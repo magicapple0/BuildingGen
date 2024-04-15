@@ -1,0 +1,35 @@
+﻿{
+  "Base": [
+    [ 1, 1 ],
+    [ 1, 1 ]
+  ],
+  "UsingTiles": [ "roof", "base" ],
+  "Tiles": [
+    {
+      "Name": "roof",
+      "Edges": [
+        [ "base" ],
+        [ "roof" ],
+        [ "air" ],
+        [ "roof" ],
+        [ "air" ],
+        [ "air" ]
+      ],
+      "FlipX": true,
+      "RotateZ": true
+    },
+    {
+      "Name": "base",
+      "Edges": [
+        [ "ground" ],
+        [ "base" ],
+        [ "roof" ],
+        [ "base" ],
+        [ "air" ],
+        [ "air" ]
+      ],
+      "FlipX": true,
+      "RotateZ": true
+    }
+  ]
+}
