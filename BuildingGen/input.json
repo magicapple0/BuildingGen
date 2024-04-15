@@ -1,0 +1,22 @@
+﻿{
+  "Base": [
+    [ 1, 1 ],
+    [ 1, 1 ]
+  ],
+  "UsingTiles": [ "dice" ],
+  "Tiles": [
+    {
+      "Name": "dice",
+      "Edges": [
+        [ "one" ],
+        [ "two" ],
+        [ "three" ],
+        [ "four" ],
+        [ "five" ],
+        [ "six" ]
+      ],
+      "FlipX": true,
+      "RotateZ": true
+    }
+  ]
+}
