@@ -18,6 +18,10 @@ namespace BuildingGen
             this.fileName = fileName;
             InputJson = JsonSerializer.Deserialize<InputJson>(File.ReadAllText(fileName));
             Tiles = new List<Tile>();
+            //var currTile = TileInfoToTile(InputJson.Tiles.FirstOrDefault());
+            //var modifiers = new[] { None, FlipXTile, FlipYTile, FlipZTile, RotateXTile };
+            //var modifiers = new[] {None, FlipXTile, FlipYTile, FlipZTile, RotateXTile, RotateXTile, RotateXTile, RotateYTile, RotateYTile, RotateYTile, RotateZTile, RotateZTile, RotateZTile };
+            //var automat = new Automatoe(modifiers);
             foreach (var tile in InputJson.Tiles)
             {
                 var tiles = new List<Tile>
