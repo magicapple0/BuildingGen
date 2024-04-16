@@ -29,6 +29,7 @@ namespace Visualize
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+
         }
 
         public void addCube(Cube cube)
