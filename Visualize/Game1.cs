@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Microsoft.VisualBasic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -10,68 +11,198 @@ namespace Visualize
     public class Game1 : Game
     {
         GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
 
-        Matrix projectionMatrix;
-        Matrix viewMatrix;
-        Matrix worldMatrix;
+        public Matrix projectionMatrix;
+        public Matrix viewMatrix;
+        public Matrix worldMatrix;
+        public BasicEffect effect { get; set; }
+        Vector3 centerOfBuilding;
+        Vector3 cameraPosition;
+        Vector3 cameraTarget;
 
-        VertexPositionColor[] triangleVertices;
-        VertexBuffer vertexBuffer;
-        IndexBuffer indexBuffer;
-        BasicEffect effect;
-
-        LineManager lineManager = new LineManager();
         List<Cube> cubes = new List<Cube>();
         List<VertexPositionColor> vertices = new List<VertexPositionColor>();
+        int[][][] tallBuilding = new int[][][]
+        {
+                          new int[][] {
+                          new int[] { 1, 1, 1 },
+                          new int[] { 1, 1, 1 },
+                          new int[] { 1, 1, 1 }}, //first floor
+                          new int[][] {
+                          new int[] { 1, 1, 1 }, 
+                          new int[] { 1, 1, 1 }, 
+                          new int[] { 0, 1, 1 }},
+                          new int[][] {
+                          new int[] { 1, 1, 1 },
+                          new int[] { 0, 1, 0 },
+                          new int[] { 0, 0, 0 }},
+                          new int[][] {
+                          new int[] { 0, 1, 0 },
+                          new int[] { 0, 0, 0 },
+                          new int[] { 0, 0, 0 }},
+                          new int[][] {
+                          new int[] { 0, 1, 0 },
+                          new int[] { 0, 0, 0 },
+                          new int[] { 0, 0, 0 }},
+                          new int[][] {
+                          new int[] { 0, 1, 0 },
+                          new int[] { 0, 0, 0 },
+                          new int[] { 0, 0, 0 }},
+                          new int[][] {
+                          new int[] { 0, 1, 0 },
+                          new int[] { 0, 0, 0 },
+                          new int[] { 0, 0, 0 }},
+                          new int[][] {
+                          new int[] { 0, 1, 0 },
+                          new int[] { 0, 0, 0 },
+                          new int[] { 0, 0, 0 }},
+                          new int[][] {
+                          new int[] { 0, 1, 0 },
+                          new int[] { 0, 0, 0 },
+                          new int[] { 0, 0, 0 }},
+                          new int[][] {
+                          new int[] { 0, 1, 0 },
+                          new int[] { 0, 0, 0 },
+                          new int[] { 0, 0, 0 }},
+                          new int[][] {
+                          new int[] { 0, 1, 0 },
+                          new int[] { 0, 0, 0 },
+                          new int[] { 0, 0, 0 }},
+                          new int[][] {
+                          new int[] { 0, 1, 0 },
+                          new int[] { 0, 0, 0 },
+                          new int[] { 0, 0, 0 }},
+                          new int[][] {
+                          new int[] { 0, 1, 0 },
+                          new int[] { 0, 0, 0 },
+                          new int[] { 0, 0, 0 }},
+                          new int[][] {
+                          new int[] { 0, 1, 0 },
+                          new int[] { 0, 0, 0 },
+                          new int[] { 0, 0, 0 }},
+                          new int[][] {
+                          new int[] { 0, 1, 0 },
+                          new int[] { 0, 0, 0 },
+                          new int[] { 0, 0, 0 }},
+                          new int[][] {
+                          new int[] { 0, 1, 0 },
+                          new int[] { 0, 0, 0 },
+                          new int[] { 0, 0, 0 }},
+                          new int[][] {
+                          new int[] { 0, 1, 0 },
+                          new int[] { 0, 0, 0 },
+                          new int[] { 0, 0, 0 }},
+        };
+
+        int[][][] building = new int[][][]
+        {
+                          new int[][] {
+                          new int[] { 1, 1, 1 },
+                          new int[] { 1, 1, 1 },
+                          new int[] { 1, 1, 1 }}, //first floor
+                          new int[][] {
+                          new int[] { 1, 1, 1 },
+                          new int[] { 1, 1, 1 },
+                          new int[] { 0, 1, 1 }},
+                          new int[][] {
+                          new int[] { 1, 1, 1 },
+                          new int[] { 0, 1, 0 },
+                          new int[] { 0, 0, 0 }},
+                          new int[][] {
+                          new int[] { 0, 1, 0 },
+                          new int[] { 0, 0, 0 },
+                          new int[] { 0, 0, 0 }},
+
+        };
+
+        int[][][] wideBuilding = new int[][][]
+        {
+                          new int[][] {
+                          new int[] { 1, 1, 1 ,  1, 1, 1 ,  1, 1, 1 ,  1, 1, 1 },
+                          new int[] { 1, 1, 1 ,  1, 1, 1 ,  1, 1, 1 ,  1, 1, 1 },
+                          new int[] { 1, 1, 1 ,  1, 1, 1 ,  1, 1, 1 ,  1, 1, 1 },}, //first floor
+                          new int[][] {
+                          new int[] { 1, 1, 1 },
+                          new int[] { 1, 1, 1 , 0, 0, 1, 1 },
+                          new int[] { 0, 1, 1 }},
+                          new int[][] {
+                          new int[] { 1, 1, 1 },
+                          new int[] { 0, 1, 0 },
+                          new int[] { 0, 0, 0 }},
+                          new int[][] {
+                          new int[] { 0, 1, 0 },
+                          new int[] { 0, 0, 0 },
+                          new int[] { 0, 0, 0 }},
+
+        };
 
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-
-        }
-
-        public void addCube(Cube cube)
-        {
-            cubes.Add(cube);
-            lineManager.addLines(cube.LineCubeIndices);
-            vertices.AddRange(cube.triangleVertices);
         }
 
         protected override void Initialize()
         {
-            viewMatrix = Matrix.CreateLookAt(new Vector3(0, 0, 6), Vector3.Zero, Vector3.Up);
+            //screen settings
+            var _windowMultiplier = 2;
+            var _screenWidth = 540;
+            var _screenHeight = 380;
+            Window.Position = new Point(
+                (GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width / 2) - (_screenWidth),
+                (GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height / 2) - (_screenHeight)
+                );
+            var _nativeRenderTarget = new RenderTarget2D(GraphicsDevice, _screenWidth, _screenHeight);
+            graphics.IsFullScreen = false;
+            graphics.PreferredBackBufferWidth = _screenWidth * _windowMultiplier;
+            graphics.PreferredBackBufferHeight = _screenHeight * _windowMultiplier;
+            graphics.ApplyChanges();
 
+            //cubes init
+            Vector3 min = new Vector3(666, 666, 666);
+            Vector3 max = new Vector3(-666, -666, -666);
+
+            //var b = building;
+            //var b = tallBuilding;
+            var b = wideBuilding;
+
+            for (var i = 0; i < b.Length; i++)
+            {
+                for (var j = 0; j < b[i].Length; j++)
+                {
+                    for (var k = 0; k < b[i][j].Length; k++)
+                    {
+                        if (b[i][j][k] == 1)
+                        {
+                            cubes.Add(new Cube(this, new Vector3(k, i, j)));
+                            //min.X = MathHelper.Min(min.X, i);
+                            min.Z = MathHelper.Min(min.Z, i);
+                            max.Z = MathHelper.Max(max.Z, i);
+                            min.Y = MathHelper.Min(min.Y, j);
+                            max.Y = MathHelper.Max(max.Y, j);
+                            min.X = MathHelper.Min(min.X, k);
+                            max.X = MathHelper.Max(max.X, k);
+                        }
+                    }
+                }
+            }
+
+            //camera settings
+            centerOfBuilding = new Vector3((max.X - min.X) / 2, (max.Y - min.Y) / 2, (max.Z - min.Z) / 2);
+            var zoom = MathHelper.Max(max.X, MathHelper.Max(max.Y, max.Z)) * 1.2f + 4;
+            cameraPosition = new Vector3(0, -centerOfBuilding.Z + 2 , zoom);
+            cameraTarget = new Vector3(0, centerOfBuilding.Z - 2, -zoom);
+            viewMatrix = Matrix.CreateLookAt(cameraPosition, new Vector3(0, centerOfBuilding.Z - 0.7f, -zoom), Vector3.Up);
             projectionMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4,
                 (float)Window.ClientBounds.Width / (float)Window.ClientBounds.Height,
                 1, 100);
-
-            worldMatrix = Matrix.CreateWorld(new Vector3(0f, 0f, 0f), new Vector3(0, 0, -1), Vector3.Up);
-
-
-            addCube(new Cube(new Vector3(0, 0, 0)));
-            addCube(new Cube(new Vector3(-1, -1, -1)));
-            addCube(new Cube(new Vector3(1, 1, 1)));
-
-
-            vertexBuffer = new VertexBuffer(GraphicsDevice, typeof(VertexPositionColor), cubes.Count * 8, BufferUsage.None);
-            vertexBuffer.SetData(vertices.ToArray());
-
-            effect = new BasicEffect(GraphicsDevice);
-            effect.VertexColorEnabled = true;
-
-            // создаем буфер индексов
-            indexBuffer = new IndexBuffer(graphics.GraphicsDevice, typeof(ushort), cubes.Count * 24, BufferUsage.WriteOnly);
-            indexBuffer.SetData<ushort>(lineManager.LineIndices);
+            worldMatrix = Matrix.CreateWorld(new Vector3(-centerOfBuilding.X - 0.5f, -centerOfBuilding.Z + 0.5f, -centerOfBuilding.Y - 0.5f), new Vector3(0, 0, -1), Vector3.Up);
 
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
-            spriteBatch = new SpriteBatch(GraphicsDevice);
-
         }
 
         protected override void UnloadContent()
@@ -101,7 +232,17 @@ namespace Visualize
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Space))
             {
-                worldMatrix = Matrix.CreateWorld(new Vector3(0f, 0f, 0f), new Vector3(0, 0, -1), Vector3.Up);
+                worldMatrix = Matrix.CreateWorld(new Vector3(-centerOfBuilding.X - 0.5f, -centerOfBuilding.Z + 0.5f, -centerOfBuilding.Y - 0.5f), new Vector3(0, 0, -1), Vector3.Up);
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.Z))
+            {
+                cameraPosition = new Vector3(cameraPosition.X, cameraPosition.Y, cameraPosition.Z - 0.1f);
+                viewMatrix = Matrix.CreateLookAt(cameraPosition, cameraTarget, Vector3.Up);
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.X))
+            {
+                cameraPosition = new Vector3(cameraPosition.X, cameraPosition.Y, cameraPosition.Z + 0.1f);
+                viewMatrix = Matrix.CreateLookAt(cameraPosition, cameraTarget, Vector3.Up);
             }
 
             base.Update(gameTime);
@@ -110,21 +251,10 @@ namespace Visualize
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-
-            effect.World = worldMatrix;
-            effect.View = viewMatrix;
-            effect.Projection = projectionMatrix;
-
-            GraphicsDevice.SetVertexBuffer(vertexBuffer);
-            // устанавливаем буфер индексов
-            GraphicsDevice.Indices = indexBuffer;
-            foreach (EffectPass pass in effect.CurrentTechnique.Passes)
+            foreach (var cube in cubes)
             {
-                pass.Apply();
-                // отрисовка примитива
-                GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.LineList, 0, 0, cubes.Count * 12);
+                cube.Draw();
             }
-
             base.Draw(gameTime);
         }
     }
