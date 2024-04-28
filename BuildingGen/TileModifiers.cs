@@ -8,6 +8,6 @@ namespace BuildingGen
 {
     public enum TileModifiers
     {
-        FlipX = 0, FlipY = 1, FlipZ = 2, RotateX = 3, RotateY = 4, RotateZ = 5, None = 6
+        FlipX = 0, FlipY, FlipZ, RotateX, RotateY, RotateZ, None
     }
 }

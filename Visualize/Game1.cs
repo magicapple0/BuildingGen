@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using System.Linq;
+using BuildingGen;
 
 namespace Visualize
 {
@@ -19,6 +20,8 @@ namespace Visualize
         Vector3 centerOfBuilding;
         Vector3 cameraPosition;
         Vector3 cameraTarget;
+        private Tile[,] tiles;
+        private Chamber chamber;
 
         List<Cube> cubes = new List<Cube>();
         List<VertexPositionColor> vertices = new List<VertexPositionColor>();
@@ -136,8 +139,9 @@ namespace Visualize
 
         };
 
-        public Game1()
+        public Game1(Tile[,] tiles)
         {
+            this.tiles = tiles;
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
         }
@@ -162,10 +166,30 @@ namespace Visualize
             Vector3 min = new Vector3(666, 666, 666);
             Vector3 max = new Vector3(-666, -666, -666);
 
-            //var b = building;
-            //var b = tallBuilding;
-            var b = wideBuilding;
+            for (int i = 0; i < tiles.GetLength(0); i++)
+            {
+                for (int j = 0; j < tiles.GetLength(1); j++)
+                {
+                    if (tiles[i,j].TileInfo.Name.Equals("house"))
+                    {
+                        cubes.Add(new Cube(this, new Vector3(i, 0, j)));
+                        //min.X = MathHelper.Min(min.X, i);
+                        min.Z = MathHelper.Min(min.Z, 1);
+                        max.Z = MathHelper.Max(max.Z, 1);
+                        min.Y = MathHelper.Min(min.Y, i);
+                        max.Y = MathHelper.Max(max.Y, i);
+                        min.X = MathHelper.Min(min.X, j);
+                        max.X = MathHelper.Max(max.X, j);
+                    }
+                }
+            }
 
+            chamber = new Chamber(this, new Vector3(tiles.GetLength(0), 1, tiles.GetLength(1)));
+
+            /*//var b = building;
+            var b = tallBuilding;
+            //var b = wideBuilding;
+            
             for (var i = 0; i < b.Length; i++)
             {
                 for (var j = 0; j < b[i].Length; j++)
@@ -185,7 +209,7 @@ namespace Visualize
                         }
                     }
                 }
-            }
+            }*/
 
             //camera settings
             centerOfBuilding = new Vector3((max.X - min.X) / 2, (max.Y - min.Y) / 2, (max.Z - min.Z) / 2);
@@ -255,6 +279,7 @@ namespace Visualize
             {
                 cube.Draw();
             }
+            chamber.Draw();
             base.Draw(gameTime);
         }
     }

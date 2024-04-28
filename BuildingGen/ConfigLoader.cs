@@ -34,15 +34,15 @@ namespace BuildingGen
                 }
                 if (tile.RotateZ)
                 {
-                    tiles.Add(RotateXTile(tiles[0]));
-                    tiles.Add(RotateXTile(tiles[tiles.Count - 1]));
-                    tiles.Add(RotateXTile(tiles[tiles.Count - 1]));
+                    tiles.Add(RotateZTile(tiles[0]));
+                    tiles.Add(RotateZTile(tiles[tiles.Count - 1]));
+                    tiles.Add(RotateZTile(tiles[tiles.Count - 1]));
                 }
                 if (tile.RotateZ && tile.FlipX)
                 {
-                    tiles.Add(RotateXTile(tiles[1]));
-                    tiles.Add(RotateXTile(tiles[tiles.Count - 1]));
-                    tiles.Add(RotateXTile(tiles[tiles.Count - 1]));
+                    tiles.Add(RotateZTile(tiles[1]));
+                    tiles.Add(RotateZTile(tiles[tiles.Count - 1]));
+                    tiles.Add(RotateZTile(tiles[tiles.Count - 1]));
                 }
                 Tiles.AddRange(tiles);
             }
