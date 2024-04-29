@@ -7,23 +7,27 @@ public class WaveFunction
     public Model CurrModel { get; set; }
     private List<Model> PreviouceFields;
     public int n = 0;
-    private Dictionary<(int, int), string> directions = new Dictionary<(int, int), string>{ 
-        {(0, 1), "up"},
-        {(0, -1), "down"},
-        {(1, 0), "right"},
-        {(-1, 0), "left"},
+    private Dictionary<(int, int, int), string> directions = new Dictionary<(int, int, int), string>{ 
+        {(0, 1, 0), "forward"},
+        {(0, -1, 0), "backward"},
+        {(1, 0, 0), "right"},
+        {(-1, 0, 0), "left"},
+        {(0, 0, 1), "up"},
+        {(0, 0, -1), "down"},
     };
     Dictionary<string, (int, int)> neighborCellDirections = new Dictionary<string, (int, int)>()
     {
-        { "up", (1, 5) },
-        { "down", (5, 1) },
+        { "forward", (1, 5) },
+        { "backward", (5, 1) },
         { "right", (3, 4) },
         { "left", (4, 3) },
+        { "up", (2, 0) },
+        { "down", (0, 2) },
     };
 
-    public WaveFunction(int widht, int height, Tile[] tileSet, int seed)
+    public WaveFunction(int widht, int height, int depth, Tile[] tileSet, int seed)
     {
-        CurrModel = new Model(widht, height, tileSet);
+        CurrModel = new Model(widht, height, depth, tileSet);
         Seed = seed;
         Rand = new Random(Seed);
         Wave();
@@ -40,14 +44,14 @@ public class WaveFunction
         while (true)
         {
             var choosenTile = ChooseTile(currCell);
-            CurrModel.VisitedTiles[currCell.Item1, currCell.Item2].Add(choosenTile);
+            CurrModel.VisitedTiles[currCell.Item1, currCell.Item2, currCell.Item3].Add(choosenTile);
             Wave();
             if (IsCollapse())
                 return true;
             //если у одной из клеток нет возможных состояний - вернемнся к 1 состоянию и попробуем еще раз
             if (IsBroken())
             {
-                while (CurrModel.VisitedTiles[currCell.Item1, currCell.Item2].Count ==
+                while (CurrModel.VisitedTiles[currCell.Item1, currCell.Item2, currCell.Item3].Count ==
                        PreviouceFields[^1].Field[currCell].Length ||
                        PreviouceFields[^1].Field[currCell].Length == 0)
                 {
@@ -60,7 +64,7 @@ public class WaveFunction
                     currCell = ChooseCell();
                     //Console.WriteLine("Шаг назад");
                 }
-                PreviouceFields[^1].VisitedTiles[currCell.Item1, currCell.Item2].Add(choosenTile);
+                PreviouceFields[^1].VisitedTiles[currCell.Item1, currCell.Item2, currCell.Item3].Add(choosenTile);
                 CurrModel = PreviouceFields[^1].Copy();
                 //Console.WriteLine("Другой тайл");
             }
@@ -79,8 +83,8 @@ public class WaveFunction
     {
         foreach (var tile in CurrModel.Field)
         {
-            if (CurrModel.VisitedTiles[tile.Key.Item1, tile.Key.Item2] != null && 
-                CurrModel.VisitedTiles[tile.Key.Item1, tile.Key.Item2].Count != tile.Value.Length)
+            if (CurrModel.VisitedTiles[tile.Key.Item1, tile.Key.Item2, tile.Key.Item3] != null && 
+                CurrModel.VisitedTiles[tile.Key.Item1, tile.Key.Item2, tile.Key.Item3].Count != tile.Value.Length)
                 return false;
         }
         return true;
@@ -109,33 +113,37 @@ public class WaveFunction
     private void Wave()
     {
         //bfs
-        Queue<(int, int)> queue = new Queue<(int, int)>(CurrModel.VisitedCells.ToArray());
-        List<(int, int)> visited = new List<(int, int)>(CurrModel.VisitedCells.ToArray());
+        Queue<(int, int, int)> queue = new Queue<(int, int, int)>(CurrModel.VisitedCells.ToArray());
+        List<(int, int, int)> visited = new List<(int, int, int)>(CurrModel.VisitedCells.ToArray());
         
         while (queue.Count != 0)
         {
             var currCell = queue.Dequeue();
             foreach (var direction in directions)
             {
-                var newCell = (currCell.Item1 + direction.Key.Item1, currCell.Item2 + direction.Key.Item2);
+                var newCell = (currCell.Item1 + direction.Key.Item1, 
+                    currCell.Item2 + direction.Key.Item2, currCell.Item3 + direction.Key.Item3);
                 if (IsAble(currCell, direction.Key) && !visited.Contains(newCell))
                 {
+                    if (newCell == (1, 1, 1))
+                        newCell = (1, 1, 1);
                     UpdateCellTiles(currCell, newCell, direction.Value);
                     queue.Enqueue(newCell);
                 }
             }
-            visited.Add(currCell);
+            if (!visited.Contains(currCell))
+                visited.Add(currCell);
         }
     }
 
-    private void UpdateCellTiles((int, int) currCell, (int, int) changingTile, string direction)
+    private void UpdateCellTiles((int, int, int) currCell, (int, int, int) changingTile, string direction)
     {
         var neighborCellDirection = neighborCellDirections[direction].Item1;
         var currCellDirection = neighborCellDirections[direction].Item2;
         
         var newNeighborTiles = new List<Tile>();
-        var oldNeighborTiles = CurrModel.Field[(changingTile.Item1, changingTile.Item2)];
-        var currCellTiles = CurrModel.Field[(currCell.Item1, currCell.Item2)];
+        var oldNeighborTiles = CurrModel.Field[changingTile];
+        var currCellTiles = CurrModel.Field[currCell];
         foreach (var currCellTile in currCellTiles)
         {
             var currCellNeighborsTilesNames = currCellTile.ModifiedEdges[currCellDirection];
@@ -152,40 +160,41 @@ public class WaveFunction
                 }
             }
         }
-        CurrModel.Field[(changingTile.Item1, changingTile.Item2)] = newNeighborTiles.ToArray();
+        CurrModel.Field[changingTile] = newNeighborTiles.ToArray();
     }
 
-    private bool IsAble((int, int) currCell, (int, int) ofset)
+    private bool IsAble((int, int, int) currCell, (int, int, int) offset)
     {
-        var newCell = (currCell.Item1 + ofset.Item1, currCell.Item2 + ofset.Item2);
-        if (newCell.Item1 < 0 || newCell.Item1 >= CurrModel.Width || newCell.Item2 < 0 || newCell.Item2 >= CurrModel.Depth)
+        var newCell = (currCell.Item1 + offset.Item1, currCell.Item2 + offset.Item2, currCell.Item3 + offset.Item3);
+        if (newCell.Item1 < 0 || newCell.Item1 >= CurrModel.Width || newCell.Item2 < 0 || newCell.Item2 >= CurrModel.Depth ||
+            newCell.Item3 < 0 || newCell.Item3 >= CurrModel.Height)
             return false;
         return true;
     }
     
-    private Tile ChooseTile((int, int) currCell)
+    private Tile ChooseTile((int, int, int) currCell)
     {
-        var availableTiles = CurrModel.Field[(currCell.Item1, currCell.Item2)];
+        var availableTiles = CurrModel.Field[(currCell.Item1, currCell.Item2, currCell.Item3)];
         var choosenTile = availableTiles[Rand.Next() % availableTiles.Length];
         var i = 1;
-        while (CurrModel.VisitedTiles[currCell.Item1, currCell.Item2].Contains(choosenTile))
+        while (CurrModel.VisitedTiles[currCell.Item1, currCell.Item2, currCell.Item3].Contains(choosenTile))
         {
             choosenTile = availableTiles[(Rand.Next() % availableTiles.Length + i) % availableTiles.Length];
             i++;
         }
-        CurrModel.Field[(currCell.Item1, currCell.Item2)] = new []{choosenTile};
+        CurrModel.Field[(currCell.Item1, currCell.Item2, currCell.Item3)] = new []{choosenTile};
         return choosenTile;
     }
 
-    private (int, int) ChooseCell()
+    private (int, int, int) ChooseCell()
     {
         //выбираем все ячейки с минимальной энтропией, исключая коллапсированные
         return CurrModel.Field.Where(x => x.Value.Length > 1).MinBy(x => (x.Value.Length, Rand.Next())).Key;
     }
-    private (int, int) ChooseCellSimple()
+    private (int, int, int) ChooseCellSimple()
     {
-        var cell = (Rand.Next() % CurrModel.Width, Rand.Next() % CurrModel.Depth);
-        while (CurrModel.Field[(cell.Item1, cell.Item2)].Length <= 1)
+        var cell = (Rand.Next() % CurrModel.Width, Rand.Next() % CurrModel.Depth, Rand.Next() % CurrModel.Height);
+        while (CurrModel.Field[(cell.Item1, cell.Item2, cell.Item3)].Length <= 1)
         {
             if (cell.Item1 + 1 != CurrModel.Width)
             {
@@ -199,6 +208,12 @@ public class WaveFunction
                 continue;
             }
             cell.Item2 = 0;
+            if (cell.Item3 + 1 != CurrModel.Height)
+            {
+                cell.Item3 += 1;
+                continue;
+            }
+            cell.Item3 = 0;
         }
         return cell;
     } 

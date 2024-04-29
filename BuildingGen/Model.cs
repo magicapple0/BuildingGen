@@ -2,47 +2,56 @@
 
 public class Model
 {
-    private int width;
     public int Width{ get; set; }
+    public int Height{ get; set; }
     public int Depth{ get; set; }
     public Tile[] TileSet { get; set; }
-    public Dictionary<(int, int), Tile[]> Field { get; set; }
-    public List<Tile>[,]  VisitedTiles { get; set; }
-    public List<(int, int)> VisitedCells { get; set; }
-    public (int, int) CurrCell;
+    public Dictionary<(int, int, int), Tile[]> Field { get; set; }
+    public List<Tile>[,,]  VisitedTiles { get; set; }
+    public List<(int, int, int)> VisitedCells { get; set; }
 
     private Tile[,] result;
 
-    public Tile[,] Result()
+    public Tile[,,] Result()
     {
-            var building = new Tile[Width, Depth];
+            var building = new Tile[Width, Depth, Height];
             for (int i = 0; i < Width; i++)
-            for (int j = 0; j < Depth; j++)
-                building[i, j] = Field[(i, j)][0];
+                for (int j = 0; j < Depth; j++)
+                    for (int k = 0; k < Height; k++)
+                    building[i, j, k] = Field[(i, j, k)][0];
             return building;
     }
 
-    public Model(int widht, int depth, Tile[] tileSet)
+    public Model(int widht, int depth, int height, Tile[] tileSet)
     {
         Width = widht;
         Depth = depth;
+        Height = height;
         TileSet = tileSet;
-        CurrCell = (0, 0);
-        Field = new Dictionary<(int, int), Tile[]>();
-        VisitedCells = new List<(int, int)>();
-        VisitedTiles = new List<Tile>[Width, Depth];
+        Field = new Dictionary<(int, int, int), Tile[]>();
+        VisitedCells = new List<(int, int, int)>();
+        VisitedTiles = new List<Tile>[Width, Depth, Height];
         for (int i = 0; i < Width; i++)
         {
             for (int j = 0; j < Depth; j++)
             {
-                if (i == 0 || i == Width - 1 || j == 0 || j == Depth - 1)
+                for (int k = 0; k < Height; k++)
                 {
-                    Field[(i, j)] = new [] {TileSet[^1]};
-                    VisitedCells.Add((i, j));
-                    continue;
+                    if (k == 0)
+                    {
+                        Field[(i, j, k)] = new [] {TileSet[^2]};
+                        VisitedCells.Add((i, j, k));
+                        continue;
+                    }
+                    if (i == 0 || i == Width - 1 || j == 0 || j == Depth - 1 || k == Height - 1 )
+                    {
+                        Field[(i, j, k)] = new [] {TileSet[^1]};
+                        VisitedCells.Add((i, j, k));
+                        continue;
+                    }
+                    Field[(i, j, k)] = TileSet.ToArray();
+                    VisitedTiles[i, j, k] = new List<Tile>();
                 }
-                Field[(i, j)] = TileSet.ToArray();
-                VisitedTiles[i, j] = new List<Tile>();
             }
         }
     }
@@ -53,23 +62,24 @@ public class Model
     {
         var copy = new Model();
         copy.Depth = Depth;
-        copy.CurrCell = CurrCell;
         copy.Width = Width;
+        copy.Height = Height;
         copy.TileSet = (Tile[])TileSet.Clone();
-        copy.Field = new Dictionary<(int, int), Tile[]>();
-        copy.VisitedTiles = new List<Tile>[Width, Depth];
-        copy.VisitedCells = new List<(int, int)>(VisitedCells);
+        copy.Field = new Dictionary<(int, int, int), Tile[]>();
+        copy.VisitedTiles = new List<Tile>[Width, Depth, Height];
+        copy.VisitedCells = new List<(int, int, int)>(VisitedCells);
         for (int i = 0; i < Width; i++)
         {
             for (int j = 0; j < Depth; j++)
             {
-                copy.Field[(i, j)] = (Tile[])Field[(i, j)].Clone();
-                if (VisitedTiles[i, j] != null)
-                    copy.VisitedTiles[i, j] = new List<Tile>(VisitedTiles[i, j]);
+                for (int k = 0; k < Height; k++)
+                {
+                    copy.Field[(i, j, k)] = (Tile[])Field[(i, j, k)].Clone();
+                    if (VisitedTiles[i, j, k] != null)
+                        copy.VisitedTiles[i, j, k] = new List<Tile>(VisitedTiles[i, j, k]);
+                }
             }
         }
         return copy;
-    }
-    
-    
+    } 
 }

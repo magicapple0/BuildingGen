@@ -8,12 +8,12 @@
     {
       "Name": "house",
       "Edges": [
-        [ "roof" ],
-        [ "house" ],
-        [ "ground" ],
-        [ "house","air" ],
-        [ "house","air"  ],
-        [ "air" ]
+        [ "air", "house" ],
+        [ "air", "house" ],
+        [ "ground", "house" ],
+        [ "air", "house"  ],
+        [ "air"  ],
+        [ "air", "house"  ]
       ],
       "FlipX": false,
       "RotateZ": true

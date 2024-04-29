@@ -70,9 +70,9 @@ namespace Visualize
 
         public void Draw()
         {
-            effect.World = game.worldMatrix;
-            effect.Projection = game.projectionMatrix;
-            effect.View = game.viewMatrix;
+            effect.World = game.WorldMatrix;
+            effect.Projection = game.ProjectionMatrix;
+            effect.View = game.ViewMatrix;
             effect.CurrentTechnique.Passes[0].Apply();
             game.GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionTexture>(
                 PrimitiveType.TriangleList,

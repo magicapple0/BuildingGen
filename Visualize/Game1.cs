@@ -1,190 +1,76 @@
-﻿using Microsoft.VisualBasic;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
-using System.Linq;
 using BuildingGen;
 
 namespace Visualize
 {
     public class Game1 : Game
     {
-        GraphicsDeviceManager graphics;
+        private readonly GraphicsDeviceManager _graphics;
 
-        public Matrix projectionMatrix;
-        public Matrix viewMatrix;
-        public Matrix worldMatrix;
-        public BasicEffect effect { get; set; }
-        Vector3 centerOfBuilding;
-        Vector3 cameraPosition;
-        Vector3 cameraTarget;
-        private Tile[,] tiles;
-        private Chamber chamber;
+        public Matrix ProjectionMatrix;
+        public Matrix ViewMatrix;
+        public Matrix WorldMatrix;
+        private BasicEffect _effect;
+        private Vector3 _centerOfBuilding;
+        private Vector3 _cameraPosition;
+        private Vector3 _cameraTarget;
+        private readonly Tile[,,] _tiles;
+        
+        private Chamber _chamber;
+        List<Cube> cubes = new ();
 
-        List<Cube> cubes = new List<Cube>();
-        List<VertexPositionColor> vertices = new List<VertexPositionColor>();
-        int[][][] tallBuilding = new int[][][]
+        public Game1(Tile[,,] tiles)
         {
-                          new int[][] {
-                          new int[] { 1, 1, 1 },
-                          new int[] { 1, 1, 1 },
-                          new int[] { 1, 1, 1 }}, //first floor
-                          new int[][] {
-                          new int[] { 1, 1, 1 }, 
-                          new int[] { 1, 1, 1 }, 
-                          new int[] { 0, 1, 1 }},
-                          new int[][] {
-                          new int[] { 1, 1, 1 },
-                          new int[] { 0, 1, 0 },
-                          new int[] { 0, 0, 0 }},
-                          new int[][] {
-                          new int[] { 0, 1, 0 },
-                          new int[] { 0, 0, 0 },
-                          new int[] { 0, 0, 0 }},
-                          new int[][] {
-                          new int[] { 0, 1, 0 },
-                          new int[] { 0, 0, 0 },
-                          new int[] { 0, 0, 0 }},
-                          new int[][] {
-                          new int[] { 0, 1, 0 },
-                          new int[] { 0, 0, 0 },
-                          new int[] { 0, 0, 0 }},
-                          new int[][] {
-                          new int[] { 0, 1, 0 },
-                          new int[] { 0, 0, 0 },
-                          new int[] { 0, 0, 0 }},
-                          new int[][] {
-                          new int[] { 0, 1, 0 },
-                          new int[] { 0, 0, 0 },
-                          new int[] { 0, 0, 0 }},
-                          new int[][] {
-                          new int[] { 0, 1, 0 },
-                          new int[] { 0, 0, 0 },
-                          new int[] { 0, 0, 0 }},
-                          new int[][] {
-                          new int[] { 0, 1, 0 },
-                          new int[] { 0, 0, 0 },
-                          new int[] { 0, 0, 0 }},
-                          new int[][] {
-                          new int[] { 0, 1, 0 },
-                          new int[] { 0, 0, 0 },
-                          new int[] { 0, 0, 0 }},
-                          new int[][] {
-                          new int[] { 0, 1, 0 },
-                          new int[] { 0, 0, 0 },
-                          new int[] { 0, 0, 0 }},
-                          new int[][] {
-                          new int[] { 0, 1, 0 },
-                          new int[] { 0, 0, 0 },
-                          new int[] { 0, 0, 0 }},
-                          new int[][] {
-                          new int[] { 0, 1, 0 },
-                          new int[] { 0, 0, 0 },
-                          new int[] { 0, 0, 0 }},
-                          new int[][] {
-                          new int[] { 0, 1, 0 },
-                          new int[] { 0, 0, 0 },
-                          new int[] { 0, 0, 0 }},
-                          new int[][] {
-                          new int[] { 0, 1, 0 },
-                          new int[] { 0, 0, 0 },
-                          new int[] { 0, 0, 0 }},
-                          new int[][] {
-                          new int[] { 0, 1, 0 },
-                          new int[] { 0, 0, 0 },
-                          new int[] { 0, 0, 0 }},
-        };
-
-        int[][][] building = new int[][][]
-        {
-                          new int[][] {
-                          new int[] { 1, 1, 1 },
-                          new int[] { 1, 1, 1 },
-                          new int[] { 1, 1, 1 }}, //first floor
-                          new int[][] {
-                          new int[] { 1, 1, 1 },
-                          new int[] { 1, 1, 1 },
-                          new int[] { 0, 1, 1 }},
-                          new int[][] {
-                          new int[] { 1, 1, 1 },
-                          new int[] { 0, 1, 0 },
-                          new int[] { 0, 0, 0 }},
-                          new int[][] {
-                          new int[] { 0, 1, 0 },
-                          new int[] { 0, 0, 0 },
-                          new int[] { 0, 0, 0 }},
-
-        };
-
-        int[][][] wideBuilding = new int[][][]
-        {
-                          new int[][] {
-                          new int[] { 1, 1, 1 ,  1, 1, 1 ,  1, 1, 1 ,  1, 1, 1 },
-                          new int[] { 1, 1, 1 ,  1, 1, 1 ,  1, 1, 1 ,  1, 1, 1 },
-                          new int[] { 1, 1, 1 ,  1, 1, 1 ,  1, 1, 1 ,  1, 1, 1 },}, //first floor
-                          new int[][] {
-                          new int[] { 1, 1, 1 },
-                          new int[] { 1, 1, 1 , 0, 0, 1, 1 },
-                          new int[] { 0, 1, 1 }},
-                          new int[][] {
-                          new int[] { 1, 1, 1 },
-                          new int[] { 0, 1, 0 },
-                          new int[] { 0, 0, 0 }},
-                          new int[][] {
-                          new int[] { 0, 1, 0 },
-                          new int[] { 0, 0, 0 },
-                          new int[] { 0, 0, 0 }},
-
-        };
-
-        public Game1(Tile[,] tiles)
-        {
-            this.tiles = tiles;
-            graphics = new GraphicsDeviceManager(this);
+            this._tiles = tiles;
+            _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
         }
 
         protected override void Initialize()
         {
             //screen settings
-            var _windowMultiplier = 2;
-            var _screenWidth = 540;
-            var _screenHeight = 380;
+            var windowMultiplier = 2;
+            var screenWidth = 540;
+            var screenHeight = 380;
             Window.Position = new Point(
-                (GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width / 2) - (_screenWidth),
-                (GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height / 2) - (_screenHeight)
+                (GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width / 2) - (screenWidth),
+                (GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height / 2) - (screenHeight)
                 );
-            var _nativeRenderTarget = new RenderTarget2D(GraphicsDevice, _screenWidth, _screenHeight);
-            graphics.IsFullScreen = false;
-            graphics.PreferredBackBufferWidth = _screenWidth * _windowMultiplier;
-            graphics.PreferredBackBufferHeight = _screenHeight * _windowMultiplier;
-            graphics.ApplyChanges();
+            var nativeRenderTarget = new RenderTarget2D(GraphicsDevice, screenWidth, screenHeight);
+            _graphics.IsFullScreen = false;
+            _graphics.PreferredBackBufferWidth = screenWidth * windowMultiplier;
+            _graphics.PreferredBackBufferHeight = screenHeight * windowMultiplier;
+            _graphics.ApplyChanges();
 
             //cubes init
             Vector3 min = new Vector3(666, 666, 666);
             Vector3 max = new Vector3(-666, -666, -666);
 
-            for (int i = 0; i < tiles.GetLength(0); i++)
+            for (int i = 0; i < _tiles.GetLength(0); i++)
             {
-                for (int j = 0; j < tiles.GetLength(1); j++)
+                for (int j = 0; j < _tiles.GetLength(1); j++)
                 {
-                    if (tiles[i,j].TileInfo.Name.Equals("house"))
+                    for (int k = 0; k < _tiles.GetLength(2); k++)
                     {
-                        cubes.Add(new Cube(this, new Vector3(i, 0, j)));
-                        //min.X = MathHelper.Min(min.X, i);
-                        min.Z = MathHelper.Min(min.Z, 1);
-                        max.Z = MathHelper.Max(max.Z, 1);
-                        min.Y = MathHelper.Min(min.Y, i);
-                        max.Y = MathHelper.Max(max.Y, i);
-                        min.X = MathHelper.Min(min.X, j);
-                        max.X = MathHelper.Max(max.X, j);
+                        if (_tiles[i, j, k].TileInfo.Name.Equals("house"))
+                        {
+                            cubes.Add(new Cube(this, new Vector3(i, k, j)));
+                            //min.X = MathHelper.Min(min.X, i);
+                            min.Z = 0;
+                            max.Z = MathHelper.Max(max.Z, k);
+                            min.Y = MathHelper.Min(min.Y, i);
+                            max.Y = MathHelper.Max(max.Y, i);
+                            min.X = MathHelper.Min(min.X, j);
+                            max.X = MathHelper.Max(max.X, j);
+                        }
                     }
                 }
             }
 
-            chamber = new Chamber(this, new Vector3(tiles.GetLength(0), 1, tiles.GetLength(1)));
+            _chamber = new Chamber(this, new Vector3(_tiles.GetLength(0), _tiles.GetLength(2), _tiles.GetLength(1)));
 
             /*//var b = building;
             var b = tallBuilding;
@@ -212,15 +98,15 @@ namespace Visualize
             }*/
 
             //camera settings
-            centerOfBuilding = new Vector3((max.X - min.X) / 2, (max.Y - min.Y) / 2, (max.Z - min.Z) / 2);
+            _centerOfBuilding = new Vector3((max.X - min.X) / 2, (max.Y - min.Y) / 2, (max.Z - min.Z) / 2);
             var zoom = MathHelper.Max(max.X, MathHelper.Max(max.Y, max.Z)) * 1.2f + 4;
-            cameraPosition = new Vector3(0, -centerOfBuilding.Z + 2 , zoom);
-            cameraTarget = new Vector3(0, centerOfBuilding.Z - 2, -zoom);
-            viewMatrix = Matrix.CreateLookAt(cameraPosition, new Vector3(0, centerOfBuilding.Z - 0.7f, -zoom), Vector3.Up);
-            projectionMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4,
-                (float)Window.ClientBounds.Width / (float)Window.ClientBounds.Height,
+            _cameraPosition = new Vector3(0, -_centerOfBuilding.Z + 2 , zoom);
+            _cameraTarget = new Vector3(0, _centerOfBuilding.Z - 2, -zoom);
+            ViewMatrix = Matrix.CreateLookAt(_cameraPosition, new Vector3(0, _centerOfBuilding.Z - 0.7f, -zoom), Vector3.Up);
+            ProjectionMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4,
+                (float)Window.ClientBounds.Width / Window.ClientBounds.Height,
                 1, 100);
-            worldMatrix = Matrix.CreateWorld(new Vector3(-centerOfBuilding.X - 0.5f, -centerOfBuilding.Z + 0.5f, -centerOfBuilding.Y - 0.5f), new Vector3(0, 0, -1), Vector3.Up);
+            WorldMatrix = Matrix.CreateWorld(new Vector3(-_centerOfBuilding.X - 0.5f, -_centerOfBuilding.Z + 0.5f, -_centerOfBuilding.Y - 0.5f), new Vector3(0, 0, -1), Vector3.Up);
 
             base.Initialize();
         }
@@ -240,33 +126,33 @@ namespace Visualize
 
             if (Keyboard.GetState().IsKeyDown(Keys.Up) || Keyboard.GetState().IsKeyDown(Keys.W))
             {
-                worldMatrix *= Matrix.CreateRotationX(MathHelper.ToRadians(1));
+                WorldMatrix *= Matrix.CreateRotationX(MathHelper.ToRadians(1));
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Down) || Keyboard.GetState().IsKeyDown(Keys.S))
             {
-                worldMatrix *= Matrix.CreateRotationX(-1 * MathHelper.ToRadians(1));
+                WorldMatrix *= Matrix.CreateRotationX(-1 * MathHelper.ToRadians(1));
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Left) || Keyboard.GetState().IsKeyDown(Keys.A))
             {
-                worldMatrix *= Matrix.CreateRotationY(MathHelper.ToRadians(1));
+                WorldMatrix *= Matrix.CreateRotationY(MathHelper.ToRadians(1));
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Right) || Keyboard.GetState().IsKeyDown(Keys.D))
             {
-                worldMatrix *= Matrix.CreateRotationY(-1 * MathHelper.ToRadians(1));
+                WorldMatrix *= Matrix.CreateRotationY(-1 * MathHelper.ToRadians(1));
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Space))
             {
-                worldMatrix = Matrix.CreateWorld(new Vector3(-centerOfBuilding.X - 0.5f, -centerOfBuilding.Z + 0.5f, -centerOfBuilding.Y - 0.5f), new Vector3(0, 0, -1), Vector3.Up);
+                WorldMatrix = Matrix.CreateWorld(new Vector3(-_centerOfBuilding.X - 0.5f, -_centerOfBuilding.Z + 0.5f, -_centerOfBuilding.Y - 0.5f), new Vector3(0, 0, -1), Vector3.Up);
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Z))
             {
-                cameraPosition = new Vector3(cameraPosition.X, cameraPosition.Y, cameraPosition.Z - 0.1f);
-                viewMatrix = Matrix.CreateLookAt(cameraPosition, cameraTarget, Vector3.Up);
+                _cameraPosition = new Vector3(_cameraPosition.X, _cameraPosition.Y, _cameraPosition.Z - 0.1f);
+                ViewMatrix = Matrix.CreateLookAt(_cameraPosition, _cameraTarget, Vector3.Up);
             }
             if (Keyboard.GetState().IsKeyDown(Keys.X))
             {
-                cameraPosition = new Vector3(cameraPosition.X, cameraPosition.Y, cameraPosition.Z + 0.1f);
-                viewMatrix = Matrix.CreateLookAt(cameraPosition, cameraTarget, Vector3.Up);
+                _cameraPosition = new Vector3(_cameraPosition.X, _cameraPosition.Y, _cameraPosition.Z + 0.1f);
+                ViewMatrix = Matrix.CreateLookAt(_cameraPosition, _cameraTarget, Vector3.Up);
             }
 
             base.Update(gameTime);
@@ -279,7 +165,7 @@ namespace Visualize
             {
                 cube.Draw();
             }
-            chamber.Draw();
+            _chamber.Draw();
             base.Draw(gameTime);
         }
     }

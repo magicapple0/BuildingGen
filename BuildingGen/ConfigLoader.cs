@@ -36,12 +36,12 @@ namespace BuildingGen
         private Tile Air = new Tile(new TileInfo("air",
                 new []
                 {
+                    new []{"house", "air", "roof"},
+                    new []{"house", "air", "roof"},
                     new []{"house", "air", "ground", "roof"},
-                    new []{"house", "air", "ground", "roof"},
-                    new []{"house", "air", "ground", "roof"},
-                    new []{"house", "air", "ground", "roof"},
-                    new []{"house", "air", "ground", "roof"},
-                    new []{"house", "air", "ground", "roof"}
+                    new []{"house", "air", "roof"},
+                    new []{"house", "air", "roof"},
+                    new []{"house", "air", "roof"}
                 },
                 false, false), 
             new []

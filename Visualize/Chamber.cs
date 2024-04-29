@@ -74,9 +74,9 @@ public class Chamber
     
     public void Draw()
     {
-        effect.World = game.worldMatrix;
-        effect.View = game.viewMatrix;
-        effect.Projection = game.projectionMatrix;
+        effect.World = game.WorldMatrix;
+        effect.View = game.ViewMatrix;
+        effect.Projection = game.ProjectionMatrix;
 
         game.GraphicsDevice.SetVertexBuffer(vertexBuffer);
         game.GraphicsDevice.Indices = indexBuffer;

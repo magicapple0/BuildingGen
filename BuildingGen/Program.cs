@@ -8,13 +8,14 @@ public static class Program
     {
         var confLoader = new ConfigLoader("input.json");
         var tiles = confLoader.Tiles;
-        var width = 5;
-        var height = 4;
-        var seed = 51;
+        var width = 6;
+        var depth = 6;
+        var height = 5;
+        var seed = 0;
         //PrintTileSet(tiles);
         var n = 100000;
 
-        var function = new WaveFunction(width, height, tiles.ToArray(), seed);
+        var function = new WaveFunction(width, depth, height, tiles.ToArray(), seed);
         Console.WriteLine(function.Run());
         /*for (int i = 0; i < n; i++)
         {
@@ -31,11 +32,10 @@ public static class Program
         //TimeTest(width, height, seed, tiles, n);
     }
 
-    public static void TimeTest(int width, int height, int seed, List<Tile> tiles, int n)
+    public static void TimeTest(int width, int depth, int height, int seed, List<Tile> tiles, int n)
     {
         var test = new int[n];
-        var function = new WaveFunction(width, height, tiles.ToArray(), seed);
-        Console.WriteLine("Time for width = " + width + ", height = " + height + ", seed = " + seed);
+        Console.WriteLine("Time for width = " + width + ", depth = " + depth + ", height = " + height + ", seed = " + seed);
 
         for (int i = 0; i < n; i++)
         {
@@ -43,7 +43,7 @@ public static class Program
             var sw = new Stopwatch();
             GC.Collect();
             sw.Start();
-            function = new WaveFunction(width, height, tiles.ToArray(), seed);
+            var function = new WaveFunction(width, depth, height, tiles.ToArray(), seed);
             function.Run();
             test[i] = (int)sw.Elapsed.TotalMilliseconds;
             Console.WriteLine(function.n);
@@ -85,11 +85,11 @@ public static class Program
         }
     }
 
-    public static void PrintField(Dictionary<(int, int), Tile[]> field)
+    public static void PrintField(Dictionary<(int, int, int), Tile[]> field)
     {
         foreach (var cell in field)
         {
-            Console.Write(cell.Key.Item1 + "\t" + cell.Key.Item2 + "\t");
+            Console.Write(cell.Key.Item1 + "\t" + cell.Key.Item2 + "\t" + cell.Key.Item3 + "\t");
             foreach (var tile in cell.Value)
             {
                 Console.Write(tile.TileInfo.Name + "\t");
@@ -98,12 +98,12 @@ public static class Program
         }
     }
 
-    public static Tile[,] Build(int width, int height, int seed)
+    public static Tile[,,] Build(int width, int depth, int height, int seed)
     {
         var confLoader = new ConfigLoader("input.json");
         var tiles = confLoader.Tiles;
 
-        var function = new WaveFunction(width, height, tiles.ToArray(), seed);
+        var function = new WaveFunction(width, depth, height, tiles.ToArray(), seed);
         function.Run();
         
         return function.CurrModel.Result();
