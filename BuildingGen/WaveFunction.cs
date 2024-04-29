@@ -2,21 +2,31 @@
 
 public class WaveFunction
 {
-    //private Tile[] TileSet { get; set; }
     private int Seed { get; set; }
     private Random Rand { get; set; }
     public Model CurrModel { get; set; }
     private List<Model> PreviouceFields;
-    public List<(int, int)> Visited { get; set; }
+    public int n = 0;
+    private Dictionary<(int, int), string> directions = new Dictionary<(int, int), string>{ 
+        {(0, 1), "up"},
+        {(0, -1), "down"},
+        {(1, 0), "right"},
+        {(-1, 0), "left"},
+    };
+    Dictionary<string, (int, int)> neighborCellDirections = new Dictionary<string, (int, int)>()
+    {
+        { "up", (1, 5) },
+        { "down", (5, 1) },
+        { "right", (3, 4) },
+        { "left", (4, 3) },
+    };
 
     public WaveFunction(int widht, int height, Tile[] tileSet, int seed)
     {
         CurrModel = new Model(widht, height, tileSet);
         Seed = seed;
-        //TileSet = tileSet.ToArray();
-        Visited = new List<(int, int)>();
         Rand = new Random(Seed);
-        Wave((0,0));
+        Wave();
         PreviouceFields = new List<Model>();
         PreviouceFields.Add(CurrModel);
         CurrModel = CurrModel.Copy();
@@ -24,99 +34,94 @@ public class WaveFunction
 
     public bool Run()
     {
-        while (!isCollapse())
+        if (IsCollapse())
+            return true;
+        var currCell = ChooseCell();
+        while (true)
         {
-            var currCell = ChooseCell();
-            if (!ChooseTile(currCell))
-            {
-                return false;
-            }
-            Wave(currCell);
+            var choosenTile = ChooseTile(currCell);
+            CurrModel.VisitedTiles[currCell.Item1, currCell.Item2].Add(choosenTile);
+            Wave();
+            if (IsCollapse())
+                return true;
             //если у одной из клеток нет возможных состояний - вернемнся к 1 состоянию и попробуем еще раз
-            if (isBroken())
+            if (IsBroken())
             {
-                Visited = new List<(int, int)>();
-                CurrModel = PreviouceFields[0].Copy();
-                PreviouceFields = new List<Model>{PreviouceFields[0]};
+                while (CurrModel.VisitedTiles[currCell.Item1, currCell.Item2].Count ==
+                       PreviouceFields[^1].Field[currCell].Length ||
+                       PreviouceFields[^1].Field[currCell].Length == 0)
+                {
+                    //если не попробовали все тайлы на этой клетке - попробуем
+                    //если эту клетку мы никак не можем поставить правильно - делаем шаг назад и пробуем другой тайл в предыдущей клетке
+                    /*if (IsAllTilesVisited())
+                        return false;*/
+                    PreviouceFields.RemoveAt(PreviouceFields.Count - 1);
+                    CurrModel = PreviouceFields[^1];
+                    currCell = ChooseCell();
+                    //Console.WriteLine("Шаг назад");
+                }
+                PreviouceFields[^1].VisitedTiles[currCell.Item1, currCell.Item2].Add(choosenTile);
+                CurrModel = PreviouceFields[^1].Copy();
+                //Console.WriteLine("Другой тайл");
             }
             else
             {
-                Visited.Add(currCell);
+                CurrModel.VisitedCells.Add(currCell);
                 PreviouceFields.Add(CurrModel);
                 CurrModel = CurrModel.Copy();
+                currCell = ChooseCell();
+                //Console.WriteLine(currCell.Item1 + "\t" + currCell.Item2 + "\tДальше");
             }
+        }
+    }
+
+    private bool IsAllTilesVisited()
+    {
+        foreach (var tile in CurrModel.Field)
+        {
+            if (CurrModel.VisitedTiles[tile.Key.Item1, tile.Key.Item2] != null && 
+                CurrModel.VisitedTiles[tile.Key.Item1, tile.Key.Item2].Count != tile.Value.Length)
+                return false;
         }
         return true;
     }
 
-    private bool isBroken()
+    private bool IsBroken()
     {
         foreach (var tile in CurrModel.Field)
         {
-            if (tile.Length == 0)
+            if (tile.Value.Length == 0)
                 return true;
         }
         return false;
     }
 
-    public bool isCollapse()
+    public bool IsCollapse()
     {
         foreach (var tile in CurrModel.Field)
         {
-            if (tile.Length != 1)
+            if (tile.Value.Length != 1)
                 return false;
         }
         return true;
     }
 
-    private void Wave((int, int) startCell)
+    private void Wave()
     {
         //bfs
-        Queue<(int, int)> queue = new Queue<(int, int)>(new []{startCell});
-        List<(int, int)> visited = new List<(int, int)>(Visited.ToArray());
-
+        Queue<(int, int)> queue = new Queue<(int, int)>(CurrModel.VisitedCells.ToArray());
+        List<(int, int)> visited = new List<(int, int)>(CurrModel.VisitedCells.ToArray());
+        
         while (queue.Count != 0)
         {
             var currCell = queue.Dequeue();
-            
-            //up
-            if (IsAble(currCell, (0, 1)))
+            foreach (var direction in directions)
             {
-                var up = (currCell.Item1, currCell.Item2 + 1);
-                if (!visited.Contains(up))
+                var newCell = (currCell.Item1 + direction.Key.Item1, currCell.Item2 + direction.Key.Item2);
+                if (IsAble(currCell, direction.Key) && !visited.Contains(newCell))
                 {
-                    UpdateCellTiles(currCell, up, "up");
-                    queue.Enqueue(up);
-                }
-            }
-            //down
-            if (IsAble(currCell, (0, -1)))
-            {
-                var down = (currCell.Item1, currCell.Item2 - 1);
-                if (!visited.Contains(down))
-                {
-                    UpdateCellTiles(currCell, down, "down");
-                    queue.Enqueue(down);
-                }
-            }
-            //right
-            if (IsAble(currCell, (1, 0)))
-            {
-                var right = (currCell.Item1 + 1, currCell.Item2);
-                if (!visited.Contains(right))
-                {
-                    UpdateCellTiles(currCell, right, "right");
-                    queue.Enqueue(right);
-                }
-            }
-            //left
-            if (IsAble(currCell, (-1, 0)))
-            {
-                var left = (currCell.Item1 - 1, currCell.Item2);
-                if (!visited.Contains(left))
-                {
-                    UpdateCellTiles(currCell, left, "left");
-                    queue.Enqueue(left);
+                    UpdateCellTiles(currCell, newCell, direction.Value);
+                    queue.Enqueue(newCell);
                 }
             }
             visited.Add(currCell);
@@ -125,34 +130,12 @@ public class WaveFunction
 
     private void UpdateCellTiles((int, int) currCell, (int, int) changingTile, string direction)
     {
-        var currCellDirection = -1;
-        var neighborCellDirection = -1;
-        switch (direction)
-        {
-            case "up":
-                neighborCellDirection = 1;
-                currCellDirection = 5;
-                break;
-            case "down":
-                neighborCellDirection = 5;
-                currCellDirection = 1;
-                break;
-            case "right":
-                neighborCellDirection = 3;
-                currCellDirection = 4;
-                break;
-            case "left":
-                neighborCellDirection = 4;
-                currCellDirection = 3;
-                break;
-            default:
-                neighborCellDirection = -1;
-                currCellDirection = -1;
-                break;
-        }
+        var neighborCellDirection = neighborCellDirections[direction].Item1;
+        var currCellDirection = neighborCellDirections[direction].Item2;
+        
         var newNeighborTiles = new List<Tile>();
-        var oldNeighborTiles = CurrModel.Field[changingTile.Item1, changingTile.Item2];
-        var currCellTiles = CurrModel.Field[currCell.Item1, currCell.Item2];
+        var oldNeighborTiles = CurrModel.Field[(changingTile.Item1, changingTile.Item2)];
+        var currCellTiles = CurrModel.Field[(currCell.Item1, currCell.Item2)];
         foreach (var currCellTile in currCellTiles)
         {
             var currCellNeighborsTilesNames = currCellTile.ModifiedEdges[currCellDirection];
@@ -169,49 +152,40 @@ public class WaveFunction
                 }
             }
         }
-        CurrModel.Field[changingTile.Item1, changingTile.Item2] = newNeighborTiles.ToArray();
+        CurrModel.Field[(changingTile.Item1, changingTile.Item2)] = newNeighborTiles.ToArray();
     }
 
     private bool IsAble((int, int) currCell, (int, int) ofset)
     {
         var newCell = (currCell.Item1 + ofset.Item1, currCell.Item2 + ofset.Item2);
-        if (newCell.Item1 < 0 || newCell.Item1 >= CurrModel.Width || newCell.Item2 < 0 || newCell.Item2 >= CurrModel.Height)
+        if (newCell.Item1 < 0 || newCell.Item1 >= CurrModel.Width || newCell.Item2 < 0 || newCell.Item2 >= CurrModel.Depth)
             return false;
         return true;
     }
     
-    private bool ChooseTile((int, int) currCell)
+    private Tile ChooseTile((int, int) currCell)
     {
-        var availableTiles = CurrModel.Field[currCell.Item1, currCell.Item2];
-        if (availableTiles.Length == 0)
-            return false;
+        var availableTiles = CurrModel.Field[(currCell.Item1, currCell.Item2)];
         var choosenTile = availableTiles[Rand.Next() % availableTiles.Length];
         var i = 1;
-        while (CurrModel.TriedTiles[currCell.Item1, currCell.Item2].Contains(choosenTile))
+        while (CurrModel.VisitedTiles[currCell.Item1, currCell.Item2].Contains(choosenTile))
         {
             choosenTile = availableTiles[(Rand.Next() % availableTiles.Length + i) % availableTiles.Length];
             i++;
         }
-        CurrModel.TriedTiles[currCell.Item1, currCell.Item2].Add(choosenTile);
-        CurrModel.Field[currCell.Item1, currCell.Item2] = new []{choosenTile};
-        return true;
-        /*foreach (var tile in availableTiles)
-        {
-            if (!CurrModel.TriedTiles[currCell.Item1, currCell.Item2].Contains(tile))
-            {
-                CurrModel.TriedTiles[currCell.Item1, currCell.Item2].Add(tile);
-                CurrModel.Field[currCell.Item1, currCell.Item2] = new Tile[]{tile};
-                return true;
-            }
-        }
-        return false;*/
+        CurrModel.Field[(currCell.Item1, currCell.Item2)] = new []{choosenTile};
+        return choosenTile;
     }
-    
+
     private (int, int) ChooseCell()
     {
-        var cell = (Rand.Next() % CurrModel.Width, Rand.Next() % CurrModel.Height);
-        //var cell = (Seed % CurrModel.Width, Seed % CurrModel.Height);
-        while (CurrModel.Field[cell.Item1, cell.Item2].Length <= 1)
+        //выбираем все ячейки с минимальной энтропией, исключая коллапсированные
+        return CurrModel.Field.Where(x => x.Value.Length > 1).MinBy(x => (x.Value.Length, Rand.Next())).Key;
+    }
+    private (int, int) ChooseCellSimple()
+    {
+        var cell = (Rand.Next() % CurrModel.Width, Rand.Next() % CurrModel.Depth);
+        while (CurrModel.Field[(cell.Item1, cell.Item2)].Length <= 1)
         {
             if (cell.Item1 + 1 != CurrModel.Width)
             {
@@ -219,7 +193,7 @@ public class WaveFunction
                 continue;
             }
             cell.Item1 = 0;
-            if (cell.Item2 + 1 != CurrModel.Height)
+            if (cell.Item2 + 1 != CurrModel.Depth)
             {
                 cell.Item2 += 1;
                 continue;

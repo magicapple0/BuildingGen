@@ -3,21 +3,8 @@
     [ 1, 1 ],
     [ 1, 1 ]
   ],
-  "UsingTiles": [ "house", "air" ],
+  "UsingTiles": [ "air", "ground", "house", "roof" ],
   "Tiles": [
-    {
-      "Name": "air",
-      "Edges": [
-        [ "air" ],
-        [ "house","air"],
-        [ "air" ],
-        [ "house","air"],
-        [ "house","air"],
-        [ "house","air"]
-      ],
-      "FlipX": false,
-      "RotateZ": false
-    },
     {
       "Name": "house",
       "Edges": [
@@ -25,7 +12,7 @@
         [ "house" ],
         [ "ground" ],
         [ "house","air" ],
-        [ "house" ],
+        [ "house","air"  ],
         [ "air" ]
       ],
       "FlipX": false,

@@ -1,4 +1,6 @@
-﻿namespace BuildingGen;
+﻿using System.Diagnostics;
+
+namespace BuildingGen;
 
 public static class Program
 {
@@ -6,17 +8,55 @@ public static class Program
     {
         var confLoader = new ConfigLoader("input.json");
         var tiles = confLoader.Tiles;
-        var width = 7;
-        var height = 7;
+        var width = 5;
+        var height = 4;
+        var seed = 51;
         //PrintTileSet(tiles);
+        var n = 100000;
 
-        var function = new WaveFunction(width, height, tiles.ToArray(), 2);
-
+        var function = new WaveFunction(width, height, tiles.ToArray(), seed);
         Console.WriteLine(function.Run());
+        /*for (int i = 0; i < n; i++)
+        {
+            Console.WriteLine(i);
+            function = new WaveFunction(width, height, tiles.ToArray(), i);
+            if (!function.Run())
+            {
+                break;
+            }
+        }*/
         PrintField(function.CurrModel.Field);
-        //Console.WriteLine(function.Run());
-        //Console.WriteLine(function.Run());
-        //Console.WriteLine(function.Run());
+        //Console.WriteLine(function.n);
+        
+        //TimeTest(width, height, seed, tiles, n);
+    }
+
+    public static void TimeTest(int width, int height, int seed, List<Tile> tiles, int n)
+    {
+        var test = new int[n];
+        var function = new WaveFunction(width, height, tiles.ToArray(), seed);
+        Console.WriteLine("Time for width = " + width + ", height = " + height + ", seed = " + seed);
+
+        for (int i = 0; i < n; i++)
+        {
+            Console.WriteLine(i);
+            var sw = new Stopwatch();
+            GC.Collect();
+            sw.Start();
+            function = new WaveFunction(width, height, tiles.ToArray(), seed);
+            function.Run();
+            test[i] = (int)sw.Elapsed.TotalMilliseconds;
+            Console.WriteLine(function.n);
+        }
+
+        var sum = 0;
+        for (int i = 0; i < n; i++)
+        {
+            Console.Write(test[i] + "\t");
+            sum += test[i];
+        }
+        Console.WriteLine();
+        Console.WriteLine("Mean: " + sum/n);
     }
 
     public static void PrintTileSet(List<Tile> tiles)
@@ -45,19 +85,16 @@ public static class Program
         }
     }
 
-    public static void PrintField(Tile[,][] field)
+    public static void PrintField(Dictionary<(int, int), Tile[]> field)
     {
-        for (int i = 0; i < field.GetLength(0); i++)
+        foreach (var cell in field)
         {
-            for (int j = 0; j < field.GetLength(1); j++)
+            Console.Write(cell.Key.Item1 + "\t" + cell.Key.Item2 + "\t");
+            foreach (var tile in cell.Value)
             {
-                Console.Write(i + "\t" + j + "\t");
-                foreach (var tile in field[i,j])
-                {
-                    Console.Write(tile.TileInfo.Name + "\t");
-                }
-                Console.WriteLine();
+                Console.Write(tile.TileInfo.Name + "\t");
             }
+            Console.WriteLine();
         }
     }
 

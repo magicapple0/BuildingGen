@@ -12,6 +12,48 @@ namespace BuildingGen
     {
         public InputJson InputJson { get; private set; }
         public List<Tile> Tiles { get; private set; }
+        private Tile Ground = new Tile(new TileInfo("ground",
+            new []
+                {
+                    new []{"house","air"},
+                    new []{"ground"},
+                    new []{"house","air"},
+                    new []{"ground"},
+                    new []{"ground"},
+                    new []{"ground"}
+                },
+            false, false), 
+            new []
+            {
+                new []{"house","air"},
+                new []{"ground"},
+                new []{"house","air"},
+                new []{"ground"},
+                new []{"ground"},
+                new []{"ground"}
+            },
+            new List<TileModifiers>());
+        private Tile Air = new Tile(new TileInfo("air",
+                new []
+                {
+                    new []{"house", "air", "ground", "roof"},
+                    new []{"house", "air", "ground", "roof"},
+                    new []{"house", "air", "ground", "roof"},
+                    new []{"house", "air", "ground", "roof"},
+                    new []{"house", "air", "ground", "roof"},
+                    new []{"house", "air", "ground", "roof"}
+                },
+                false, false), 
+            new []
+            {
+                new []{"house", "air", "ground", "roof"},
+                new []{"house", "air", "ground", "roof"},
+                new []{"house", "air", "ground", "roof"},
+                new []{"house", "air", "ground", "roof"},
+                new []{"house", "air", "ground", "roof"},
+                new []{"house", "air", "ground", "roof"}
+            },
+            new List<TileModifiers>());
 
         private readonly string fileName;
         public ConfigLoader(string fileName) {
@@ -35,17 +77,19 @@ namespace BuildingGen
                 if (tile.RotateZ)
                 {
                     tiles.Add(RotateZTile(tiles[0]));
-                    tiles.Add(RotateZTile(tiles[tiles.Count - 1]));
-                    tiles.Add(RotateZTile(tiles[tiles.Count - 1]));
+                    tiles.Add(RotateZTile(tiles[^1]));
+                    tiles.Add(RotateZTile(tiles[^1]));
                 }
                 if (tile.RotateZ && tile.FlipX)
                 {
                     tiles.Add(RotateZTile(tiles[1]));
-                    tiles.Add(RotateZTile(tiles[tiles.Count - 1]));
-                    tiles.Add(RotateZTile(tiles[tiles.Count - 1]));
+                    tiles.Add(RotateZTile(tiles[^1]));
+                    tiles.Add(RotateZTile(tiles[^1]));
                 }
                 Tiles.AddRange(tiles);
             }
+            Tiles.Add(Ground);
+            Tiles.Add(Air);
         }
 
 
