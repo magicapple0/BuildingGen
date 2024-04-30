@@ -18,6 +18,9 @@ namespace Visualize
         private Vector3 _cameraPosition;
         private Vector3 _cameraTarget;
         private readonly Tile[,,] _tiles;
+        private string[] houseTexture = new string[] { "roof.png", "wall.png", "bottom.png", "wall.png", "wall.png", "wall.png"};
+        private string[] cornerTexture = new string[] { "roof.png", "corner.png", "bottom.png", "corner.png", "corner.png", "corner.png"};
+        private string[] roofTexture = new string[] { "roof.png", "roof_side.png", "bottom.png", "roof_side.png", "roof_side.png", "roof_side.png"};
         
         private Chamber _chamber;
         List<Cube> cubes = new ();
@@ -46,8 +49,8 @@ namespace Visualize
             _graphics.ApplyChanges();
 
             //cubes init
-            Vector3 min = new Vector3(666, 666, 666);
-            Vector3 max = new Vector3(-666, -666, -666);
+            Vector3 min = new Vector3(0, 0, 0);
+            Vector3 max = new Vector3(_tiles.GetLength(0), _tiles.GetLength(2), _tiles.GetLength(1));
 
             for (int i = 0; i < _tiles.GetLength(0); i++)
             {
@@ -57,14 +60,15 @@ namespace Visualize
                     {
                         if (_tiles[i, j, k].TileInfo.Name.Equals("house"))
                         {
-                            cubes.Add(new Cube(this, new Vector3(i, k, j)));
-                            //min.X = MathHelper.Min(min.X, i);
-                            min.Z = 0;
-                            max.Z = MathHelper.Max(max.Z, k);
-                            min.Y = MathHelper.Min(min.Y, i);
-                            max.Y = MathHelper.Max(max.Y, i);
-                            min.X = MathHelper.Min(min.X, j);
-                            max.X = MathHelper.Max(max.X, j);
+                            cubes.Add(new Cube(this, new Vector3(i, k, j), houseTexture));
+                        }
+                        if (_tiles[i, j, k].TileInfo.Name.Equals("roof"))
+                        {
+                            cubes.Add(new Cube(this, new Vector3(i, k, j), roofTexture));
+                        }
+                        if (_tiles[i, j, k].TileInfo.Name.Equals("corner"))
+                        {
+                            cubes.Add(new Cube(this, new Vector3(i, k, j), cornerTexture));
                         }
                     }
                 }

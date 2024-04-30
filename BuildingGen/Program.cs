@@ -8,10 +8,10 @@ public static class Program
     {
         var confLoader = new ConfigLoader("input.json");
         var tiles = confLoader.Tiles;
-        var width = 6;
-        var depth = 6;
+        var width = 10;
+        var depth = 5;
         var height = 5;
-        var seed = 0;
+        var seed = 3;
         //PrintTileSet(tiles);
         var n = 100000;
 

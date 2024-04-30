@@ -62,11 +62,11 @@ public class WaveFunction
                     PreviouceFields.RemoveAt(PreviouceFields.Count - 1);
                     CurrModel = PreviouceFields[^1];
                     currCell = ChooseCell();
-                    //Console.WriteLine("Шаг назад");
+                    Console.WriteLine("Шаг назад");
                 }
                 PreviouceFields[^1].VisitedTiles[currCell.Item1, currCell.Item2, currCell.Item3].Add(choosenTile);
                 CurrModel = PreviouceFields[^1].Copy();
-                //Console.WriteLine("Другой тайл");
+                Console.WriteLine("Другой тайл");
             }
             else
             {
@@ -74,7 +74,7 @@ public class WaveFunction
                 PreviouceFields.Add(CurrModel);
                 CurrModel = CurrModel.Copy();
                 currCell = ChooseCell();
-                //Console.WriteLine(currCell.Item1 + "\t" + currCell.Item2 + "\tДальше");
+                Console.WriteLine(currCell.Item1 + "\t" + currCell.Item2 + "\tДальше");
             }
         }
     }
@@ -186,12 +186,12 @@ public class WaveFunction
         return choosenTile;
     }
 
-    private (int, int, int) ChooseCell()
+    private (int, int, int) ChooseCell8()
     {
         //выбираем все ячейки с минимальной энтропией, исключая коллапсированные
         return CurrModel.Field.Where(x => x.Value.Length > 1).MinBy(x => (x.Value.Length, Rand.Next())).Key;
     }
-    private (int, int, int) ChooseCellSimple()
+    private (int, int, int) ChooseCell()
     {
         var cell = (Rand.Next() % CurrModel.Width, Rand.Next() % CurrModel.Depth, Rand.Next() % CurrModel.Height);
         while (CurrModel.Field[(cell.Item1, cell.Item2, cell.Item3)].Length <= 1)

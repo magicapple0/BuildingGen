@@ -15,9 +15,9 @@ namespace BuildingGen
         private Tile Ground = new Tile(new TileInfo("ground",
             new []
                 {
-                    new []{"house","air"},
+                    new []{"house","air","corner"},
                     new []{"ground"},
-                    new []{"house","air"},
+                    new []{"house","air","corner"},
                     new []{"ground"},
                     new []{"ground"},
                     new []{"ground"}
@@ -25,9 +25,9 @@ namespace BuildingGen
             false, false), 
             new []
             {
-                new []{"house","air"},
+                new []{"house","air","corner"},
                 new []{"ground"},
-                new []{"house","air"},
+                new []{"house","air","corner"},
                 new []{"ground"},
                 new []{"ground"},
                 new []{"ground"}
@@ -36,22 +36,22 @@ namespace BuildingGen
         private Tile Air = new Tile(new TileInfo("air",
                 new []
                 {
-                    new []{"house", "air", "roof"},
-                    new []{"house", "air", "roof"},
-                    new []{"house", "air", "ground", "roof"},
-                    new []{"house", "air", "roof"},
-                    new []{"house", "air", "roof"},
-                    new []{"house", "air", "roof"}
+                    new []{"house", "air", "ground", "roof","corner"},
+                    new []{"house", "air", "ground", "roof","corner"},
+                    new []{"house", "air", "ground", "roof","corner"},
+                    new []{"house", "air", "ground", "roof","corner"},
+                    new []{"house", "air", "ground", "roof","corner"},
+                    new []{"house", "air", "ground", "roof","corner"}
                 },
                 false, false), 
             new []
             {
-                new []{"house", "air", "ground", "roof"},
-                new []{"house", "air", "ground", "roof"},
-                new []{"house", "air", "ground", "roof"},
-                new []{"house", "air", "ground", "roof"},
-                new []{"house", "air", "ground", "roof"},
-                new []{"house", "air", "ground", "roof"}
+                new []{"house", "air", "ground", "roof","corner"},
+                new []{"house", "air", "ground", "roof","corner"},
+                new []{"house", "air", "ground", "roof","corner"},
+                new []{"house", "air", "ground", "roof","corner"},
+                new []{"house", "air", "ground", "roof","corner"},
+                new []{"house", "air", "ground", "roof","corner"}
             },
             new List<TileModifiers>());
 
