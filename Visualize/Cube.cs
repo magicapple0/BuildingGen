@@ -9,9 +9,9 @@ namespace Visualize
         private readonly Game1 _game;
         private BasicEffect _effect;
         private Quad[] _faces;
-        private readonly string[] _textures;
+        private readonly Texture2D[] _textures;
 
-        public Cube(Game1 game, Vector3 position, string[] textures) 
+        public Cube(Game1 game, Vector3 position, Texture2D[] textures) 
         {
             _game = game;
             _textures = textures;

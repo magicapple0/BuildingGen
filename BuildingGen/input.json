@@ -3,8 +3,8 @@
     [ 1, 1 ],
     [ 1, 1 ]
   ],
-  "UsingTiles": [ "air", "ground", "house", "roof", "corner" ],
-  "Tiles": [
+  "UsingTiles": [ "house", "roof", "corner", "grass" ],
+  "TilesInfo": [
     {
       "Name": "house",
       "Edges": [
@@ -16,20 +16,24 @@
         [ "house", "roof"]
       ],
       "FlipX": false,
-      "RotateZ": false
+      "RotateZ": false,
+      "Color": null,
+      "Texture": [ "roof.png", "wall.png", "bottom.png", "wall.png", "wall.png", "wall.png"]
     },
     {
       "Name": "house",
       "Edges": [
         [ "house", "roof"],
         [ "air"],
-        [ "house", "ground"],
+        [ "house", "grass"],
         [ "house", "corner", "roof"],
         [ "house", "corner", "roof"],
         [ "house"]
       ],
       "FlipX": false,
-      "RotateZ": true
+      "RotateZ": true,
+      "Color": null,
+      "Texture": ["roof.png", "wall.png", "bottom.png", "wall.png", "wall.png", "wall.png"]
     },
     {
       "Name": "roof",
@@ -42,20 +46,39 @@
         [ "air", "house", "roof" ]
       ],
       "FlipX": false,
-      "RotateZ": false
+      "RotateZ": false,
+      "Color": null,
+      "Texture": ["roof.png", "roof_side.png", "bottom.png", "roof_side.png", "roof_side.png", "roof_side.png"]
     },
     {
       "Name": "corner",
       "Edges": [
         [ "roof", "corner" ],
         [ "house" ],
-        [ "corner", "ground" ],
-        [ "house"  ],
-        [ "air"  ],
+        [ "corner", "grass" ],
+        [ "house" ],
+        [ "air" ],
         [ "air" ]
       ],
       "FlipX": false,
-      "RotateZ": true
+      "RotateZ": true,
+      "Color": null,
+      "Texture": ["roof.png", "bottom.png", "bottom.png", "bottom.png", "corner.png", "corner_flip.png"]
+    },
+    {
+      "Name": "grass",
+      "Edges": [
+        [ "corner", "house", "air" ],
+        [ "grass" ],
+        [ "ground" ],
+        [ "grass" ],
+        [ "grass", "air"],
+        [ "grass", "air" ]
+      ],
+      "FlipX": false,
+      "RotateZ": true,
+      "Color": "3C896D",
+      "Texture": null
     }
   ]
 }

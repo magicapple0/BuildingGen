@@ -9,7 +9,7 @@ public class WaveFunction
 
     public WaveFunction(int width, int depth, int height, Tile[] tileSet, int seed)
     {
-        CurrModel = new Model(width, depth, height, tileSet);
+        CurrModel = new Model(width + 2, depth + 2, height + 2, tileSet);
         Seed = seed;
         Rand = new Random(Seed);
     }

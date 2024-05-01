@@ -8,10 +8,10 @@ public static class Program
     {
         var confLoader = new ConfigLoader("input.json");
         var tiles = confLoader.Tiles;
-        var width = 6;
-        var depth = 6;
-        var height = 6;
-        var seed = 0;
+        const int width = 6;
+        const int  depth = 6;
+        const int  height = 6;
+        const int  seed = 0;
         //PrintTileSet(tiles);
         var n = 100000;
 
@@ -27,8 +27,6 @@ public static class Program
             }
         }*/
         PrintField(function.CurrModel.Field);
-        //Console.WriteLine(function.n);
-        
         //TimeTest(width, height, seed, tiles, n);
     }
 
@@ -56,9 +54,10 @@ public static class Program
         }
         Console.WriteLine();
         Console.WriteLine("Mean: " + sum/n);
+        
     }
 
-    public static void PrintTileSet(List<Tile> tiles)
+    private static void PrintTileSet(List<Tile> tiles)
     {
         foreach (var tile in tiles)
         {
@@ -67,18 +66,14 @@ public static class Program
             foreach (var edge in tile.ModifiedEdges)
             {
                 edges += "(";
-                foreach (var neighbor in edge)
-                {
-                    edges += neighbor + " ";
-                }
+                edges = edge.Aggregate(edges, (current, neighbor) => current + (neighbor + " "));
                 edges += ") ";
             }
             Console.Write(edges + "\t");
             var modifiers = "";
-            if (tile.TileModifiers.Count == 0)
+            if (tile.Modifiers.Count == 0)
                 modifiers = "None";
-            foreach (var modifier in tile.TileModifiers)
-                modifiers += modifier + " ";
+            modifiers = tile.Modifiers.Aggregate(modifiers, (current, modifier) => current + (modifier + " "));
             Console.Write(modifiers + "\t");
             Console.WriteLine();
         }
@@ -104,7 +99,21 @@ public static class Program
 
         var function = new WaveFunction(width, depth, height, tiles.ToArray(), seed);
         function.Run();
-        
+
+        /*
+        var tile = new Tile(new TileInfo("corner",
+            new[]
+            {
+                new[] { "roof", "corner" }, new[] { "house" }, new[] { "corner", "ground" },
+                new[] { "house" }, new[] { "air" }, new[] { "air" }
+            },
+            false, true, null, //null));
+            new[] { "roof.png", "bottom.png", "bottom.png", "bottom.png", "corner.png", "corner_flip.png" }));
+        var a = new Tile[1, 1, 1];
+        tile.RotateZTile();
+        tile.RotateZTile();
+        a[0, 0, 0] = tile;
+        return a;*/
         return function.CurrModel.Result();
     }
 }

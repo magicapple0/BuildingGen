@@ -17,72 +17,28 @@ namespace Visualize
         private Vector3 _cameraPosition;
         private Vector3 _cameraTarget;
         private readonly Tile[,,] _tiles;
-        private readonly string[] _houseTexture = { "roof.png", "wall.png", "bottom.png", "wall.png", "wall.png", "wall.png"};
-        private readonly string[] _cornerTexture = { "roof.png", "corner.png", "bottom.png", "corner.png", "corner.png", "corner.png"};
-        private readonly string[] _roofTexture = { "roof.png", "roof_side.png", "bottom.png", "roof_side.png", "roof_side.png", "roof_side.png"};
+        private readonly TextureManager _textureManager;
         
         private Chamber _chamber;
         private readonly List<Cube> _cubes = new ();
 
         public Game1(Tile[,,] tiles)
         {
-            this._tiles = tiles;
+            _tiles = tiles;
             _graphics = new GraphicsDeviceManager(this);
+            _textureManager = new TextureManager(this);
             Content.RootDirectory = "Content";
         }
 
         protected override void Initialize()
         {
-            //screen settings
-            var windowMultiplier = 2;
-            var screenWidth = 540;
-            var screenHeight = 380;
-            Window.Position = new Point(
-                (GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width / 2) - (screenWidth),
-                (GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height / 2) - (screenHeight)
-                );
-            _graphics.IsFullScreen = false;
-            _graphics.PreferredBackBufferWidth = screenWidth * windowMultiplier;
-            _graphics.PreferredBackBufferHeight = screenHeight * windowMultiplier;
-            _graphics.ApplyChanges();
-
-            //cubes init
+            SetGraphicsSettings();
+            CubeInitialize();
             Vector3 min = new Vector3(0, 0, 0);
-            Vector3 max = new Vector3(_tiles.GetLength(0), _tiles.GetLength(2), _tiles.GetLength(1));
+            Vector3 max = new Vector3(_tiles.GetLength(0) - 1, _tiles.GetLength(2) - 1, _tiles.GetLength(1) - 1);
 
-            for (int i = 0; i < _tiles.GetLength(0); i++)
-            {
-                for (int j = 0; j < _tiles.GetLength(1); j++)
-                {
-                    for (int k = 0; k < _tiles.GetLength(2); k++)
-                    {
-                        switch(_tiles[i, j, k].TileInfo.Name)
-                        {
-                            case "house":
-                                _cubes.Add(new Cube(this, new Vector3(i, k, j), _houseTexture));
-                                break;
-                            case "roof":
-                                _cubes.Add(new Cube(this, new Vector3(i, k, j), _roofTexture));
-                                break;
-                            case "corner":
-                                _cubes.Add(new Cube(this, new Vector3(i, k, j), _cornerTexture));
-                                break;
-                        }
-                    }
-                }
-            }
-
-            _chamber = new Chamber(this, new Vector3(_tiles.GetLength(0), _tiles.GetLength(2), _tiles.GetLength(1)));
-            
-            _centerOfBuilding = new Vector3((max.X - min.X) / 2, (max.Y - min.Y) / 2, (max.Z - min.Z) / 2);
-            var zoom = MathHelper.Max(max.X, MathHelper.Max(max.Y, max.Z)) * 1.2f + 4;
-            _cameraPosition = new Vector3(0, -_centerOfBuilding.Z + 2 , zoom);
-            _cameraTarget = new Vector3(0, _centerOfBuilding.Z - 2, -zoom);
-            ViewMatrix = Matrix.CreateLookAt(_cameraPosition, new Vector3(0, _centerOfBuilding.Z - 0.7f, -zoom), Vector3.Up);
-            ProjectionMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4,
-                (float)Window.ClientBounds.Width / Window.ClientBounds.Height,
-                1, 100);
-            WorldMatrix = Matrix.CreateWorld(new Vector3(-_centerOfBuilding.X - 0.5f, -_centerOfBuilding.Z + 0.5f, -_centerOfBuilding.Y - 0.5f), new Vector3(0, 0, -1), Vector3.Up);
+            _chamber = new Chamber(this, max);
+            SetCameraSettings(min, max);
 
             base.Initialize();
         }
@@ -136,6 +92,49 @@ namespace Visualize
             }
             _chamber.Draw();
             base.Draw(gameTime);
+        }
+
+        private void SetGraphicsSettings()
+        {
+            var windowMultiplier = 2;
+            var screenWidth = 540;
+            var screenHeight = 380;
+            Window.Position = new Point(
+                (GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width / 2) - (screenWidth),
+                (GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height / 2) - (screenHeight)
+            );
+            _graphics.IsFullScreen = false;
+            _graphics.PreferredBackBufferWidth = screenWidth * windowMultiplier;
+            _graphics.PreferredBackBufferHeight = screenHeight * windowMultiplier;
+            _graphics.ApplyChanges();
+        }
+
+        private void SetCameraSettings(Vector3 min, Vector3 max)
+        {
+            _centerOfBuilding = new Vector3((max.X - min.X) / 2, (max.Y - min.Y) / 2, (max.Z - min.Z) / 2);
+            var zoom = MathHelper.Max(max.X, MathHelper.Max(max.Y, max.Z)) * 1.2f + 4;
+            _cameraPosition = new Vector3(0, -_centerOfBuilding.Z + 2 , zoom);
+            _cameraTarget = new Vector3(0, _centerOfBuilding.Z - 2, -zoom);
+            ViewMatrix = Matrix.CreateLookAt(_cameraPosition, new Vector3(0, _centerOfBuilding.Z - 0.7f, -zoom), Vector3.Up);
+            ProjectionMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4,
+                (float)Window.ClientBounds.Width / Window.ClientBounds.Height, 1, 100);
+            WorldMatrix = Matrix.CreateWorld(new Vector3(-_centerOfBuilding.X - 0.5f, -_centerOfBuilding.Z + 0.5f, -_centerOfBuilding.Y - 0.5f), new Vector3(0, 0, -1), Vector3.Up);
+        }
+
+        private void CubeInitialize()
+        {
+            for (int i = 0; i < _tiles.GetLength(0); i++)
+            {
+                for (int j = 0; j < _tiles.GetLength(1); j++)
+                {
+                    for (int k = 0; k < _tiles.GetLength(2); k++)
+                    {
+                        if (_tiles[i, j, k].TileInfo.Name == "air")
+                            continue;
+                        _cubes.Add(new Cube(this, new Vector3(i, k, j), _textureManager.GetTexture(_tiles[i, j, k])));
+                    }
+                }
+            }
         }
     }
 }

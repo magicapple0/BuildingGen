@@ -13,20 +13,20 @@ public class Model
     };
     private readonly Dictionary<string, (int, int)> _neighborCellDirections = new()
     {
-        { "forward", (1, 5) },
-        { "backward", (5, 1) },
+        { "forward", (5, 1) },
+        { "backward", (1, 5) },
         { "right", (3, 4) },
         { "left", (4, 3) },
         { "up", (2, 0) },
         { "down", (0, 2) },
     };
     
-    private int Width { get; set; }
-    private int Height { get; set; }
-    private int Depth { get; set; }
-    private Tile[] TileSet { get; set; }
-    public Dictionary<(int, int, int), Tile[]> Field { get; set; }
-    private Dictionary<(int, int, int), List<Tile>> VisitedTiles { get; set; }
+    private int Width { get; init; }
+    private int Height { get; init; }
+    private int Depth { get; init; }
+    private Tile[] TileSet { get; init; }
+    public Dictionary<(int, int, int), Tile[]> Field { get; private init; }
+    private Dictionary<(int, int, int), List<Tile>> VisitedTiles { get; init; }
     private List<(int, int, int)> VisitedCells => Field.Where(x => x.Value.Length == 1).Select(x => x.Key).ToList();
 
     public Queue<((int, int, int), Tile)>? PossibleMoves;
@@ -100,8 +100,6 @@ public class Model
                     currCell.Item2 + direction.Key.Item2, currCell.Item3 + direction.Key.Item3);
                 if (IsAble(currCell, direction.Key) && !visited.Contains(newCell))
                 {
-                    if (newCell == (1, 1, 1))
-                        newCell = (1, 1, 1);
                     UpdateCellTiles(currCell, newCell, direction.Value);
                     queue.Enqueue(newCell);
                 }
@@ -117,59 +115,45 @@ public class Model
                 newCell.Item3 < 0 || newCell.Item3 >= Height);
     }
 
-    private void UpdateCellTiles((int, int, int) currCell, (int, int, int) changingTile, string direction)
+    private void UpdateCellTiles((int, int, int) currCell, (int, int, int) changingCell, string direction)
     {
         var neighborCellDirection = _neighborCellDirections[direction].Item1;
         var currCellDirection = _neighborCellDirections[direction].Item2;
 
         var newNeighborTiles = new List<Tile>();
-        var oldNeighborTiles = Field[changingTile];
-        var currCellTiles = Field[currCell];
-        foreach (var currCellTile in currCellTiles)
-        {
-            var currCellNeighborsTilesNames = currCellTile.ModifiedEdges[currCellDirection];
-            foreach (var tile in oldNeighborTiles)
-            {
-                //если текущая клетка может соседствовать с выбранным соседом (в этом направлении)
-                if (currCellNeighborsTilesNames.Contains(tile.TileInfo.Name))
-                    //если соседняя клетка может соседствовать с текущей (в этом направлении)
-                    if (!newNeighborTiles.Contains(tile) &&
-                        tile.ModifiedEdges[neighborCellDirection].Contains(currCellTile.TileInfo.Name))
-                        newNeighborTiles.Add(tile);
-            }
-        }
-
-        Field[changingTile] = newNeighborTiles.ToArray();
+        //если текущая клетка может соседствовать с выбранным соседом (в этом направлении) и наоборот
+        foreach (var currCellTile in Field[currCell])
+            foreach (var oldNeighborTile in Field[changingCell])
+                if (!newNeighborTiles.Contains(oldNeighborTile) &&
+                    currCellTile.ModifiedEdges[currCellDirection].Contains(oldNeighborTile.TileInfo.Name) &&
+                    oldNeighborTile.ModifiedEdges[neighborCellDirection].Contains(currCellTile.TileInfo.Name))
+                    newNeighborTiles.Add(oldNeighborTile);
+        Field[changingCell] = newNeighborTiles.ToArray();
     }
     
     public Tile[,,] Result()
     {
-        var building = new Tile[Width, Depth, Height];
+        var building = new Tile[Width - 1, Depth - 1, Height - 1];
         for (int i = 0; i < Width; i++)
-        for (int j = 0; j < Depth; j++)
-        for (int k = 0; k < Height; k++)
-            building[i, j, k] = Field[(i, j, k)][0];
+            for (int j = 0; j < Depth; j++)
+            for (int k = 0; k < Height; k++)
+            {
+                if (i == 0 || j == 0 || k == 0 || i == Width || j == Depth || k == Height)
+                    continue;
+                building[i - 1, j - 1, k - 1] = Field[(i, j, k)][0];
+            }
+        
         return building;
     }
     
     public bool IsCollapse()
     {
-        foreach (var tile in Field)
-        {
-            if (tile.Value.Length != 1)
-                return false;
-        }
-        return true;
+        return Field.Where(x => x.Value.Length != 1).Select(x => x.Key).ToList().Count == 0;
     }
     
     public bool IsBroken()
     {
-        foreach (var tile in Field)
-        {
-            if (tile.Value.Length == 0)
-                return true;
-        }
-        return false;
+        return Field.Where(x => x.Value.Length == 0).Select(x => x.Key).ToList().Count != 0;
     }
 
     public Model Copy()

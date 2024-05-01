@@ -10,6 +10,6 @@ namespace BuildingGen
     {
         public int[][] Base { get; set; }
         public string[] UsingTiles { get; set; }
-        public TileInfo[] Tiles { get; set; }
+        public TileInfo[] TilesInfo { get; set; }
     }
 }

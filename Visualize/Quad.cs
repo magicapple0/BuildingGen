@@ -11,12 +11,12 @@ namespace Visualize
         private BasicEffect _effect;
         private Texture2D _texture;
 
-        public Quad(Game1 game, string texturePath, Vector3[] positions)
+        public Quad(Game1 game, Texture2D texture, Vector3[] positions)
         {
             _game = game;
             InitializeVertices(positions);
             InitializeIndices();
-            InitializeEffect(texturePath);
+            InitializeEffect(texture);
         }
 
         private void InitializeVertices(Vector3[] position)
@@ -51,15 +51,11 @@ namespace Visualize
             _indices[2] = 0;
         }
 
-        private void InitializeEffect(string texturePath)
+        private void InitializeEffect(Texture2D texture)
         {
             _effect = new BasicEffect(_game.GraphicsDevice);
-            using (var stream = TitleContainer.OpenStream(texturePath))
-            {
-                _texture = Texture2D.FromStream(_game.GraphicsDevice, stream);
-            }
             _effect.TextureEnabled = true;
-            _effect.Texture = _texture;
+            _effect.Texture = texture;
         }
 
         public void Draw()
