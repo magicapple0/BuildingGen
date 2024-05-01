@@ -13,17 +13,16 @@ namespace Visualize
         public Matrix ProjectionMatrix;
         public Matrix ViewMatrix;
         public Matrix WorldMatrix;
-        private BasicEffect _effect;
         private Vector3 _centerOfBuilding;
         private Vector3 _cameraPosition;
         private Vector3 _cameraTarget;
         private readonly Tile[,,] _tiles;
-        private string[] houseTexture = new string[] { "roof.png", "wall.png", "bottom.png", "wall.png", "wall.png", "wall.png"};
-        private string[] cornerTexture = new string[] { "roof.png", "corner.png", "bottom.png", "corner.png", "corner.png", "corner.png"};
-        private string[] roofTexture = new string[] { "roof.png", "roof_side.png", "bottom.png", "roof_side.png", "roof_side.png", "roof_side.png"};
+        private readonly string[] _houseTexture = { "roof.png", "wall.png", "bottom.png", "wall.png", "wall.png", "wall.png"};
+        private readonly string[] _cornerTexture = { "roof.png", "corner.png", "bottom.png", "corner.png", "corner.png", "corner.png"};
+        private readonly string[] _roofTexture = { "roof.png", "roof_side.png", "bottom.png", "roof_side.png", "roof_side.png", "roof_side.png"};
         
         private Chamber _chamber;
-        List<Cube> cubes = new ();
+        private readonly List<Cube> _cubes = new ();
 
         public Game1(Tile[,,] tiles)
         {
@@ -42,7 +41,6 @@ namespace Visualize
                 (GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width / 2) - (screenWidth),
                 (GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height / 2) - (screenHeight)
                 );
-            var nativeRenderTarget = new RenderTarget2D(GraphicsDevice, screenWidth, screenHeight);
             _graphics.IsFullScreen = false;
             _graphics.PreferredBackBufferWidth = screenWidth * windowMultiplier;
             _graphics.PreferredBackBufferHeight = screenHeight * windowMultiplier;
@@ -58,50 +56,24 @@ namespace Visualize
                 {
                     for (int k = 0; k < _tiles.GetLength(2); k++)
                     {
-                        if (_tiles[i, j, k].TileInfo.Name.Equals("house"))
+                        switch(_tiles[i, j, k].TileInfo.Name)
                         {
-                            cubes.Add(new Cube(this, new Vector3(i, k, j), houseTexture));
-                        }
-                        if (_tiles[i, j, k].TileInfo.Name.Equals("roof"))
-                        {
-                            cubes.Add(new Cube(this, new Vector3(i, k, j), roofTexture));
-                        }
-                        if (_tiles[i, j, k].TileInfo.Name.Equals("corner"))
-                        {
-                            cubes.Add(new Cube(this, new Vector3(i, k, j), cornerTexture));
+                            case "house":
+                                _cubes.Add(new Cube(this, new Vector3(i, k, j), _houseTexture));
+                                break;
+                            case "roof":
+                                _cubes.Add(new Cube(this, new Vector3(i, k, j), _roofTexture));
+                                break;
+                            case "corner":
+                                _cubes.Add(new Cube(this, new Vector3(i, k, j), _cornerTexture));
+                                break;
                         }
                     }
                 }
             }
 
             _chamber = new Chamber(this, new Vector3(_tiles.GetLength(0), _tiles.GetLength(2), _tiles.GetLength(1)));
-
-            /*//var b = building;
-            var b = tallBuilding;
-            //var b = wideBuilding;
             
-            for (var i = 0; i < b.Length; i++)
-            {
-                for (var j = 0; j < b[i].Length; j++)
-                {
-                    for (var k = 0; k < b[i][j].Length; k++)
-                    {
-                        if (b[i][j][k] == 1)
-                        {
-                            cubes.Add(new Cube(this, new Vector3(k, i, j)));
-                            //min.X = MathHelper.Min(min.X, i);
-                            min.Z = MathHelper.Min(min.Z, i);
-                            max.Z = MathHelper.Max(max.Z, i);
-                            min.Y = MathHelper.Min(min.Y, j);
-                            max.Y = MathHelper.Max(max.Y, j);
-                            min.X = MathHelper.Min(min.X, k);
-                            max.X = MathHelper.Max(max.X, k);
-                        }
-                    }
-                }
-            }*/
-
-            //camera settings
             _centerOfBuilding = new Vector3((max.X - min.X) / 2, (max.Y - min.Y) / 2, (max.Z - min.Z) / 2);
             var zoom = MathHelper.Max(max.X, MathHelper.Max(max.Y, max.Z)) * 1.2f + 4;
             _cameraPosition = new Vector3(0, -_centerOfBuilding.Z + 2 , zoom);
@@ -114,13 +86,6 @@ namespace Visualize
 
             base.Initialize();
         }
-
-        protected override void LoadContent()
-        {
-        }
-
-        protected override void UnloadContent()
-        { }
 
         protected override void Update(GameTime gameTime)
         {
@@ -165,7 +130,7 @@ namespace Visualize
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-            foreach (var cube in cubes)
+            foreach (var cube in _cubes)
             {
                 cube.Draw();
             }

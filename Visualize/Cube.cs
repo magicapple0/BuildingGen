@@ -5,52 +5,52 @@ namespace Visualize
 {
     public class Cube
     {
-        Vector3 position;
-        Game1 game;
-        BasicEffect effect;
-        Quad[] faces;
-        private string[] textures;
+        private readonly Vector3 _position;
+        private readonly Game1 _game;
+        private BasicEffect _effect;
+        private Quad[] _faces;
+        private readonly string[] _textures;
 
         public Cube(Game1 game, Vector3 position, string[] textures) 
         {
-            this.game = game;
-            this.textures = textures;
-            effect = new BasicEffect(game.GraphicsDevice);
-            this.position = position;
+            _game = game;
+            _textures = textures;
+            _effect = new BasicEffect(game.GraphicsDevice);
+            _position = position;
             InitializeEffect();
             InitializeFaces();
         }
 
         private void InitializeFaces()
         {
-            faces = new Quad[6];
-            faces[0] = new Quad(game, textures[1],
-                new [] { position + new Vector3(0, 1, 1), position + new Vector3(1, 1, 1), position + new Vector3(1, 0, 1), position + new Vector3(0, 0, 1) }); //front
-            faces[1] = new Quad(game, textures[4],
-                new [] { position + new Vector3(1, 1, 1), position + new Vector3(1, 1, 0), position + new Vector3(1, 0, 0), position + new Vector3(1, 0, 1) }); //right
-            faces[2] = new Quad(game, textures[3],
-                new [] { position + new Vector3(0, 1, 0), position + new Vector3(0, 1, 1), position + new Vector3(0, 0, 1), position + new Vector3(0, 0, 0) }); //left
-            faces[3] = new Quad(game, textures[5],
-                new [] { position + new Vector3(1, 1, 0), position + new Vector3(0, 1, 0), position + new Vector3(0, 0, 0), position + new Vector3(1, 0, 0) }); //back
-            faces[4] = new Quad(game, textures[0],
-                new [] { position + new Vector3(0, 1, 1), position + new Vector3(0, 1, 0), position + new Vector3(1, 1, 0), position + new Vector3(1, 1, 1) }); //up
-            faces[5] = new Quad(game, textures[2],
-                new [] { position + new Vector3(1, 0, 0), position + new Vector3(0, 0, 0), position + new Vector3(0, 0, 1), position + new Vector3(1, 0, 1) }); //down
+            _faces = new Quad[6];
+            _faces[0] = new Quad(_game, _textures[1],
+                new [] { _position + new Vector3(0, 1, 1), _position + new Vector3(1, 1, 1), _position + new Vector3(1, 0, 1), _position + new Vector3(0, 0, 1) }); //front
+            _faces[1] = new Quad(_game, _textures[4],
+                new [] { _position + new Vector3(1, 1, 1), _position + new Vector3(1, 1, 0), _position + new Vector3(1, 0, 0), _position + new Vector3(1, 0, 1) }); //right
+            _faces[2] = new Quad(_game, _textures[3],
+                new [] { _position + new Vector3(0, 1, 0), _position + new Vector3(0, 1, 1), _position + new Vector3(0, 0, 1), _position + new Vector3(0, 0, 0) }); //left
+            _faces[3] = new Quad(_game, _textures[5],
+                new [] { _position + new Vector3(1, 1, 0), _position + new Vector3(0, 1, 0), _position + new Vector3(0, 0, 0), _position + new Vector3(1, 0, 0) }); //back
+            _faces[4] = new Quad(_game, _textures[0],
+                new [] { _position + new Vector3(0, 1, 1), _position + new Vector3(0, 1, 0), _position + new Vector3(1, 1, 0), _position + new Vector3(1, 1, 1) }); //up
+            _faces[5] = new Quad(_game, _textures[2],
+                new [] { _position + new Vector3(1, 0, 0), _position + new Vector3(0, 0, 0), _position + new Vector3(0, 0, 1), _position + new Vector3(1, 0, 1) }); //down
         }
 
-        public void InitializeEffect()
+        private void InitializeEffect()
         {
-            effect = new BasicEffect(game.GraphicsDevice);
-            effect.VertexColorEnabled = true;
+            _effect = new BasicEffect(_game.GraphicsDevice);
+            _effect.VertexColorEnabled = true;
         }
         
         public void Draw()
         {
-            effect.World = game.WorldMatrix;
-            effect.View = game.ViewMatrix;
-            effect.Projection = game.ProjectionMatrix;
+            _effect.World = _game.WorldMatrix;
+            _effect.View = _game.ViewMatrix;
+            _effect.Projection = _game.ProjectionMatrix;
 
-            foreach (var face in faces)
+            foreach (var face in _faces)
             {
                 face.Draw();
             }

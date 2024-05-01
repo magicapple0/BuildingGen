@@ -8,10 +8,10 @@ public static class Program
     {
         var confLoader = new ConfigLoader("input.json");
         var tiles = confLoader.Tiles;
-        var width = 10;
-        var depth = 5;
-        var height = 5;
-        var seed = 3;
+        var width = 6;
+        var depth = 6;
+        var height = 6;
+        var seed = 0;
         //PrintTileSet(tiles);
         var n = 100000;
 
@@ -46,7 +46,6 @@ public static class Program
             var function = new WaveFunction(width, depth, height, tiles.ToArray(), seed);
             function.Run();
             test[i] = (int)sw.Elapsed.TotalMilliseconds;
-            Console.WriteLine(function.n);
         }
 
         var sum = 0;
@@ -85,7 +84,7 @@ public static class Program
         }
     }
 
-    public static void PrintField(Dictionary<(int, int, int), Tile[]> field)
+    private static void PrintField(Dictionary<(int, int, int), Tile[]> field)
     {
         foreach (var cell in field)
         {

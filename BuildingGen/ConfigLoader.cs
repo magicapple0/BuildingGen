@@ -15,55 +15,31 @@ namespace BuildingGen
         private Tile Ground = new Tile(new TileInfo("ground",
             new []
                 {
-                    new []{"house","air","corner"},
+                    new []{"air"},
                     new []{"ground"},
-                    new []{"house","air","corner"},
+                    new []{""},
                     new []{"ground"},
                     new []{"ground"},
                     new []{"ground"}
                 },
-            false, false), 
-            new []
-            {
-                new []{"house","air","corner"},
-                new []{"ground"},
-                new []{"house","air","corner"},
-                new []{"ground"},
-                new []{"ground"},
-                new []{"ground"}
-            },
-            new List<TileModifiers>());
+            false, false), null, new List<TileModifiers>());
         private Tile Air = new Tile(new TileInfo("air",
                 new []
                 {
-                    new []{"house", "air", "ground", "roof","corner"},
-                    new []{"house", "air", "ground", "roof","corner"},
-                    new []{"house", "air", "ground", "roof","corner"},
-                    new []{"house", "air", "ground", "roof","corner"},
-                    new []{"house", "air", "ground", "roof","corner"},
-                    new []{"house", "air", "ground", "roof","corner"}
+                    new []{"air"},
+                    new []{"air"},
+                    new []{"air", "ground"},
+                    new []{"air"},
+                    new []{"air"},
+                    new []{"air"}
                 },
-                false, false), 
-            new []
-            {
-                new []{"house", "air", "ground", "roof","corner"},
-                new []{"house", "air", "ground", "roof","corner"},
-                new []{"house", "air", "ground", "roof","corner"},
-                new []{"house", "air", "ground", "roof","corner"},
-                new []{"house", "air", "ground", "roof","corner"},
-                new []{"house", "air", "ground", "roof","corner"}
-            },
-            new List<TileModifiers>());
+                false, false), null, new List<TileModifiers>());
 
         private readonly string fileName;
         public ConfigLoader(string fileName) {
             this.fileName = fileName;
             InputJson = JsonSerializer.Deserialize<InputJson>(File.ReadAllText(fileName));
             Tiles = new List<Tile>();
-            //var currTile = TileInfoToTile(InputJson.Tiles.FirstOrDefault());
-            //var modifiers = new[] { None, FlipXTile, FlipYTile, FlipZTile, RotateXTile };
-            //var modifiers = new[] {None, FlipXTile, FlipYTile, FlipZTile, RotateXTile, RotateXTile, RotateXTile, RotateYTile, RotateYTile, RotateYTile, RotateZTile, RotateZTile, RotateZTile };
-            //var automat = new Automatoe(modifiers);
             foreach (var tile in InputJson.Tiles)
             {
                 var tiles = new List<Tile>
@@ -88,10 +64,21 @@ namespace BuildingGen
                 }
                 Tiles.AddRange(tiles);
             }
+            
+            var groundNeighbors = new List<string>(InputJson.UsingTiles);
+            groundNeighbors.AddRange(new List<string>(Ground.TileInfo.Edges[0]));
+            Ground.TileInfo.Edges[0] = groundNeighbors.ToArray();
+            for (int i = 0; i < 6; i++)
+            {
+                var airNeighbors = new List<string>(InputJson.UsingTiles);
+                airNeighbors.AddRange(new List<string>(Air.TileInfo.Edges[i]));
+                Air.TileInfo.Edges[i] = airNeighbors.ToArray();
+            }
+            Ground.ModifiedEdges = Ground.TileInfo.Edges;
+            Air.ModifiedEdges = Air.TileInfo.Edges;
             Tiles.Add(Ground);
             Tiles.Add(Air);
         }
-
 
         public string GetJsonString()
         {
@@ -118,7 +105,6 @@ namespace BuildingGen
             newModifiers.Add(TileModifiers.FlipX);
             return new Tile(tile.TileInfo, newEdges, newModifiers);
         }
-
 
         private Tile FlipYTile(Tile tile)
         {

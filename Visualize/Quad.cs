@@ -1,85 +1,79 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Xna.Framework.Audio;
 
 namespace Visualize
 {
     public class Quad
     {
-        VertexPositionTexture[] vertices;
-        short[] indices;
-        Game1 game;
-        BasicEffect effect;
-        Texture2D texture;
+        private VertexPositionTexture[] _vertices;
+        private short[] _indices;
+        private readonly Game1 _game;
+        private BasicEffect _effect;
+        private Texture2D _texture;
 
         public Quad(Game1 game, string texturePath, Vector3[] positions)
         {
-            this.game = game;
+            _game = game;
             InitializeVertices(positions);
             InitializeIndices();
             InitializeEffect(texturePath);
         }
 
-        public void InitializeVertices(Vector3[] position)
+        private void InitializeVertices(Vector3[] position)
         {
-            vertices = new VertexPositionTexture[4];
+            _vertices = new VertexPositionTexture[4];
 
             // Define vertex 0 (top left)
-            vertices[0].Position = position[0];
-            vertices[0].TextureCoordinate = new Vector2(0, -1);
+            _vertices[0].Position = position[0];
+            _vertices[0].TextureCoordinate = new Vector2(0, -1);
             // Define vertex 1 (top right)
-            vertices[1].Position = position[1];
-            vertices[1].TextureCoordinate = new Vector2(1, -1);
+            _vertices[1].Position = position[1];
+            _vertices[1].TextureCoordinate = new Vector2(1, -1);
             // define vertex 2 (bottom right)
-            vertices[2].Position = position[2];
-            vertices[2].TextureCoordinate = new Vector2(1, 0);
+            _vertices[2].Position = position[2];
+            _vertices[2].TextureCoordinate = new Vector2(1, 0);
             // define vertex 3 (bottom left) 
-            vertices[3].Position = position[3];
-            vertices[3].TextureCoordinate = new Vector2(0, 0);
+            _vertices[3].Position = position[3];
+            _vertices[3].TextureCoordinate = new Vector2(0, 0);
             
         }
 
-        public void InitializeIndices()
+        private void InitializeIndices()
         {
-            indices = new short[6];
+            _indices = new short[6];
             // Define triangle 0 
-            indices[3] = 0;
-            indices[4] = 1;
-            indices[5] = 2;
+            _indices[3] = 0;
+            _indices[4] = 1;
+            _indices[5] = 2;
             // define triangle 1
-            indices[0] = 2;
-            indices[1] = 3;
-            indices[2] = 0;
+            _indices[0] = 2;
+            _indices[1] = 3;
+            _indices[2] = 0;
         }
 
-        public void InitializeEffect(string texturePath)
+        private void InitializeEffect(string texturePath)
         {
-            effect = new BasicEffect(game.GraphicsDevice);
+            _effect = new BasicEffect(_game.GraphicsDevice);
             using (var stream = TitleContainer.OpenStream(texturePath))
             {
-                texture = Texture2D.FromStream(game.GraphicsDevice, stream);
+                _texture = Texture2D.FromStream(_game.GraphicsDevice, stream);
             }
-            effect.TextureEnabled = true;
-            effect.Texture = texture;
+            _effect.TextureEnabled = true;
+            _effect.Texture = _texture;
         }
 
         public void Draw()
         {
-            effect.World = game.WorldMatrix;
-            effect.Projection = game.ProjectionMatrix;
-            effect.View = game.ViewMatrix;
-            effect.CurrentTechnique.Passes[0].Apply();
-            game.GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionTexture>(
+            _effect.World = _game.WorldMatrix;
+            _effect.Projection = _game.ProjectionMatrix;
+            _effect.View = _game.ViewMatrix;
+            _effect.CurrentTechnique.Passes[0].Apply();
+            _game.GraphicsDevice.DrawUserIndexedPrimitives(
                 PrimitiveType.TriangleList,
-                vertices,   // The vertex collection
+                _vertices,   // The vertex collection
                 0,          // The starting index in the vertex array
                 4,          // The number of indices in the shape
-                indices,    // The index collection
+                _indices,    // The index collection
                 0,          // The starting index in the index array
                 2           // The number of triangles to draw
                 );

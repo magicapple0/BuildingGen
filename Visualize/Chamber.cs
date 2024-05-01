@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Linq;
 
@@ -7,50 +6,50 @@ namespace Visualize;
 
 public class Chamber
 {
-    private Vector3 size;
-    Game1 game;
-    BasicEffect effect;
-    VertexBuffer vertexBuffer;
-    IndexBuffer indexBuffer;
-    ushort[] indices;
-    VertexPositionColor[] vertices { set; get; }
+    private Vector3 _size;
+    private Game1 _game;
+    private BasicEffect _effect;
+    private VertexBuffer _vertexBuffer;
+    private IndexBuffer _indexBuffer;
+    private ushort[] _indices;
+    private VertexPositionColor[] _vertices;
     
-    public Chamber(Game1 _game, Vector3 _size)
+    public Chamber(Game1 game, Vector3 size)
     {
-        size = _size;
-        game = _game;
-        effect = new BasicEffect(game.GraphicsDevice);
-        InitializeVertexCoordinates(size);
+        _size = size;
+        _game = game;
+        _effect = new BasicEffect(_game.GraphicsDevice);
+        InitializeVertexCoordinates(_size);
         InitializeEffect();
         InitializeIndices();
     }
 
     private void InitializeEffect()
     {
-        effect = new BasicEffect(game.GraphicsDevice);
-        effect.VertexColorEnabled = true;
+        _effect = new BasicEffect(_game.GraphicsDevice);
+        _effect.VertexColorEnabled = true;
     }
 
     private void InitializeVertexCoordinates(Vector3 size)
     {
-        vertices = new VertexPositionColor[8];
-        vertices[0] = new VertexPositionColor(new Vector3(0, size.Y, size.Z), Color.Red);
-        vertices[1] = new VertexPositionColor(new Vector3(size.X, size.Y, size.Z), Color.Red);
-        vertices[2] = new VertexPositionColor(new Vector3(size.X, 0, size.Z), Color.Red);
-        vertices[3] = new VertexPositionColor(new Vector3(0, 0, size.Z), Color.Red);
+        _vertices = new VertexPositionColor[8];
+        _vertices[0] = new VertexPositionColor(new Vector3(0, size.Y, size.Z), Color.Red);
+        _vertices[1] = new VertexPositionColor(new Vector3(size.X, size.Y, size.Z), Color.Red);
+        _vertices[2] = new VertexPositionColor(new Vector3(size.X, 0, size.Z), Color.Red);
+        _vertices[3] = new VertexPositionColor(new Vector3(0, 0, size.Z), Color.Red);
  
-        vertices[4] = new VertexPositionColor(new Vector3(0, size.Y, 0), Color.Red);
-        vertices[5] = new VertexPositionColor(new Vector3(size.X, size.Y, 0), Color.Red);
-        vertices[6] = new VertexPositionColor(new Vector3(size.X, 0, 0), Color.Red);
-        vertices[7] = new VertexPositionColor(new Vector3(0, 0, 0), Color.Red);
+        _vertices[4] = new VertexPositionColor(new Vector3(0, size.Y, 0), Color.Red);
+        _vertices[5] = new VertexPositionColor(new Vector3(size.X, size.Y, 0), Color.Red);
+        _vertices[6] = new VertexPositionColor(new Vector3(size.X, 0, 0), Color.Red);
+        _vertices[7] = new VertexPositionColor(new Vector3(0, 0, 0), Color.Red);
         
-        vertexBuffer = new VertexBuffer(game.GraphicsDevice, typeof(VertexPositionColor), 8, BufferUsage.None);
-        vertexBuffer.SetData(vertices.ToArray());
+        _vertexBuffer = new VertexBuffer(_game.GraphicsDevice, typeof(VertexPositionColor), 8, BufferUsage.None);
+        _vertexBuffer.SetData(_vertices.ToArray());
     }
 
     private void InitializeIndices()
     {
-        indices = new ushort[]
+        _indices = new ushort[]
         {
             0,1,// передние линии
             1,2,
@@ -68,23 +67,23 @@ public class Chamber
             2,6
         };
         
-        indexBuffer = new IndexBuffer(game.GraphicsDevice, typeof(ushort), 24, BufferUsage.WriteOnly);
-        indexBuffer.SetData(indices);
+        _indexBuffer = new IndexBuffer(_game.GraphicsDevice, typeof(ushort), 24, BufferUsage.WriteOnly);
+        _indexBuffer.SetData(_indices);
     }
     
     public void Draw()
     {
-        effect.World = game.WorldMatrix;
-        effect.View = game.ViewMatrix;
-        effect.Projection = game.ProjectionMatrix;
+        _effect.World = _game.WorldMatrix;
+        _effect.View = _game.ViewMatrix;
+        _effect.Projection = _game.ProjectionMatrix;
 
-        game.GraphicsDevice.SetVertexBuffer(vertexBuffer);
-        game.GraphicsDevice.Indices = indexBuffer;
+        _game.GraphicsDevice.SetVertexBuffer(_vertexBuffer);
+        _game.GraphicsDevice.Indices = _indexBuffer;
         //drawing the edges
-        foreach (EffectPass pass in effect.CurrentTechnique.Passes)
+        foreach (EffectPass pass in _effect.CurrentTechnique.Passes)
         {
             pass.Apply();
-            game.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.LineList, 0, 0, 12);
+            _game.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.LineList, 0, 0, 12);
         }
     }
 }

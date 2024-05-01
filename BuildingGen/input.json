@@ -8,12 +8,25 @@
     {
       "Name": "house",
       "Edges": [
-        [ "house", "roof" ],
-        [ "house", "air"],
-        [ "house", "ground" ],
-        [ "house", "air"],
-        [ "house", "air", "corner"],
-        [ "house", "corner"]
+        [ "house", "roof"],
+        [ "house", "roof"],
+        [ "house", "ground"],
+        [ "house", "roof"],
+        [ "house", "roof"],
+        [ "house", "roof"]
+      ],
+      "FlipX": false,
+      "RotateZ": false
+    },
+    {
+      "Name": "house",
+      "Edges": [
+        [ "house", "roof"],
+        [ "air"],
+        [ "house", "ground"],
+        [ "house", "corner", "roof"],
+        [ "house", "corner", "roof"],
+        [ "house"]
       ],
       "FlipX": false,
       "RotateZ": true
