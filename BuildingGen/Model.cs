@@ -1,15 +1,17 @@
 ﻿namespace BuildingGen;
 
+
+
 public class Model
 {
-    private readonly Dictionary<(int, int, int), string> _directions = new()
+    private readonly Dictionary<string, Vector3> _directions = new()
     {
-        { (0, 1, 0), "forward" },
-        { (0, -1, 0), "backward" },
-        { (1, 0, 0), "right" },
-        { (-1, 0, 0), "left" },
-        { (0, 0, 1), "up" },
-        { (0, 0, -1), "down" },
+        { "forward", (0, 1, 0) },
+        { "backward", (0, -1, 0) },
+        { "right", (1, 0, 0) },
+        { "left", (-1, 0, 0) },
+        { "up", (0, 0, 1) },
+        { "down", (0, 0, -1) },
     };
     private readonly Dictionary<string, (int, int)> _neighborCellDirections = new()
     {
@@ -25,11 +27,11 @@ public class Model
     private int Height { get; init; }
     private int Depth { get; init; }
     private Tile[] TileSet { get; init; }
-    public Dictionary<(int, int, int), Tile[]> Field { get; private init; }
-    private Dictionary<(int, int, int), List<Tile>> VisitedTiles { get; init; }
-    private List<(int, int, int)> VisitedCells => Field.Where(x => x.Value.Length == 1).Select(x => x.Key).ToList();
+    public Dictionary<Vector3, Tile[]> Field { get; private init; }
+    public List<Vector3> VisitedCells => Field.Where(x => x.Value.Length == 1).Select(x => x.Key).ToList();
 
-    public Queue<((int, int, int), Tile)>? PossibleMoves;
+    public Queue<(Vector3, Tile)>? PossibleMoves;
+    public HashSet<Vector3> Neighbors = new ();
 
     public Model(int width, int depth, int height, Tile[] tileSet)
     {
@@ -37,26 +39,23 @@ public class Model
         Depth = depth;
         Height = height;
         TileSet = tileSet;
-        Field = new Dictionary<(int, int, int), Tile[]>();
-        VisitedTiles = new Dictionary<(int, int, int), List<Tile>>();
+        Field = new Dictionary<Vector3, Tile[]>();
         var ground = TileSet[^2];
         var air = TileSet[^1];
         TileSet = (Tile[])TileSet.Clone();
         var newTileSet = new List<Tile>(TileSet);
         newTileSet.RemoveAt(newTileSet.Count - 2);
         TileSet = newTileSet.ToArray();
-        for (int i = 0; i < Width; i++)
+        for (var i = 0; i < Width; i++)
         {
-            for (int j = 0; j < Depth; j++)
+            for (var j = 0; j < Depth; j++)
             {
-                for (int k = 0; k < Height; k++)
+                for (var k = 0; k < Height; k++)
                 {
-                    VisitedTiles.Add((i, j, k), new List<Tile>());
                     if (k == 0)
                     {
                         Field[(i, j, k)] = new[] { ground };
                         VisitedCells.Add((i, j, k));
-                        VisitedTiles[(i, j, k)].Add(ground);
                         continue;
                     }
 
@@ -64,7 +63,6 @@ public class Model
                     {
                         Field[(i, j, k)] = new[] { air };
                         VisitedCells.Add((i, j, k));
-                        VisitedTiles[(i, j, k)].Add(air);
                         continue;
                     }
 
@@ -75,44 +73,61 @@ public class Model
     }
 
     private Model() { }
-
+    
     public void CalculateMoves(Random random)
     {
-        var minTiles = Field.Where(x => x.Value.Length > 1).MinBy(x => x.Value.Length).Value.Length;
-        PossibleMoves = new Queue<((int, int, int), Tile)>(
-            Field.Where(x => x.Value.Length == minTiles)
-                .SelectMany(x => x.Value.Select(tile => (x.Key, tile)))
-                .OrderBy(x => random.Next()));
+        if (!Neighbors.Any(x => Field[x].Length > 1))
+        {
+            PossibleMoves = new Queue<(Vector3, Tile)>();
+            return;
+        }
+        var neighbor = Neighbors.Where(x => Field[x].Length > 1).MinBy(x => Field[x].Length);
+        PossibleMoves = new Queue<(Vector3, Tile)>(Field[neighbor].OrderBy(_ => random.Next()).Select(x => (neighbor, x)));
     }
 
     public void Wave()
     {
         //bfs
-        var queue = new Queue<(int, int, int)>(VisitedCells.ToArray());
-        var visited = new HashSet<(int, int, int)>(VisitedCells.ToArray());
+        var queue = new Queue<Vector3>(VisitedCells.ToArray());
+        var visited = new HashSet<Vector3>(VisitedCells.ToArray());
 
         while (queue.Count != 0)
         {
             var currCell = queue.Dequeue();
-            foreach (var direction in _directions)
+            foreach (var neighbor in GetNotVisitedNeighbors(currCell, visited))
             {
-                var newCell = (currCell.Item1 + direction.Key.Item1,
-                    currCell.Item2 + direction.Key.Item2, currCell.Item3 + direction.Key.Item3);
-                if (IsAble(currCell, direction.Key) && !visited.Contains(newCell))
-                {
-                    UpdateCellTiles(currCell, newCell, direction.Value);
-                    queue.Enqueue(newCell);
-                }
+                UpdateCellTiles(currCell, neighbor.Item1, neighbor.Item2);
+                queue.Enqueue(neighbor.Item1);
             }
             visited.Add(currCell);
         }
     }
 
-    private bool IsAble((int, int, int) currCell, (int, int, int) offset)
+    private List<(Vector3, string)> GetNotVisitedNeighbors(Vector3 currCell, HashSet<Vector3> visited)
     {
-        var newCell = (currCell.Item1 + offset.Item1, currCell.Item2 + offset.Item2, currCell.Item3 + offset.Item3);
-        return !(newCell.Item1 < 0 || newCell.Item1 >= Width || newCell.Item2 < 0 || newCell.Item2 >= Depth ||
-                newCell.Item3 < 0 || newCell.Item3 >= Height);
+        var neighbors = new List<(Vector3, string)>();
+        foreach (var direction in _directions)
+        {
+            var newCell = (currCell.X + direction.Value.X,
+                currCell.Y + direction.Value.Y, currCell.Z + direction.Value.Z);
+            if (IsAble(newCell) && !visited.Contains(newCell))
+                neighbors.Add((newCell, direction.Key));
+        }
+        return neighbors;
+    }
+    
+    public void SetTile(Vector3 cell, Tile tile)
+    {
+        Field[cell] = new[] { tile };
+        foreach (var neighbor in GetNotVisitedNeighbors(cell, Neighbors))
+            Neighbors.Add(neighbor.Item1);
+        Neighbors.Remove(cell);
+    }
+    
+    private bool IsAble((int, int, int) cell)
+    {
+        return !(cell.Item1 < 0 || cell.Item1 >= Width || cell.Item2 < 0 || cell.Item2 >= Depth ||
+                cell.Item3 < 0 || cell.Item3 >= Height);
     }
 
     private void UpdateCellTiles((int, int, int) currCell, (int, int, int) changingCell, string direction)
@@ -121,14 +136,20 @@ public class Model
         var currCellDirection = _neighborCellDirections[direction].Item2;
 
         var newNeighborTiles = new List<Tile>();
+        var newCurrCellTiles = new List<Tile>();
         //если текущая клетка может соседствовать с выбранным соседом (в этом направлении) и наоборот
         foreach (var currCellTile in Field[currCell])
             foreach (var oldNeighborTile in Field[changingCell])
-                if (!newNeighborTiles.Contains(oldNeighborTile) &&
-                    currCellTile.ModifiedEdges[currCellDirection].Contains(oldNeighborTile.TileInfo.Name) &&
+                if (currCellTile.ModifiedEdges[currCellDirection].Contains(oldNeighborTile.TileInfo.Name) &&
                     oldNeighborTile.ModifiedEdges[neighborCellDirection].Contains(currCellTile.TileInfo.Name))
-                    newNeighborTiles.Add(oldNeighborTile);
+                {
+                    if (!newNeighborTiles.Contains(oldNeighborTile))
+                        newNeighborTiles.Add(oldNeighborTile);
+                    if (!newCurrCellTiles.Contains(currCellTile))
+                        newCurrCellTiles.Add(currCellTile);
+                }
         Field[changingCell] = newNeighborTiles.ToArray();
+        Field[currCell] = newCurrCellTiles.ToArray();
     }
     
     public Tile[,,] Result()
@@ -138,6 +159,11 @@ public class Model
             for (int j = 0; j < Depth; j++)
             for (int k = 0; k < Height; k++)
             {
+                if (Field[(i, j, k)].Length != 1)
+                {
+                    building[i - 1, j - 1, k - 1] = TileSet[^1];
+                    continue;
+                }
                 if (i == 0 || j == 0 || k == 0 || i == Width || j == Depth || k == Height)
                     continue;
                 building[i - 1, j - 1, k - 1] = Field[(i, j, k)][0];
@@ -164,8 +190,8 @@ public class Model
             Width = Width,
             Height = Height,
             TileSet = (Tile[])TileSet.Clone(),
-            Field = new Dictionary<(int, int, int), Tile[]>(),
-            VisitedTiles = new Dictionary<(int, int, int), List<Tile>>()
+            Field = new Dictionary<Vector3, Tile[]>(),
+            Neighbors = new HashSet<Vector3>(Neighbors)
         };
         for (int i = 0; i < Width; i++)
         {
@@ -174,7 +200,6 @@ public class Model
                 for (int k = 0; k < Height; k++)
                 {
                     copy.Field[(i, j, k)] = (Tile[])Field[(i, j, k)].Clone();
-                    copy.VisitedTiles[(i, j, k)] = new List<Tile>(VisitedTiles[(i, j, k)]);
                 }
             }
         }

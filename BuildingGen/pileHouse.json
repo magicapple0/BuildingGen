@@ -3,14 +3,14 @@
     [ 1, 1 ],
     [ 1, 1 ]
   ],
-  "UsingTiles": [ "house", "roof", "corner", "grass" ],
+  "UsingTiles": [ "house", "roof", "corner", "grass", "pile" ],
   "TilesInfo": [
     {
       "Name": "house",
       "Edges": [
         [ "house", "roof"],
         [ "house", "roof"],
-        [ "house", "grass"],
+        [ "house", "air"],
         [ "house", "roof"],
         [ "house", "roof"],
         [ "house", "roof"]
@@ -25,7 +25,7 @@
       "Edges": [
         [ "house", "roof"],
         [ "air"],
-        [ "house", "grass"],
+        [ "house", "air"],
         [ "house", "corner", "roof"],
         [ "house", "corner", "roof"],
         [ "house"]
@@ -37,17 +37,16 @@
     },
     {
       "Name": "roof",
-      "Description": "roof filling",
       "Edges": [
         [ "air" ],
-        [ "air" ],
+        [ "air", "house", "roof" ],
         [ "house", "corner" ],
-        [ "roof", "air" ],
-        [ "roof", "air" ],
-        [ "house", "corner", "air"  ]
+        [ "air", "house", "roof" ],
+        [ "air", "house", "roof" ],
+        [ "air", "house", "roof" ]
       ],
       "FlipX": false,
-      "RotateZ": true,
+      "RotateZ": false,
       "Color": null,
       "Texture": ["roof.png", "roof_side.png", "bottom.png", "roof_side.png", "roof_side.png", "roof_side.png"]
     },
@@ -56,7 +55,7 @@
       "Edges": [
         [ "roof", "corner" ],
         [ "house" ],
-        [ "corner", "grass" ],
+        [ "corner", "pile" ],
         [ "house" ],
         [ "air" ],
         [ "air" ]
@@ -69,7 +68,7 @@
     {
       "Name": "grass",
       "Edges": [
-        [ "corner", "house", "air" ],
+        [ "air", "pile" ],
         [ "grass" ],
         [ "ground" ],
         [ "grass" ],
@@ -78,7 +77,22 @@
       ],
       "FlipX": false,
       "RotateZ": true,
-      "Color": "3C896D",
+      "Color": "808000",
+      "Texture": null
+    },
+    {
+      "Name": "pile",
+      "Edges": [
+        [ "corner", "pile" ],
+        [ "air" ],
+        [ "grass", "pile" ],
+        [ "air" ],
+        [ "air" ],
+        [ "air" ]
+      ],
+      "FlipX": false,
+      "RotateZ": false,
+      "Color": "663300",
       "Texture": null
     }
   ]

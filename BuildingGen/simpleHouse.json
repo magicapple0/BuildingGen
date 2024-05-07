@@ -37,17 +37,16 @@
     },
     {
       "Name": "roof",
-      "Description": "roof filling",
       "Edges": [
         [ "air" ],
-        [ "air" ],
+        [ "air", "house", "roof" ],
         [ "house", "corner" ],
-        [ "roof", "air" ],
-        [ "roof", "air" ],
-        [ "house", "corner", "air"  ]
+        [ "air", "house", "roof" ],
+        [ "air", "house", "roof" ],
+        [ "air", "house", "roof" ]
       ],
       "FlipX": false,
-      "RotateZ": true,
+      "RotateZ": false,
       "Color": null,
       "Texture": ["roof.png", "roof_side.png", "bottom.png", "roof_side.png", "roof_side.png", "roof_side.png"]
     },

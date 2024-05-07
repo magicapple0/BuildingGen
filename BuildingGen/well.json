@@ -9,45 +9,29 @@
       "Name": "house",
       "Edges": [
         [ "house", "roof"],
-        [ "house", "roof"],
+        [ "air" ],
         [ "house", "grass"],
-        [ "house", "roof"],
-        [ "house", "roof"],
-        [ "house", "roof"]
+        [ "house", "corner"],
+        [ "house", "corner"],
+        [ "house", "air"]
       ],
-      "FlipX": false,
-      "RotateZ": false,
+      "FlipX": true,
+      "RotateZ": true,
       "Color": null,
       "Texture": [ "roof.png", "wall.png", "bottom.png", "wall.png", "wall.png", "wall.png"]
     },
     {
-      "Name": "house",
-      "Edges": [
-        [ "house", "roof"],
-        [ "air"],
-        [ "house", "grass"],
-        [ "house", "corner", "roof"],
-        [ "house", "corner", "roof"],
-        [ "house"]
-      ],
-      "FlipX": false,
-      "RotateZ": true,
-      "Color": null,
-      "Texture": ["roof.png", "wall.png", "bottom.png", "wall.png", "wall.png", "wall.png"]
-    },
-    {
       "Name": "roof",
-      "Description": "roof filling",
       "Edges": [
         [ "air" ],
-        [ "air" ],
-        [ "house", "corner" ],
-        [ "roof", "air" ],
-        [ "roof", "air" ],
-        [ "house", "corner", "air"  ]
+        [ "air", "roof"],
+        [ "house", "corner", "roof" ],
+        [ "air", "roof" ],
+        [ "air", "roof" ],
+        [ "air", "roof" ]
       ],
       "FlipX": false,
-      "RotateZ": true,
+      "RotateZ": false,
       "Color": null,
       "Texture": ["roof.png", "roof_side.png", "bottom.png", "roof_side.png", "roof_side.png", "roof_side.png"]
     },
@@ -76,7 +60,7 @@
         [ "grass", "air"],
         [ "grass", "air" ]
       ],
-      "FlipX": false,
+      "FlipX": true,
       "RotateZ": true,
       "Color": "3C896D",
       "Texture": null

@@ -8,15 +8,27 @@ public static class Program
     {
         var confLoader = new ConfigLoader("input.json");
         var tiles = confLoader.Tiles;
-        const int width = 6;
-        const int  depth = 6;
-        const int  height = 6;
-        const int  seed = 0;
+        const int width = 5;
+        const int  depth = 10;
+        const int  height = 7;
+        const int seed = 1;
         //PrintTileSet(tiles);
         var n = 100000;
 
         var function = new WaveFunction(width, depth, height, tiles.ToArray(), seed);
-        Console.WriteLine(function.Run());
+        var b = function.Run();
+        Console.WriteLine(b);
+
+        /*for (int i = 0; i < n; i++)
+        {
+            if (b)
+                Console.WriteLine(i + "\t");
+            function = new WaveFunction(width, depth, height, tiles.ToArray(), i);
+            b = function.Run();
+        }*/
+        
+        //function.Run().Last();
+        //Console.WriteLine(function.Run());
         /*for (int i = 0; i < n; i++)
         {
             Console.WriteLine(i);
@@ -26,7 +38,7 @@ public static class Program
                 break;
             }
         }*/
-        PrintField(function.CurrModel.Field);
+        //PrintField(function.CurrModel.Field);
         //TimeTest(width, height, seed, tiles, n);
     }
 
@@ -79,11 +91,11 @@ public static class Program
         }
     }
 
-    private static void PrintField(Dictionary<(int, int, int), Tile[]> field)
+    private static void PrintField(Dictionary<Vector3, Tile[]> field)
     {
         foreach (var cell in field)
         {
-            Console.Write(cell.Key.Item1 + "\t" + cell.Key.Item2 + "\t" + cell.Key.Item3 + "\t");
+            Console.Write(cell.Key.X + "\t" + cell.Key.Y + "\t" + cell.Key.Z + "\t");
             foreach (var tile in cell.Value)
             {
                 Console.Write(tile.TileInfo.Name + "\t");
@@ -99,6 +111,7 @@ public static class Program
 
         var function = new WaveFunction(width, depth, height, tiles.ToArray(), seed);
         function.Run();
+        return function.CurrModel.Result();
 
         /*
         var tile = new Tile(new TileInfo("corner",
@@ -114,6 +127,6 @@ public static class Program
         tile.RotateZTile();
         a[0, 0, 0] = tile;
         return a;*/
-        return function.CurrModel.Result();
+        //return function.CurrModel.Result();
     }
 }

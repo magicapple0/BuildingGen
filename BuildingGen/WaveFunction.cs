@@ -16,25 +16,34 @@ public class WaveFunction
 
     public bool Run()
     {
+        var n = 1;
         CurrModel.Wave();
         if (CurrModel.IsCollapse())
             return true;
         _previousModels.Push(CurrModel);
         CurrModel = CurrModel.Copy();
+        CurrModel.Neighbors.Add((1, 1, 1));
+        
         while (true)
         {
+            Console.Write($"\n{n++}:{_previousModels.Count}\t");
             if (CurrModel.PossibleMoves == null)
                 CurrModel.CalculateMoves(Rand);
             while (CurrModel.PossibleMoves == null || CurrModel.PossibleMoves.Count == 0)
             {
                 CurrModel = _previousModels.Pop();
+                Console.Write("Шаг назад\t");
             }
 
             var move = CurrModel.PossibleMoves.Dequeue();
             var newModel = CurrModel.Copy();
-            newModel.Field[move.Item1] = new[] { move.Item2 };
+            newModel.SetTile(move.Item1, move.Item2);
             newModel.Wave();
-            if (newModel.IsBroken()) continue;
+            if (newModel.IsBroken())
+            {
+                Console.Write("Другой тайл\t");
+                continue;
+            }
             if (newModel.IsCollapse())
             {
                 CurrModel = newModel;
@@ -43,6 +52,7 @@ public class WaveFunction
 
             _previousModels.Push(CurrModel);
             CurrModel = newModel;
+            Console.Write("Дальше\t");
         }
     }
 }

@@ -1,8 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using BuildingGen;
+using Vector3 = Microsoft.Xna.Framework.Vector3;
 
 namespace Visualize
 {
@@ -16,11 +18,12 @@ namespace Visualize
         private Vector3 _centerOfBuilding;
         private Vector3 _cameraPosition;
         private Vector3 _cameraTarget;
-        private readonly Tile[,,] _tiles;
+        private Tile[,,] _tiles;
+        private readonly Tile[,,] generatedTiles;
         private readonly TextureManager _textureManager;
-        
+
         private Chamber _chamber;
-        private readonly List<Cube> _cubes = new ();
+        private List<Cube> _cubes = new();
 
         public Game1(Tile[,,] tiles)
         {
@@ -34,8 +37,8 @@ namespace Visualize
         {
             SetGraphicsSettings();
             CubeInitialize();
-            Vector3 min = new Vector3(0, 0, 0);
-            Vector3 max = new Vector3(_tiles.GetLength(0) - 1, _tiles.GetLength(2) - 1, _tiles.GetLength(1) - 1);
+            var min = new Vector3(0, 0, 0);
+            var max = new Vector3(_tiles.GetLength(0) - 1, _tiles.GetLength(2) - 1, _tiles.GetLength(1) - 1);
 
             _chamber = new Chamber(this, max);
             SetCameraSettings(min, max);
@@ -43,37 +46,53 @@ namespace Visualize
             base.Initialize();
         }
 
+        private DateTime time = DateTime.Now;
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
                 Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            if (DateTime.Now - time > TimeSpan.FromMilliseconds(100))
+            {
+                //CubeInitialize();
+                time = DateTime.Now;
+            }
+
             if (Keyboard.GetState().IsKeyDown(Keys.Up) || Keyboard.GetState().IsKeyDown(Keys.W))
             {
                 WorldMatrix *= Matrix.CreateRotationX(MathHelper.ToRadians(1));
             }
+
             if (Keyboard.GetState().IsKeyDown(Keys.Down) || Keyboard.GetState().IsKeyDown(Keys.S))
             {
                 WorldMatrix *= Matrix.CreateRotationX(-1 * MathHelper.ToRadians(1));
             }
+
             if (Keyboard.GetState().IsKeyDown(Keys.Left) || Keyboard.GetState().IsKeyDown(Keys.A))
             {
                 WorldMatrix *= Matrix.CreateRotationY(MathHelper.ToRadians(1));
             }
+
             if (Keyboard.GetState().IsKeyDown(Keys.Right) || Keyboard.GetState().IsKeyDown(Keys.D))
             {
                 WorldMatrix *= Matrix.CreateRotationY(-1 * MathHelper.ToRadians(1));
             }
+
             if (Keyboard.GetState().IsKeyDown(Keys.Space))
             {
-                WorldMatrix = Matrix.CreateWorld(new Vector3(-_centerOfBuilding.X - 0.5f, -_centerOfBuilding.Z + 0.5f, -_centerOfBuilding.Y - 0.5f), new Vector3(0, 0, -1), Vector3.Up);
+                WorldMatrix =
+                    Matrix.CreateWorld(
+                        new Vector3(-_centerOfBuilding.X - 0.5f, -_centerOfBuilding.Z + 0.5f,
+                            -_centerOfBuilding.Y - 0.5f), new Vector3(0, 0, -1), Vector3.Up);
             }
+
             if (Keyboard.GetState().IsKeyDown(Keys.Z))
             {
                 _cameraPosition = new Vector3(_cameraPosition.X, _cameraPosition.Y, _cameraPosition.Z - 0.1f);
                 ViewMatrix = Matrix.CreateLookAt(_cameraPosition, _cameraTarget, Vector3.Up);
             }
+
             if (Keyboard.GetState().IsKeyDown(Keys.X))
             {
                 _cameraPosition = new Vector3(_cameraPosition.X, _cameraPosition.Y, _cameraPosition.Z + 0.1f);
@@ -86,10 +105,15 @@ namespace Visualize
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-            foreach (var cube in _cubes)
+            lock (_cubes)
             {
-                cube.Draw();
+                foreach (var cube in _cubes)
+                {
+                    cube.Draw();
+                }
             }
+            
+
             _chamber.Draw();
             base.Draw(gameTime);
         }
@@ -113,16 +137,25 @@ namespace Visualize
         {
             _centerOfBuilding = new Vector3((max.X - min.X) / 2, (max.Y - min.Y) / 2, (max.Z - min.Z) / 2);
             var zoom = MathHelper.Max(max.X, MathHelper.Max(max.Y, max.Z)) * 1.2f + 4;
-            _cameraPosition = new Vector3(0, -_centerOfBuilding.Z + 2 , zoom);
+            _cameraPosition = new Vector3(0, -_centerOfBuilding.Z + 2, zoom);
             _cameraTarget = new Vector3(0, _centerOfBuilding.Z - 2, -zoom);
-            ViewMatrix = Matrix.CreateLookAt(_cameraPosition, new Vector3(0, _centerOfBuilding.Z - 0.7f, -zoom), Vector3.Up);
+            ViewMatrix = Matrix.CreateLookAt(_cameraPosition, new Vector3(0, _centerOfBuilding.Z - 0.7f, -zoom),
+                Vector3.Up);
             ProjectionMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4,
                 (float)Window.ClientBounds.Width / Window.ClientBounds.Height, 1, 100);
-            WorldMatrix = Matrix.CreateWorld(new Vector3(-_centerOfBuilding.X - 0.5f, -_centerOfBuilding.Z + 0.5f, -_centerOfBuilding.Y - 0.5f), new Vector3(0, 0, -1), Vector3.Up);
+            WorldMatrix =
+                Matrix.CreateWorld(
+                    new Vector3(-_centerOfBuilding.X - 0.5f, -_centerOfBuilding.Z + 0.5f, -_centerOfBuilding.Y - 0.5f),
+                    new Vector3(0, 0, -1), Vector3.Up);
         }
+
+        private bool fin;
 
         private void CubeInitialize()
         {
+            //_tiles = generatedTiles.Current;
+            var newCubes = new List<Cube>();
+
             for (int i = 0; i < _tiles.GetLength(0); i++)
             {
                 for (int j = 0; j < _tiles.GetLength(1); j++)
@@ -131,9 +164,14 @@ namespace Visualize
                     {
                         if (_tiles[i, j, k].TileInfo.Name == "air")
                             continue;
-                        _cubes.Add(new Cube(this, new Vector3(i, k, j), _textureManager.GetTexture(_tiles[i, j, k])));
+                        newCubes.Add(new Cube(this, new Vector3(i, k, j), _textureManager.GetTexture(_tiles[i, j, k])));
                     }
                 }
+            }
+
+            lock (_cubes)
+            {
+                _cubes = newCubes;
             }
         }
     }
