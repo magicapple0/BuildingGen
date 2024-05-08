@@ -3,7 +3,7 @@
     [ 1, 1 ],
     [ 1, 1 ]
   ],
-  "UsingTiles": [ "house", "roof", "corner", "grass" ],
+  "UsingTiles": [ "Textures/house", "Textures/roof", "Textures/corner", "Textures/grass" ],
   "TilesInfo": [
     {
       "Name": "house",
@@ -18,7 +18,7 @@
       "FlipX": false,
       "RotateZ": false,
       "Color": null,
-      "Texture": [ "roof.png", "wall.png", "bottom.png", "wall.png", "wall.png", "wall.png"]
+      "Texture": [ "Textures/roof.png", "Textures/wall.png", "Textures/bottom.png", "Textures/wall.png", "Textures/wall.png", "Textures/wall.png"]
     },
     {
       "Name": "house",
@@ -33,11 +33,10 @@
       "FlipX": false,
       "RotateZ": true,
       "Color": null,
-      "Texture": ["roof.png", "wall.png", "bottom.png", "wall.png", "wall.png", "wall.png"]
+      "Texture": ["Textures/roof.png", "Textures/wall.png", "Textures/bottom.png", "Textures/wall.png", "Textures/wall.png", "Textures/wall.png"]
     },
     {
       "Name": "roof",
-      "Description": "roof filling",
       "Edges": [
         [ "air" ],
         [ "air" ],
@@ -49,7 +48,7 @@
       "FlipX": false,
       "RotateZ": true,
       "Color": null,
-      "Texture": ["roof.png", "roof_side.png", "bottom.png", "roof_side.png", "roof_side.png", "roof_side.png"]
+      "Texture": ["Textures/roof.png", "Textures/roof_side.png", "Textures/bottom.png", "Textures/roof_side.png", "Textures/roof_side.png", "Textures/roof_side.png"]
     },
     {
       "Name": "corner",
@@ -64,20 +63,20 @@
       "FlipX": false,
       "RotateZ": true,
       "Color": null,
-      "Texture": ["roof.png", "bottom.png", "bottom.png", "bottom.png", "corner.png", "corner_flip.png"]
+      "Texture": ["Textures/roof.png", "Textures/bottom.png", "Textures/bottom.png", "Textures/bottom.png", "Textures/corner.png", "Textures/corner_flip.png"]
     },
     {
       "Name": "grass",
       "Edges": [
-        [ "corner", "house", "air" ],
-        [ "grass" ],
+        [ "corner", "house" , "air"],
+        [ "grass", "bound" ],
         [ "ground" ],
-        [ "grass" ],
-        [ "grass", "air"],
-        [ "grass", "air" ]
+        [ "grass", "bound" ],
+        [ "grass", "bound"],
+        [ "grass", "bound" ]
       ],
       "FlipX": false,
-      "RotateZ": true,
+      "RotateZ": false,
       "Color": "3C896D",
       "Texture": null
     }

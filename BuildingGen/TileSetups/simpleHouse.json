@@ -3,14 +3,14 @@
     [ 1, 1 ],
     [ 1, 1 ]
   ],
-  "UsingTiles": [ "house", "roof", "corner", "grass", "pile" ],
+  "UsingTiles": [ "house", "roof", "corner", "grass" ],
   "TilesInfo": [
     {
       "Name": "house",
       "Edges": [
         [ "house", "roof"],
         [ "house", "roof"],
-        [ "house", "air"],
+        [ "house", "grass"],
         [ "house", "roof"],
         [ "house", "roof"],
         [ "house", "roof"]
@@ -18,14 +18,14 @@
       "FlipX": false,
       "RotateZ": false,
       "Color": null,
-      "Texture": [ "roof.png", "wall.png", "bottom.png", "wall.png", "wall.png", "wall.png"]
+      "Texture": [ "Textures/roof.png", "Textures/wall.png", "Textures/bottom.png", "Textures/wall.png", "Textures/wall.png", "Textures/wall.png"]
     },
     {
       "Name": "house",
       "Edges": [
         [ "house", "roof"],
         [ "air"],
-        [ "house", "air"],
+        [ "house", "grass"],
         [ "house", "corner", "roof"],
         [ "house", "corner", "roof"],
         [ "house"]
@@ -33,7 +33,7 @@
       "FlipX": false,
       "RotateZ": true,
       "Color": null,
-      "Texture": ["roof.png", "wall.png", "bottom.png", "wall.png", "wall.png", "wall.png"]
+      "Texture": ["Textures/roof.png", "Textures/wall.png", "Textures/bottom.png", "Textures/wall.png", "Textures/wall.png", "Textures/wall.png"]
     },
     {
       "Name": "roof",
@@ -48,14 +48,14 @@
       "FlipX": false,
       "RotateZ": false,
       "Color": null,
-      "Texture": ["roof.png", "roof_side.png", "bottom.png", "roof_side.png", "roof_side.png", "roof_side.png"]
+      "Texture": ["Textures/roof.png", "Textures/roof_side.png", "Textures/bottom.png", "Textures/roof_side.png", "Textures/roof_side.png", "Textures/roof_side.png"]
     },
     {
       "Name": "corner",
       "Edges": [
         [ "roof", "corner" ],
         [ "house" ],
-        [ "corner", "pile" ],
+        [ "corner", "grass" ],
         [ "house" ],
         [ "air" ],
         [ "air" ]
@@ -63,36 +63,21 @@
       "FlipX": false,
       "RotateZ": true,
       "Color": null,
-      "Texture": ["roof.png", "bottom.png", "bottom.png", "bottom.png", "corner.png", "corner_flip.png"]
+      "Texture": ["Textures/roof.png", "Textures/bottom.png", "Textures/bottom.png", "Textures/bottom.png", "Textures/corner.png", "Textures/corner_flip.png"]
     },
     {
       "Name": "grass",
       "Edges": [
-        [ "air", "pile" ],
-        [ "grass" ],
+        [ "corner", "house" , "air"],
+        [ "grass", "bound" ],
         [ "ground" ],
-        [ "grass" ],
-        [ "grass", "air"],
-        [ "grass", "air" ]
-      ],
-      "FlipX": false,
-      "RotateZ": true,
-      "Color": "808000",
-      "Texture": null
-    },
-    {
-      "Name": "pile",
-      "Edges": [
-        [ "corner", "pile" ],
-        [ "air" ],
-        [ "grass", "pile" ],
-        [ "air" ],
-        [ "air" ],
-        [ "air" ]
+        [ "grass", "bound" ],
+        [ "grass", "bound"],
+        [ "grass", "bound" ]
       ],
       "FlipX": false,
       "RotateZ": false,
-      "Color": "663300",
+      "Color": "3C896D",
       "Texture": null
     }
   ]

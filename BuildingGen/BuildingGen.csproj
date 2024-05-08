@@ -8,13 +8,19 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Update="1.json">
+    <None Update="TileSetups\well.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="input.json">
+    <None Update="TileSetups\input.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="well.json">
+    <None Update="TileSetups\pileHouse.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TileSetups\simpleHouse.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TileSetups\triangleRoof.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

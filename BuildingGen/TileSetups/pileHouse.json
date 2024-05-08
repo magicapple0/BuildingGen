@@ -1,0 +1,99 @@
+﻿{
+  "Base": [
+    [ 1, 1 ],
+    [ 1, 1 ]
+  ],
+  "UsingTiles": [ "house", "roof", "corner", "grass", "pile" ],
+  "TilesInfo": [
+    {
+      "Name": "house",
+      "Edges": [
+        [ "house", "roof"],
+        [ "house", "roof"],
+        [ "house", "air"],
+        [ "house", "roof"],
+        [ "house", "roof"],
+        [ "house", "roof"]
+      ],
+      "FlipX": false,
+      "RotateZ": false,
+      "Color": null,
+      "Texture": [ "Textures/roof.png", "Textures/wall.png", "Textures/bottom.png", "Textures/wall.png", "Textures/wall.png", "Textures/wall.png"]
+    },
+    {
+      "Name": "house",
+      "Edges": [
+        [ "house", "roof"],
+        [ "air"],
+        [ "house", "air"],
+        [ "house", "corner", "roof"],
+        [ "house", "corner", "roof"],
+        [ "house"]
+      ],
+      "FlipX": false,
+      "RotateZ": true,
+      "Color": null,
+      "Texture": ["Textures/roof.png", "Textures/wall.png", "Textures/bottom.png", "Textures/wall.png", "Textures/wall.png", "Textures/wall.png"]
+    },    
+    {
+      "Name": "roof",
+      "Edges": [
+        [ "air" ],
+        [ "air" ],
+        [ "house", "corner" ],
+        [ "roof", "air" ],
+        [ "roof", "air" ],
+        [ "house", "corner", "air"  ]
+      ],
+      "FlipX": false,
+      "RotateZ": true,
+      "Color": null,
+      "Texture": ["Textures/roof.png", "Textures/roof_side.png", "Textures/bottom.png", "Textures/roof_side.png", "Textures/roof_side.png", "Textures/roof_side.png"]
+    },
+    {
+      "Name": "corner",
+      "Edges": [
+        [ "roof", "corner" ],
+        [ "house" ],
+        [ "corner", "pile" ],
+        [ "house" ],
+        [ "air" ],
+        [ "air" ]
+      ],
+      "FlipX": false,
+      "RotateZ": true,
+      "Color": null,
+      "Texture": ["Textures/roof.png", "Textures/bottom.png", "Textures/bottom.png", "Textures/bottom.png", "Textures/corner.png", "Textures/corner_flip.png"]
+    },
+    {
+      "Name": "grass",
+      "Edges": [
+        [ "pile" , "air"],
+        [ "grass", "bound" ],
+        [ "ground" ],
+        [ "grass", "bound" ],
+        [ "grass", "bound"],
+        [ "grass", "bound" ]
+      ],
+      "FlipX": false,
+      "RotateZ": false,
+      "Color": "808000",
+      "Texture": null
+    },
+    {
+      "Name": "pile",
+      "Edges": [
+        [ "corner", "pile" ],
+        [ "air" ],
+        [ "grass", "pile" ],
+        [ "air" ],
+        [ "air" ],
+        [ "air" ]
+      ],
+      "FlipX": false,
+      "RotateZ": false,
+      "Color": "663300",
+      "Texture": null
+    }
+  ]
+}

@@ -25,7 +25,8 @@ namespace BuildingGen
             Texture = texture;
             if (texture == null && color == null)
             {
-                Texture = new [] { "img.png", "img.png", "img.png", "img.png", "img.png", "img.png" };
+                Texture = new [] { "Textures/img.png", "Textures/img.png", "Textures/img.png", 
+                                   "Textures/img.png", "Textures/img.png", "Textures/img.png" };
             }
         }
     }

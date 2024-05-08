@@ -38,7 +38,7 @@ namespace Visualize
             SetGraphicsSettings();
             CubeInitialize();
             var min = new Vector3(0, 0, 0);
-            var max = new Vector3(_tiles.GetLength(0) - 1, _tiles.GetLength(2) - 1, _tiles.GetLength(1) - 1);
+            var max = new Vector3(_tiles.GetLength(0), _tiles.GetLength(2), _tiles.GetLength(1));
 
             _chamber = new Chamber(this, max);
             SetCameraSettings(min, max);

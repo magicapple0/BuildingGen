@@ -4,18 +4,22 @@ namespace BuildingGen;
 
 public static class Program
 {
+    private const string InputTiles = "TileSetups/pileHouse.json";
+    private const int Width = 4;
+    private const int  Depth = 4;
+    private const int  Height = 4;
+    private const int Seed = 1;
+    
     public static void Main()
     {
-        var confLoader = new ConfigLoader("input.json");
+        
+        var confLoader = new ConfigLoader(InputTiles);
         var tiles = confLoader.Tiles;
-        const int width = 5;
-        const int  depth = 10;
-        const int  height = 7;
-        const int seed = 1;
         //PrintTileSet(tiles);
+        
         var n = 100000;
 
-        var function = new WaveFunction(width, depth, height, tiles.ToArray(), seed);
+        var function = new WaveFunction(Width, Depth, Height, tiles.ToArray(), Seed);
         var b = function.Run();
         Console.WriteLine(b);
 
@@ -38,8 +42,6 @@ public static class Program
                 break;
             }
         }*/
-        //PrintField(function.CurrModel.Field);
-        //TimeTest(width, height, seed, tiles, n);
     }
 
     public static void TimeTest(int width, int depth, int height, int seed, List<Tile> tiles, int n)
@@ -97,23 +99,23 @@ public static class Program
         {
             Console.Write(cell.Key.X + "\t" + cell.Key.Y + "\t" + cell.Key.Z + "\t");
             foreach (var tile in cell.Value)
-            {
                 Console.Write(tile.TileInfo.Name + "\t");
-            }
             Console.WriteLine();
         }
     }
 
-    public static Tile[,,] Build(int width, int depth, int height, int seed)
+    public static Tile[,,] Build(Vector3 size, int seed, string config)
     {
-        var confLoader = new ConfigLoader("input.json");
+        var confLoader = new ConfigLoader(config);
         var tiles = confLoader.Tiles;
 
-        var function = new WaveFunction(width, depth, height, tiles.ToArray(), seed);
+        var function = new WaveFunction(size.X, size.Y, size.Z, tiles.ToArray(), seed);
         function.Run();
         return function.CurrModel.Result();
+    }
 
-        /*
+    public static Tile[,,] BuildTestTile()
+    {
         var tile = new Tile(new TileInfo("corner",
             new[]
             {
@@ -126,7 +128,6 @@ public static class Program
         tile.RotateZTile();
         tile.RotateZTile();
         a[0, 0, 0] = tile;
-        return a;*/
-        //return function.CurrModel.Result();
+        return a;
     }
 }

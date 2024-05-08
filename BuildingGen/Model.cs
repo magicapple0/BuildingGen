@@ -41,10 +41,11 @@ public class Model
         TileSet = tileSet;
         Field = new Dictionary<Vector3, Tile[]>();
         var ground = TileSet[^2];
-        var air = TileSet[^1];
+        var bound = TileSet[^1];
         TileSet = (Tile[])TileSet.Clone();
         var newTileSet = new List<Tile>(TileSet);
         newTileSet.RemoveAt(newTileSet.Count - 2);
+        newTileSet.RemoveAt(newTileSet.Count - 1);
         TileSet = newTileSet.ToArray();
         for (var i = 0; i < Width; i++)
         {
@@ -61,7 +62,7 @@ public class Model
 
                     if (i == 0 || i == Width - 1 || j == 0 || j == Depth - 1 || k == Height - 1)
                     {
-                        Field[(i, j, k)] = new[] { air };
+                        Field[(i, j, k)] = new[] { bound };
                         VisitedCells.Add((i, j, k));
                         continue;
                     }
@@ -154,17 +155,17 @@ public class Model
     
     public Tile[,,] Result()
     {
-        var building = new Tile[Width - 1, Depth - 1, Height - 1];
-        for (int i = 0; i < Width; i++)
-            for (int j = 0; j < Depth; j++)
-            for (int k = 0; k < Height; k++)
+        var building = new Tile[Width - 2, Depth - 2, Height - 2];
+        for (int i = 0; i < Width - 1; i++)
+            for (int j = 0; j < Depth - 1; j++)
+            for (int k = 0; k < Height - 1; k++)
             {
                 if (Field[(i, j, k)].Length != 1)
                 {
                     building[i - 1, j - 1, k - 1] = TileSet[^1];
                     continue;
                 }
-                if (i == 0 || j == 0 || k == 0 || i == Width || j == Depth || k == Height)
+                if (i == 0 || j == 0 || k == 0)
                     continue;
                 building[i - 1, j - 1, k - 1] = Field[(i, j, k)][0];
             }
