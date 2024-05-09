@@ -1,4 +1,4 @@
 ﻿
-using var game = new Visualize.Game1(BuildingGen.Program.Build((10, 10, 4), 4, "TileSetups/pileHouse.json"));
+using var game = new Visualize.Game1(BuildingGen.Program.Build((11, 11, 4), 3, "TileSetups/well.json"));
 
 game.Run();

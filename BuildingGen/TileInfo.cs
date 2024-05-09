@@ -11,15 +11,17 @@ namespace BuildingGen
         public string Name { get; set; }
         public string[][] Edges { get; set; }
         public bool FlipX { get; set; }
+        public bool FlipY { get; set; }
         public bool RotateZ { get; set; }
         public string? Color { get; set; }
         public string[]? Texture { get; set; }
         public TileInfo() { }
-        public TileInfo(string name, string[][] edges, bool flipX, bool rotateZ, string? color, string[]? texture)
+        public TileInfo(string name, string[][] edges, bool flipX, bool flipY, bool rotateZ, string? color, string[]? texture)
         {
             Name = name;
             Edges = edges;
             FlipX = flipX;
+            FlipY = flipY;
             RotateZ = rotateZ;
             Color = color;
             Texture = texture;

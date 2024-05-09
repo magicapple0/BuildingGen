@@ -7,9 +7,9 @@ public class WaveFunction
     public Model CurrModel { get; set; }
     private readonly Stack<Model> _previousModels = new ();
 
-    public WaveFunction(int width, int depth, int height, Tile[] tileSet, int seed)
+    public WaveFunction(Vector3 size, Tile[] tileSet, int seed, bool xSymmetry, bool ySymmetry)
     {
-        CurrModel = new Model(width + 2, depth + 2, height + 2, tileSet);
+        CurrModel = new Model(size, tileSet, xSymmetry, ySymmetry);
         Seed = seed;
         Rand = new Random(Seed);
     }

@@ -9,7 +9,8 @@ namespace BuildingGen
     public class InputJson
     {
         public int[][] Base { get; set; }
-        public string[] UsingTiles { get; set; }
         public TileInfo[] TilesInfo { get; set; }
+        public bool XSymmetry { get; set; }
+        public bool YSymmetry { get; set; }
     }
 }

@@ -21,6 +21,13 @@
             Modifiers.Add(TileModifiers.FlipX);
         }
         
+        public void FlipY()
+        {
+            ModifiedEdges = new [] { ModifiedEdges[0], ModifiedEdges[5], ModifiedEdges[2], ModifiedEdges[3], ModifiedEdges[4], ModifiedEdges[1] };
+            if (ModifiedTextures != null) ModifiedTextures = new [] { ModifiedTextures[0], ModifiedTextures[5], ModifiedTextures[2], ModifiedTextures[3], ModifiedTextures[4], ModifiedTextures[1] };
+            Modifiers.Add(TileModifiers.FlipY);
+        }
+        
         public void RotateZTile()
         {
             ModifiedEdges = new [] { ModifiedEdges[0], ModifiedEdges[3], ModifiedEdges[2], ModifiedEdges[5], ModifiedEdges[1], ModifiedEdges[4] };

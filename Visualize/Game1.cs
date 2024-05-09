@@ -18,14 +18,14 @@ namespace Visualize
         private Vector3 _centerOfBuilding;
         private Vector3 _cameraPosition;
         private Vector3 _cameraTarget;
-        private Tile[,,] _tiles;
-        private readonly Tile[,,] generatedTiles;
+        private Dictionary<BuildingGen.Vector3, Tile> _tiles;
         private readonly TextureManager _textureManager;
+        private Vector3 max;
 
         private Chamber _chamber;
         private List<Cube> _cubes = new();
 
-        public Game1(Tile[,,] tiles)
+        public Game1(Dictionary<BuildingGen.Vector3, Tile> tiles)
         {
             _tiles = tiles;
             _graphics = new GraphicsDeviceManager(this);
@@ -36,12 +36,10 @@ namespace Visualize
         protected override void Initialize()
         {
             SetGraphicsSettings();
+            max = new Vector3(0, 0, 0);
             CubeInitialize();
-            var min = new Vector3(0, 0, 0);
-            var max = new Vector3(_tiles.GetLength(0), _tiles.GetLength(2), _tiles.GetLength(1));
-
             _chamber = new Chamber(this, max);
-            SetCameraSettings(min, max);
+            SetCameraSettings(new Vector3(0, 0, 0), max);
 
             base.Initialize();
         }
@@ -156,17 +154,14 @@ namespace Visualize
             //_tiles = generatedTiles.Current;
             var newCubes = new List<Cube>();
 
-            for (int i = 0; i < _tiles.GetLength(0); i++)
+            foreach (var tile in _tiles)
             {
-                for (int j = 0; j < _tiles.GetLength(1); j++)
-                {
-                    for (int k = 0; k < _tiles.GetLength(2); k++)
-                    {
-                        if (_tiles[i, j, k].TileInfo.Name == "air")
-                            continue;
-                        newCubes.Add(new Cube(this, new Vector3(i, k, j), _textureManager.GetTexture(_tiles[i, j, k])));
-                    }
-                }
+                max.X = Math.Max(max.X, tile.Key.X + 1);
+                max.Y = Math.Max(max.Y, tile.Key.Z + 1);
+                max.Z = Math.Max(max.Z, tile.Key.Y + 1);
+                if (tile.Value.TileInfo.Name == "air")
+                    continue;
+                newCubes.Add(new Cube(this, new Vector3(tile.Key.X, tile.Key.Z, tile.Key.Y), _textureManager.GetTexture(tile.Value)));
             }
 
             lock (_cubes)

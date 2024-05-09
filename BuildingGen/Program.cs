@@ -4,11 +4,11 @@ namespace BuildingGen;
 
 public static class Program
 {
-    private const string InputTiles = "TileSetups/pileHouse.json";
-    private const int Width = 4;
-    private const int  Depth = 4;
-    private const int  Height = 4;
-    private const int Seed = 1;
+    private const string InputTiles = "TileSetups/input.json";
+    private const int Width = 5;
+    private const int  Depth = 5;
+    private const int  Height = 1;
+    private const int Seed = 4;
     
     public static void Main()
     {
@@ -19,7 +19,7 @@ public static class Program
         
         var n = 100000;
 
-        var function = new WaveFunction(Width, Depth, Height, tiles.ToArray(), Seed);
+        var function = new WaveFunction((Width, Depth, Height), tiles.ToArray(), Seed, confLoader.XSymmetry, confLoader.YSymmetry);
         var b = function.Run();
         Console.WriteLine(b);
 
@@ -44,10 +44,10 @@ public static class Program
         }*/
     }
 
-    public static void TimeTest(int width, int depth, int height, int seed, List<Tile> tiles, int n)
+    public static void TimeTest(Vector3 size, int seed, List<Tile> tiles, int n)
     {
         var test = new int[n];
-        Console.WriteLine("Time for width = " + width + ", depth = " + depth + ", height = " + height + ", seed = " + seed);
+        Console.WriteLine("Time for width = " + size.X + ", depth = " + size.Y + ", height = " + size.Z + ", seed = " + seed);
 
         for (int i = 0; i < n; i++)
         {
@@ -55,7 +55,7 @@ public static class Program
             var sw = new Stopwatch();
             GC.Collect();
             sw.Start();
-            var function = new WaveFunction(width, depth, height, tiles.ToArray(), seed);
+            var function = new WaveFunction(size, tiles.ToArray(), seed, true, false);
             function.Run();
             test[i] = (int)sw.Elapsed.TotalMilliseconds;
         }
@@ -104,12 +104,12 @@ public static class Program
         }
     }
 
-    public static Tile[,,] Build(Vector3 size, int seed, string config)
+    public static Dictionary<Vector3, Tile> Build(Vector3 size, int seed, string config)
     {
         var confLoader = new ConfigLoader(config);
         var tiles = confLoader.Tiles;
 
-        var function = new WaveFunction(size.X, size.Y, size.Z, tiles.ToArray(), seed);
+        var function = new WaveFunction(size, tiles.ToArray(), seed, confLoader.XSymmetry, confLoader.YSymmetry);
         function.Run();
         return function.CurrModel.Result();
     }
@@ -122,7 +122,7 @@ public static class Program
                 new[] { "roof", "corner" }, new[] { "house" }, new[] { "corner", "ground" },
                 new[] { "house" }, new[] { "air" }, new[] { "air" }
             },
-            false, true, null, //null));
+            false, false, true, null, //null));
             new[] { "roof.png", "bottom.png", "bottom.png", "bottom.png", "corner.png", "corner_flip.png" }));
         var a = new Tile[1, 1, 1];
         tile.RotateZTile();

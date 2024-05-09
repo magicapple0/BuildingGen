@@ -1,4 +1,6 @@
-﻿namespace BuildingGen;
+﻿using System.Net.NetworkInformation;
+
+namespace BuildingGen;
 
 
 
@@ -22,51 +24,142 @@ public class Model
         { "up", (2, 0) },
         { "down", (0, 2) },
     };
-    
-    private int Width { get; init; }
-    private int Height { get; init; }
-    private int Depth { get; init; }
+    private Vector3 Size { get; set; }
+    private bool XSymmetry { get; init; }
+    private bool YSymmetry { get; init; }
+    private bool XEven { get; init; }
+    private bool YEven { get; init; }
     private Tile[] TileSet { get; init; }
-    public Dictionary<Vector3, Tile[]> Field { get; private init; }
-    public List<Vector3> VisitedCells => Field.Where(x => x.Value.Length == 1).Select(x => x.Key).ToList();
+    private Dictionary<Vector3, Tile[]> Field { get; init; }
+    private Dictionary<string, List<Vector3>> _bounds;
+    private List<Vector3> VisitedCells => Field.Where(x => x.Value.Length == 1).Select(x => x.Key).ToList();
 
     public Queue<(Vector3, Tile)>? PossibleMoves;
     public HashSet<Vector3> Neighbors = new ();
 
-    public Model(int width, int depth, int height, Tile[] tileSet)
+    public Model(Vector3 size, Tile[] tileSet, bool xSymmetry, bool ySymmetry)
     {
-        Width = width;
-        Depth = depth;
-        Height = height;
-        TileSet = tileSet;
+        XSymmetry = xSymmetry;
+        YSymmetry = ySymmetry;
+        XEven = size.X % 2 == 0;
+        YEven = size.Y % 2 == 0;
+        Size = CalculateFieldSize(size);
+
         Field = new Dictionary<Vector3, Tile[]>();
+        TileSet = (Tile[])tileSet.Clone();
+        var newTileSet = new List<Tile>(TileSet);
         var ground = TileSet[^2];
         var bound = TileSet[^1];
-        TileSet = (Tile[])TileSet.Clone();
-        var newTileSet = new List<Tile>(TileSet);
         newTileSet.RemoveAt(newTileSet.Count - 2);
         newTileSet.RemoveAt(newTileSet.Count - 1);
         TileSet = newTileSet.ToArray();
-        for (var i = 0; i < Width; i++)
+        InitializeField();
+        _bounds = new()
         {
-            for (var j = 0; j < Depth; j++)
-            {
-                for (var k = 0; k < Height; k++)
+            { "forward", Field.Where(x => x.Key.Y == 0).Select(x => x.Key).ToList() },
+            { "backward", Field.Where(x => x.Key.Y == Size.Y - 1).Select(x => x.Key).ToList() },
+            { "right", Field.Where(x => x.Key.X == Size.X - 1).Select(x => x.Key).ToList() },
+            { "left", Field.Where(x => x.Key.X == 0).Select(x => x.Key).ToList() },
+            { "up", Field.Where(x => x.Key.Z == Size.Z - 1).Select(x => x.Key).ToList() },
+            { "down", Field.Where(x => x.Key.Z == 0).Select(x => x.Key).ToList() },
+        };
+        var boundTileSet = new List<Tile>(new[] { bound });
+        var groundTileSet = new List<Tile>(new[] { ground });
+        if (!xSymmetry && !ySymmetry)
+        {
+            foreach (var direction in _directions)
+                SetBoundTiles(boundTileSet, direction.Key);
+            SetBoundTiles(groundTileSet, "down");
+        }
+        if (xSymmetry && !ySymmetry)
+        {
+            var xSymmetryTiles = new List<Tile>();
+            if (XEven)
+                xSymmetryTiles = GetSelfSymmetryTiles("right");
+            else
+                xSymmetryTiles = new List<Tile>(TileSet);
+            SetBoundTiles(xSymmetryTiles, "right");
+            SetBoundTiles(groundTileSet, "down");
+            SetBoundTiles(boundTileSet, "up");
+            SetBoundTiles(boundTileSet, "left");
+            SetBoundTiles(boundTileSet, "forward");
+            SetBoundTiles(boundTileSet, "backward");
+        }
+        if (ySymmetry && !xSymmetry)
+        {
+            var ySymmetryTiles = new List<Tile>();
+            if (YEven)
+                ySymmetryTiles = GetSelfSymmetryTiles("backward");
+            else
+                ySymmetryTiles = new List<Tile>(TileSet);
+            SetBoundTiles(ySymmetryTiles, "backward");
+            SetBoundTiles(groundTileSet, "down");
+            SetBoundTiles(boundTileSet, "up");
+            SetBoundTiles(boundTileSet, "left");
+            SetBoundTiles(boundTileSet, "forward");
+            SetBoundTiles(boundTileSet, "right");
+        }
+        if (ySymmetry && xSymmetry)
+        {
+            var xSymmetryTiles = new List<Tile>();
+            if (XEven)
+                xSymmetryTiles = GetSelfSymmetryTiles("right");
+            else
+                xSymmetryTiles = new List<Tile>(TileSet);
+            var ySymmetryTiles = new List<Tile>();
+            if (YEven)
+                ySymmetryTiles = GetSelfSymmetryTiles("backward");
+            else
+                ySymmetryTiles = new List<Tile>(TileSet);
+            SetBoundTiles(ySymmetryTiles, "backward");
+            SetBoundTiles(xSymmetryTiles, "right");
+            SetBoundTiles(groundTileSet, "down");
+            SetBoundTiles(boundTileSet, "up");
+            SetBoundTiles(boundTileSet, "left");
+            SetBoundTiles(boundTileSet, "forward");
+        }
+    }
+
+    private void SetBoundTiles(List<Tile> boundTiles, string direction)
+    {
+        var boundCells = _bounds[direction];
+        foreach (var cell in Field.Where(cell => boundCells.Contains(cell.Key)))
+            Field[cell.Key] = boundTiles.ToArray();
+    }
+
+    private Vector3 CalculateFieldSize(Vector3 size)
+    {
+        var newSize = new Vector3(0, 0, size.Z + 2);
+        newSize.X = XSymmetry ? (int)Math.Ceiling(size.X / (decimal)2) + 1 : size.X + 2;
+        newSize.Y = YSymmetry ? (int)Math.Ceiling(size.Y / (decimal)2) + 1 : size.Y + 2;
+        return newSize;
+    }
+
+    private List<Tile> GetSelfSymmetryTiles(string direction)
+    {
+        var symmetryTiles = new List<Tile>();
+        var directions = _neighborCellDirections[direction];
+        foreach (var tile1 in TileSet)
+        {
+            foreach (var tile2 in TileSet)
+                if (tile1.ModifiedEdges[directions.Item1].Contains(tile2.TileInfo.Name) &&
+                    tile2.ModifiedEdges[directions.Item2].Contains(tile1.TileInfo.Name))
                 {
-                    if (k == 0)
-                    {
-                        Field[(i, j, k)] = new[] { ground };
-                        VisitedCells.Add((i, j, k));
-                        continue;
-                    }
+                    if (!symmetryTiles.Contains(tile1))
+                        symmetryTiles.Add(tile1);
+                }
+        }
+        return symmetryTiles;
+    }
 
-                    if (i == 0 || i == Width - 1 || j == 0 || j == Depth - 1 || k == Height - 1)
-                    {
-                        Field[(i, j, k)] = new[] { bound };
-                        VisitedCells.Add((i, j, k));
-                        continue;
-                    }
-
+    private void InitializeField()
+    {
+        for (var i = 0; i < Size.X; i++)
+        {
+            for (var j = 0; j < Size.Y; j++)
+            {
+                for (var k = 0; k < Size.Z; k++)
+                {
                     Field[(i, j, k)] = TileSet.ToArray();
                 }
             }
@@ -127,8 +220,8 @@ public class Model
     
     private bool IsAble((int, int, int) cell)
     {
-        return !(cell.Item1 < 0 || cell.Item1 >= Width || cell.Item2 < 0 || cell.Item2 >= Depth ||
-                cell.Item3 < 0 || cell.Item3 >= Height);
+        return !(cell.Item1 < 0 || cell.Item1 >= Size.X || cell.Item2 < 0 || cell.Item2 >= Size.Y ||
+                cell.Item3 < 0 || cell.Item3 >= Size.Z);
     }
 
     private void UpdateCellTiles((int, int, int) currCell, (int, int, int) changingCell, string direction)
@@ -153,24 +246,112 @@ public class Model
         Field[currCell] = newCurrCellTiles.ToArray();
     }
     
-    public Tile[,,] Result()
+    public Dictionary<Vector3, Tile> Result()
     {
-        var building = new Tile[Width - 2, Depth - 2, Height - 2];
-        for (int i = 0; i < Width - 1; i++)
-            for (int j = 0; j < Depth - 1; j++)
-            for (int k = 0; k < Height - 1; k++)
+        var field = GetFieldDictionaryVectorTile();
+        if (XSymmetry && XEven)
+        {
+            field = XEvenMirrorResult(field);
+            Size = Size with { X = Size.X * 2 };
+        }
+        if (XSymmetry && !XEven)
+        {
+            field = XOddMirrorResult(field);
+            Size = Size with { X = Size.X * 2 - 1};
+        }
+        if (YSymmetry && YEven)
+        {
+            field = YEvenMirrorResult(field);
+            Size = Size with { Y = Size.Y * 2 };
+        }
+        if (YSymmetry && !YEven)
+        {
+            field = YOddMirrorResult(field);
+            Size = Size with { Y = Size.Y * 2 - 1};
+        }
+        field = DeleteBounds(field);
+
+        return field;
+    }
+
+    private Dictionary<Vector3, Tile> DeleteBounds(Dictionary<Vector3, Tile> field)
+    {
+        var result = new Dictionary<Vector3, Tile>();
+        foreach (var cell in field)
+        {
+            if (cell.Key.X == 0 || cell.Key.Y == 0 || cell.Key.Z == 0 || 
+                cell.Key.X == Size.X - 1 || cell.Key.Y == Size.Y - 1 || cell.Key.Z == Size.Z - 1)
+                continue;
+            result.Add(new Vector3(cell.Key.X - 1, cell.Key.Y - 1, cell.Key.Z - 1), cell.Value);
+        }
+        return result;
+    }
+
+    private Dictionary<Vector3, Tile> XEvenMirrorResult(Dictionary<Vector3, Tile> field)
+    {
+        var result = new Dictionary<Vector3, Tile>();
+        foreach (var cell in field)
+        {
+            result.Add(new Vector3(cell.Key.X, cell.Key.Y, cell.Key.Z), cell.Value);
+            var flippedTile = cell.Value.Copy();
+            flippedTile.FlipX();
+            result.Add(new Vector3(2 * Size.X - cell.Key.X - 1, cell.Key.Y, cell.Key.Z), flippedTile);
+        }
+        return result;
+    }
+    
+    private Dictionary<Vector3, Tile> YOddMirrorResult(Dictionary<Vector3, Tile> field)
+    {
+        var result = new Dictionary<Vector3, Tile>();
+        foreach (var cell in field)
+        {
+            if (cell.Key.Y == Size.Y - 1)
             {
-                if (Field[(i, j, k)].Length != 1)
-                {
-                    building[i - 1, j - 1, k - 1] = TileSet[^1];
-                    continue;
-                }
-                if (i == 0 || j == 0 || k == 0)
-                    continue;
-                building[i - 1, j - 1, k - 1] = Field[(i, j, k)][0];
+                result.Add(new Vector3(cell.Key.X, cell.Key.Y, cell.Key.Z), cell.Value);
+                continue;
             }
-        
-        return building;
+            result.Add(new Vector3(cell.Key.X, cell.Key.Y, cell.Key.Z), cell.Value);
+            var flippedTile = cell.Value.Copy();
+            flippedTile.FlipY();
+            result.Add(new Vector3(cell.Key.X, 2 * (Size.Y - 1) - cell.Key.Y, cell.Key.Z), flippedTile);
+        }
+        return result;
+    }
+    
+    private Dictionary<Vector3, Tile> YEvenMirrorResult(Dictionary<Vector3, Tile> field)
+    {
+        var result = new Dictionary<Vector3, Tile>();
+        foreach (var cell in field)
+        {
+            result.Add(new Vector3(cell.Key.X, cell.Key.Y, cell.Key.Z), cell.Value);
+            var flippedTile = cell.Value.Copy();
+            flippedTile.FlipY();
+            result.Add(new Vector3(cell.Key.X, 2 * Size.Y - cell.Key.Y - 1, cell.Key.Z), flippedTile);
+        }
+        return result;
+    }
+    
+    private Dictionary<Vector3, Tile> XOddMirrorResult(Dictionary<Vector3, Tile> field)
+    {
+        var result = new Dictionary<Vector3, Tile>();
+        foreach (var cell in field)
+        {
+            if (cell.Key.X == Size.X - 1)
+            {
+                result.Add(new Vector3(cell.Key.X, cell.Key.Y, cell.Key.Z), cell.Value);
+                continue;
+            }
+            result.Add(new Vector3(cell.Key.X, cell.Key.Y, cell.Key.Z), cell.Value);
+            var flippedTile = cell.Value.Copy();
+            flippedTile.FlipX();
+            result.Add(new Vector3(2 * (Size.X - 1) - cell.Key.X, cell.Key.Y, cell.Key.Z), flippedTile);
+        }
+        return result;
+    }
+
+    private Dictionary<Vector3, Tile> GetFieldDictionaryVectorTile()
+    {
+        return Field.ToDictionary(x => x.Key, x => x.Value[0]);
     }
     
     public bool IsCollapse()
@@ -187,24 +368,19 @@ public class Model
     {
         var copy = new Model
         {
-            Depth = Depth,
-            Width = Width,
-            Height = Height,
+            Size = Size,
+            XSymmetry = XSymmetry,
+            YSymmetry = YSymmetry,
+            XEven = XEven,
+            YEven = YEven,
             TileSet = (Tile[])TileSet.Clone(),
             Field = new Dictionary<Vector3, Tile[]>(),
             Neighbors = new HashSet<Vector3>(Neighbors)
         };
-        for (int i = 0; i < Width; i++)
+        foreach (var cell in Field)
         {
-            for (int j = 0; j < Depth; j++)
-            {
-                for (int k = 0; k < Height; k++)
-                {
-                    copy.Field[(i, j, k)] = (Tile[])Field[(i, j, k)].Clone();
-                }
-            }
+            copy.Field[cell.Key] = (Tile[])Field[cell.Key].Clone();
         }
-
         return copy;
     }
 }

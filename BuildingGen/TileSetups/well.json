@@ -3,7 +3,8 @@
     [ 1, 1 ],
     [ 1, 1 ]
   ],
-  "UsingTiles": [ "house", "roof", "corner", "grass" ],
+  "XSymmetry": true,
+  "YSymmetry": true,
   "TilesInfo": [
     {
       "Name": "house",
