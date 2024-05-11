@@ -114,20 +114,26 @@ public static class Program
         return function.CurrModel.Result();
     }
 
-    public static Tile[,,] BuildTestTile()
+    public static Dictionary<Vector3, Tile> BuildTestTile()
     {
-        var tile = new Tile(new TileInfo("corner",
+        var cornerInfo = new TileInfo("corner",
             new[]
             {
                 new[] { "roof", "corner" }, new[] { "house" }, new[] { "corner", "ground" },
                 new[] { "house" }, new[] { "air" }, new[] { "air" }
             },
-            false, false, true, null, //null));
-            new[] { "roof.png", "bottom.png", "bottom.png", "bottom.png", "corner.png", "corner_flip.png" }));
-        var a = new Tile[1, 1, 1];
-        tile.RotateZTile();
-        tile.RotateZTile();
-        a[0, 0, 0] = tile;
-        return a;
+            false, false, false, null,
+            new[]
+            {
+                "Textures/roof.png", "Textures/bottom.png", "Textures/bottom.png", "Textures/bottom.png",
+                "Textures/corner.png", "Textures/corner_flip.png"
+            });
+        var tile = new Tile(cornerInfo);
+        var tile1 = new Tile(cornerInfo);
+        tile1.FlipX();
+        tile1.FlipY();
+        tile1.FlipX();
+        tile1.FlipY();
+        return new Dictionary<Vector3, Tile>{{new Vector3(0,0,0), tile}, {new Vector3(1,1,1), tile1}} ;
     }
 }
