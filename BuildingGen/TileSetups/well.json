@@ -17,6 +17,7 @@
         [ "house", "air"]
       ],
       "FlipX": true,
+      "FlipY": false,
       "RotateZ": true,
       "Color": null,
       "Texture": [ "Textures/roof.png", "Textures/wall.png", "Textures/bottom.png", 
@@ -33,6 +34,7 @@
         [ "air", "roof" ]
       ],
       "FlipX": false,
+      "FlipY": false,
       "RotateZ": false,
       "Color": null,
       "Texture": ["Textures/roof.png", "Textures/roof_side.png", "Textures/bottom.png", 
@@ -49,6 +51,7 @@
         [ "air" ]
       ],
       "FlipX": false,
+      "FlipY": false,
       "RotateZ": true,
       "Color": null,
       "Texture": ["Textures/roof.png", "Textures/bottom.png", "Textures/bottom.png", 
@@ -65,6 +68,7 @@
         [ "grass", "bound" ]
       ],
       "FlipX": false,
+      "FlipY": false,
       "RotateZ": false,
       "Color": "3C896D",
       "Texture": null

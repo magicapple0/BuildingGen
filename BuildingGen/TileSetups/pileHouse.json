@@ -3,8 +3,8 @@
     [ 1, 1 ],
     [ 1, 1 ]
   ],
-  "XSymmetry": false,
-  "YSymmetry": false,
+  "XSymmetry": true,
+  "YSymmetry": true,
   "TilesInfo": [
     {
       "Name": "house",

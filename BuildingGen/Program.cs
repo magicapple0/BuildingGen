@@ -111,7 +111,7 @@ public static class Program
 
         var function = new WaveFunction(size, tiles.ToArray(), seed, confLoader.XSymmetry, confLoader.YSymmetry);
         function.Run();
-        return function.CurrModel.Result();
+        return function.CurrState.Result();
     }
 
     public static Dictionary<Vector3, Tile> BuildTestTile()

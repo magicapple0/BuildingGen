@@ -3,6 +3,8 @@
     [ 1, 1 ],
     [ 1, 1 ]
   ],
+  "XSymmetry": true,
+  "YSymmetry": true,
   "TilesInfo": [
     {
       "Name": "house",
@@ -15,6 +17,7 @@
         [ "house", "roof"]
       ],
       "FlipX": false,
+      "FlipY": false,
       "RotateZ": false,
       "Color": null,
       "Texture": [ "Textures/roof.png", "Textures/wall.png", "Textures/bottom.png", "Textures/wall.png", "Textures/wall.png", "Textures/wall.png"]
@@ -30,6 +33,7 @@
         [ "house"]
       ],
       "FlipX": false,
+      "FlipY": false,
       "RotateZ": true,
       "Color": null,
       "Texture": ["Textures/roof.png", "Textures/wall.png", "Textures/bottom.png", "Textures/wall.png", "Textures/wall.png", "Textures/wall.png"]
@@ -45,6 +49,7 @@
         [ "house", "corner", "air"  ]
       ],
       "FlipX": false,
+      "FlipY": false,
       "RotateZ": true,
       "Color": null,
       "Texture": ["Textures/roof.png", "Textures/roof_side.png", "Textures/bottom.png", "Textures/roof_side.png", "Textures/roof_side.png", "Textures/roof_side.png"]
@@ -60,6 +65,7 @@
         [ "air" ]
       ],
       "FlipX": false,
+      "FlipY": false,
       "RotateZ": true,
       "Color": null,
       "Texture": ["Textures/roof.png", "Textures/bottom.png", "Textures/bottom.png", "Textures/bottom.png", "Textures/corner.png", "Textures/corner_flip.png"]
@@ -75,6 +81,7 @@
         [ "grass", "bound" ]
       ],
       "FlipX": false,
+      "FlipY": false,
       "RotateZ": false,
       "Color": "3C896D",
       "Texture": null

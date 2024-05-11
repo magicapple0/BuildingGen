@@ -1,10 +1,7 @@
-﻿using System.Net.NetworkInformation;
-
-namespace BuildingGen;
+﻿namespace BuildingGen;
 
 
-
-public class Model
+public class State
 {
     private readonly Dictionary<string, Vector3> _directions = new()
     {
@@ -37,7 +34,7 @@ public class Model
     public Queue<(Vector3, Tile)>? PossibleMoves;
     public HashSet<Vector3> Neighbors = new ();
 
-    public Model(Vector3 size, Tile[] tileSet, bool xSymmetry, bool ySymmetry)
+    public State(Vector3 size, Tile[] tileSet, bool xSymmetry, bool ySymmetry)
     {
         XSymmetry = xSymmetry;
         YSymmetry = ySymmetry;
@@ -73,11 +70,7 @@ public class Model
         }
         if (xSymmetry && !ySymmetry)
         {
-            var xSymmetryTiles = new List<Tile>();
-            if (XEven)
-                xSymmetryTiles = GetSelfSymmetryTiles("right");
-            else
-                xSymmetryTiles = new List<Tile>(TileSet);
+            var xSymmetryTiles = XEven ? GetEvenSymmetryTiles("right") : GetOddSymmetryTiles("right");
             SetBoundTiles(xSymmetryTiles, "right");
             SetBoundTiles(groundTileSet, "down");
             SetBoundTiles(boundTileSet, "up");
@@ -87,11 +80,7 @@ public class Model
         }
         if (ySymmetry && !xSymmetry)
         {
-            var ySymmetryTiles = new List<Tile>();
-            if (YEven)
-                ySymmetryTiles = GetSelfSymmetryTiles("backward");
-            else
-                ySymmetryTiles = new List<Tile>(TileSet);
+            var ySymmetryTiles = YEven ? GetEvenSymmetryTiles("backward") : GetOddSymmetryTiles("backward");
             SetBoundTiles(ySymmetryTiles, "backward");
             SetBoundTiles(groundTileSet, "down");
             SetBoundTiles(boundTileSet, "up");
@@ -101,16 +90,8 @@ public class Model
         }
         if (ySymmetry && xSymmetry)
         {
-            var xSymmetryTiles = new List<Tile>();
-            if (XEven)
-                xSymmetryTiles = GetSelfSymmetryTiles("right");
-            else
-                xSymmetryTiles = new List<Tile>(TileSet);
-            var ySymmetryTiles = new List<Tile>();
-            if (YEven)
-                ySymmetryTiles = GetSelfSymmetryTiles("backward");
-            else
-                ySymmetryTiles = new List<Tile>(TileSet);
+            var xSymmetryTiles = XEven ? GetEvenSymmetryTiles("right") : GetOddSymmetryTiles("right");
+            var ySymmetryTiles = YEven ? GetEvenSymmetryTiles("backward") : GetOddSymmetryTiles("backward");
             SetBoundTiles(ySymmetryTiles, "backward");
             SetBoundTiles(xSymmetryTiles, "right");
             SetBoundTiles(groundTileSet, "down");
@@ -135,19 +116,50 @@ public class Model
         return newSize;
     }
 
-    private List<Tile> GetSelfSymmetryTiles(string direction)
+    private List<Tile> GetOddSymmetryTiles(string direction)
+    {
+        var symmetryTiles = new List<Tile>();
+        var directions = _neighborCellDirections[direction];
+        foreach (var tile in TileSet)
+        {
+            var symmetryTile = tile.Copy();
+            var modifiedEdges = new List<string>();
+            foreach (var neighbor in tile.ModifiedEdges[directions.Item1])
+            {
+                if (tile.ModifiedEdges[directions.Item2].Contains(neighbor))
+                {
+                    modifiedEdges.Add(neighbor);
+                }
+            }
+            if (modifiedEdges.Count == 0)
+                continue;
+            symmetryTile.ModifiedEdges[directions.Item1] = modifiedEdges.ToArray();
+            symmetryTile.ModifiedEdges[directions.Item2] = modifiedEdges.ToArray();
+            symmetryTiles.Add(symmetryTile);
+        }
+        return symmetryTiles;
+    }
+
+    private List<Tile> GetEvenSymmetryTiles(string direction)
     {
         var symmetryTiles = new List<Tile>();
         var directions = _neighborCellDirections[direction];
         foreach (var tile1 in TileSet)
         {
             foreach (var tile2 in TileSet)
-                if (tile1.ModifiedEdges[directions.Item1].Contains(tile2.TileInfo.Name) &&
+                if (tile1.TileInfo.Name == tile2.TileInfo.Name && tile1.ModifiedEdges[directions.Item1].Contains(tile2.TileInfo.Name) &&
                     tile2.ModifiedEdges[directions.Item2].Contains(tile1.TileInfo.Name))
                 {
                     if (!symmetryTiles.Contains(tile1))
-                        symmetryTiles.Add(tile1);
+                    {
+                        var symmetryTile = tile1.Copy();
+                        symmetryTile.ModifiedEdges[directions.Item1] = new []{tile2.TileInfo.Name};
+                        symmetryTiles.Add(symmetryTile);
+                    }   
                 }
+            if (tile1.ModifiedEdges[directions.Item1].Contains(tile1.TileInfo.Name) && 
+                tile1.ModifiedEdges[directions.Item2].Contains(tile1.TileInfo.Name) && !symmetryTiles.Contains(tile1))
+                symmetryTiles.Add(tile1);
         }
         return symmetryTiles;
     }
@@ -166,7 +178,7 @@ public class Model
         }
     }
 
-    private Model() { }
+    private State() { }
     
     public void CalculateMoves(Random random)
     {
@@ -364,9 +376,9 @@ public class Model
         return Field.Where(x => x.Value.Length == 0).Select(x => x.Key).ToList().Count != 0;
     }
 
-    public Model Copy()
+    public State Copy()
     {
-        var copy = new Model
+        var copy = new State
         {
             Size = Size,
             XSymmetry = XSymmetry,
