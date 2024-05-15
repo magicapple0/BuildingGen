@@ -4,7 +4,7 @@ namespace BuildingGen;
 
 public static class Program
 {
-    private const string InputTiles = "TileSetups/input.json";
+    private const string InputTiles = "TileSetups/well.json";
     private const int Width = 5;
     private const int  Depth = 5;
     private const int  Height = 1;
@@ -15,13 +15,13 @@ public static class Program
         
         var confLoader = new ConfigLoader(InputTiles);
         var tiles = confLoader.Tiles;
-        //PrintTileSet(tiles);
+        PrintTileSet(tiles);
         
         var n = 100000;
 
-        var function = new WaveFunction((Width, Depth, Height), tiles.ToArray(), Seed, confLoader.XSymmetry, confLoader.YSymmetry);
-        var b = function.Run();
-        Console.WriteLine(b);
+        //var function = new WaveFunction((Width, Depth, Height), tiles.ToArray(), Seed, confLoader.XSymmetry, confLoader.YSymmetry);
+        //var b = function.Run();
+        //Console.WriteLine(b);
 
         /*for (int i = 0; i < n; i++)
         {
@@ -111,7 +111,7 @@ public static class Program
 
         var function = new WaveFunction(size, tiles.ToArray(), seed, confLoader.XSymmetry, confLoader.YSymmetry);
         function.Run();
-        return function.CurrState.Result();
+        return function.CurrState.Map.Result();
     }
 
     public static Dictionary<Vector3, Tile> BuildTestTile()

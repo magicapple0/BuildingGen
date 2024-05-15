@@ -4,7 +4,7 @@ public class WaveFunction
 {
     private int Seed { get; set; }
     private Random Rand { get; set; }
-    public State CurrState { get; set; }
+    public State CurrState { get; private set; }
     private readonly Stack<State> _previousStates = new ();
 
     public WaveFunction(Vector3 size, Tile[] tileSet, int seed, bool xSymmetry, bool ySymmetry)

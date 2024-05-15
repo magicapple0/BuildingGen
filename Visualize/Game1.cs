@@ -18,9 +18,9 @@ namespace Visualize
         private Vector3 _centerOfBuilding;
         private Vector3 _cameraPosition;
         private Vector3 _cameraTarget;
-        private Dictionary<BuildingGen.Vector3, Tile> _tiles;
+        private readonly Dictionary<BuildingGen.Vector3, Tile> _tiles;
         private readonly TextureManager _textureManager;
-        private Vector3 max;
+        private Vector3 _max;
 
         private Chamber _chamber;
         private List<Cube> _cubes = new();
@@ -36,26 +36,18 @@ namespace Visualize
         protected override void Initialize()
         {
             SetGraphicsSettings();
-            max = new Vector3(0, 0, 0);
+            _max = new Vector3(0, 0, 0);
             CubeInitialize();
-            _chamber = new Chamber(this, max);
-            SetCameraSettings(new Vector3(0, 0, 0), max);
+            _chamber = new Chamber(this, _max);
+            SetCameraSettings(new Vector3(0, 0, 0));
 
             base.Initialize();
         }
-
-        private DateTime time = DateTime.Now;
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
                 Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-
-            if (DateTime.Now - time > TimeSpan.FromMilliseconds(100))
-            {
-                //CubeInitialize();
-                time = DateTime.Now;
-            }
 
             if (Keyboard.GetState().IsKeyDown(Keys.Up) || Keyboard.GetState().IsKeyDown(Keys.W))
             {
@@ -131,10 +123,10 @@ namespace Visualize
             _graphics.ApplyChanges();
         }
 
-        private void SetCameraSettings(Vector3 min, Vector3 max)
+        private void SetCameraSettings(Vector3 min)
         {
-            _centerOfBuilding = new Vector3((max.X - min.X) / 2, (max.Y - min.Y) / 2, (max.Z - min.Z) / 2);
-            var zoom = MathHelper.Max(max.X, MathHelper.Max(max.Y, max.Z)) * 1.2f + 4;
+            _centerOfBuilding = new Vector3((_max.X - min.X) / 2, (_max.Y - min.Y) / 2, (_max.Z - min.Z) / 2);
+            var zoom = MathHelper.Max(_max.X, MathHelper.Max(_max.Y, _max.Z)) * 1.2f + 4;
             _cameraPosition = new Vector3(0, -_centerOfBuilding.Z + 2, zoom);
             _cameraTarget = new Vector3(0, _centerOfBuilding.Z - 2, -zoom);
             ViewMatrix = Matrix.CreateLookAt(_cameraPosition, new Vector3(0, _centerOfBuilding.Z - 0.7f, -zoom),
@@ -147,18 +139,15 @@ namespace Visualize
                     new Vector3(0, 0, -1), Vector3.Up);
         }
 
-        private bool fin;
-
         private void CubeInitialize()
         {
-            //_tiles = generatedTiles.Current;
             var newCubes = new List<Cube>();
 
             foreach (var tile in _tiles)
             {
-                max.X = Math.Max(max.X, tile.Key.X + 1);
-                max.Y = Math.Max(max.Y, tile.Key.Z + 1);
-                max.Z = Math.Max(max.Z, tile.Key.Y + 1);
+                _max.X = Math.Max(_max.X, tile.Key.X + 1);
+                _max.Y = Math.Max(_max.Y, tile.Key.Z + 1);
+                _max.Z = Math.Max(_max.Z, tile.Key.Y + 1);
                 if (tile.Value.TileInfo.Name == "air")
                     continue;
                 newCubes.Add(new Cube(this, new Vector3(tile.Key.X, tile.Key.Z, tile.Key.Y), _textureManager.GetTexture(tile.Value)));

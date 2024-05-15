@@ -1,5 +1,5 @@
 ﻿
-using var game = new Visualize.Game1(BuildingGen.Program.Build((7, 8, 10), 3, "TileSetups/pileHouse.json"));
+using var game = new Visualize.Game1(BuildingGen.Program.Build((8, 8, 8), 3, "TileSetups/well.json"));
 //в нечетном, соседи тайлов обрабатывать
 
 game.Run();
