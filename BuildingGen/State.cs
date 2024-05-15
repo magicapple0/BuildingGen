@@ -8,9 +8,9 @@ public class State
     public Queue<(Vector3, Tile)>? PossibleMoves;
     public HashSet<Vector3> Neighbors = new ();
 
-    public State(Vector3 size, Tile[] tileSet, bool xSymmetry, bool ySymmetry)
+    public State(Vector3 size, TileInfo[] tilesInfos, bool xSymmetry, bool ySymmetry)
     {
-        Map = new Map(size, tileSet, xSymmetry, ySymmetry);
+        Map = new Map(size, tilesInfos, xSymmetry, ySymmetry);
     }
 
     private State() { }

@@ -7,21 +7,21 @@ public static class Program
     private const string InputTiles = "TileSetups/well.json";
     private const int Width = 5;
     private const int  Depth = 5;
-    private const int  Height = 1;
+    private const int  Height = 4;
     private const int Seed = 4;
     
     public static void Main()
     {
         
-        var confLoader = new ConfigLoader(InputTiles);
-        var tiles = confLoader.Tiles;
-        PrintTileSet(tiles);
+        var confLoader = new JsonManager(InputTiles);
+        //PrintTileSet(tiles);
         
         var n = 100000;
 
-        //var function = new WaveFunction((Width, Depth, Height), tiles.ToArray(), Seed, confLoader.XSymmetry, confLoader.YSymmetry);
-        //var b = function.Run();
-        //Console.WriteLine(b);
+        var function = new WaveFunction((Width, Depth, Height), confLoader.TilesInfos, Seed, confLoader.XSymmetry, confLoader.YSymmetry);
+        var b = function.Run();
+        Console.WriteLine(b);
+        JsonManager.SaveJsonResult(function.CurrState.Map.Result(), "result.json");
 
         /*for (int i = 0; i < n; i++)
         {
@@ -44,7 +44,7 @@ public static class Program
         }*/
     }
 
-    public static void TimeTest(Vector3 size, int seed, List<Tile> tiles, int n)
+    public static void TimeTest(Vector3 size, int seed, TileInfo[] tilesInfos, int n)
     {
         var test = new int[n];
         Console.WriteLine("Time for width = " + size.X + ", depth = " + size.Y + ", height = " + size.Z + ", seed = " + seed);
@@ -55,7 +55,7 @@ public static class Program
             var sw = new Stopwatch();
             GC.Collect();
             sw.Start();
-            var function = new WaveFunction(size, tiles.ToArray(), seed, true, false);
+            var function = new WaveFunction(size, tilesInfos, seed, true, false);
             function.Run();
             test[i] = (int)sw.Elapsed.TotalMilliseconds;
         }
@@ -106,10 +106,9 @@ public static class Program
 
     public static Dictionary<Vector3, Tile> Build(Vector3 size, int seed, string config)
     {
-        var confLoader = new ConfigLoader(config);
-        var tiles = confLoader.Tiles;
+        var confLoader = new JsonManager(config);
 
-        var function = new WaveFunction(size, tiles.ToArray(), seed, confLoader.XSymmetry, confLoader.YSymmetry);
+        var function = new WaveFunction(size, confLoader.TilesInfos, seed, confLoader.XSymmetry, confLoader.YSymmetry);
         function.Run();
         return function.CurrState.Map.Result();
     }

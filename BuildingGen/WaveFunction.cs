@@ -7,9 +7,9 @@ public class WaveFunction
     public State CurrState { get; private set; }
     private readonly Stack<State> _previousStates = new ();
 
-    public WaveFunction(Vector3 size, Tile[] tileSet, int seed, bool xSymmetry, bool ySymmetry)
+    public WaveFunction(Vector3 size, TileInfo[] tilesInfos, int seed, bool xSymmetry, bool ySymmetry)
     {
-        CurrState = new State(size, tileSet, xSymmetry, ySymmetry);
+        CurrState = new State(size, tilesInfos, xSymmetry, ySymmetry);
         Seed = seed;
         Rand = new Random(Seed);
     }

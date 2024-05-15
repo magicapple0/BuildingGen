@@ -12,9 +12,9 @@ public class Map
 
     private Map() { }
 
-    public Map(Vector3 size, Tile[] tileSet, bool xSymmetry, bool ySymmetry)
+    public Map(Vector3 size, TileInfo[] tilesInfos, bool xSymmetry, bool ySymmetry)
     {
-        _tileManager = new TileManager(tileSet);
+        _tileManager = new TileManager(tilesInfos);
         XSymmetry = xSymmetry;
         YSymmetry = ySymmetry;
         XEven = size.X % 2 == 0;
@@ -138,7 +138,7 @@ public class Map
 
         return field;
     }
-    
+
     private Dictionary<Vector3, Tile> DeleteBounds(Dictionary<Vector3, Tile> field)
     {
         var result = new Dictionary<Vector3, Tile>();
