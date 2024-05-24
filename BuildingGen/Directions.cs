@@ -11,6 +11,16 @@ public static class DirectionConstants
         { Directions.Up, (0, 0, 1) },
         { Directions.Down, (0, 0, -1) },
     };
+    
+    public static readonly Dictionary<Directions, int> DirectionsSides = new()
+    {
+        { Directions.Face, 1 },
+        { Directions.Back, 5 },
+        { Directions.Right, 4 },
+        { Directions.Left, 3 },
+        { Directions.Up, 0 },
+        { Directions.Down, 2 },
+    };
     public static readonly Dictionary<Directions, (int, int)> CellOppositeSides = new()
     {
         { Directions.Face, (5, 1) },

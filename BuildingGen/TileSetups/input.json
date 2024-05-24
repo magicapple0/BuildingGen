@@ -7,99 +7,83 @@
   "YSymmetry": false,
   "TilesInfo": [
     {
-      "Name": "xselfsymmetry",
+      "Name": "house",
       "Edges": [
-        [ "air"],
-        [ "air"],
-        [ "ground"],
-        [ "xselfsymmetry", "air"],
-        [ "xselfsymmetry", "air"],
-        [ "notsymmetry"]
+        [ "house", "roof"],
+        [ "house", "roof"],
+        [ "house", "grass"],
+        [ "house", "roof"],
+        [ "house", "roof"],
+        [ "house", "roof"]
       ],
       "FlipX": false,
       "FlipY": false,
       "RotateZ": false,
-      "Color": "CC0000",
-      "Texture": null
+      "Color": null,
+      "Texture": [ "Textures/roof.png", "Textures/wall.png", "Textures/bottom.png", "Textures/wall.png", "Textures/wall.png", "Textures/wall.png"]
     },
     {
-      "Name": "xflipped",
+      "Name": "house",
       "Edges": [
+        [ "house", "roof"],
         [ "air"],
-        [ "air"],
-        [ "ground"],
-        [ "xflipped", "air"],
-        [ "air"],
-        [ "air"]
-      ],
-      "FlipX": true,
-      "FlipY": false,
-      "RotateZ": false,
-      "Color": "404040",
-      "Texture": null
-    },    
-    {
-      "Name": "xsymmetry",
-      "Edges": [
-        [ "air"],
-        [ "air"],
-        [ "ground"],
-        [ "xselfsymmetry", "air"],
-        [ "xselfsymmetry", "air"],
-        [ "notsymmetry", "air"]
+        [ "house", "grass"],
+        [ "house", "corner", "roof"],
+        [ "house", "corner", "roof"],
+        [ "house"]
       ],
       "FlipX": false,
       "FlipY": false,
-      "RotateZ": false,
-      "Color": "FF9999",
-      "Texture": null
+      "RotateZ": true,
+      "Color": null,
+      "Texture": ["Textures/roof.png", "Textures/wall.png", "Textures/bottom.png", "Textures/wall.png", "Textures/wall.png", "Textures/wall.png"]
     },
     {
-      "Name": "yselfsymmetry",
+      "Name": "roof",
       "Edges": [
-        [ "air"],
-        [ "yselfsymmetry", "air"],
-        [ "ground"],
-        [ "notsymmetry", "air"],
-        [ "air"],
-        [ "yselfsymmetry", "air"]
+        [ "roof", "air", "house", "corner" ],
+        [ "roof", "air", "house", "corner" ],
+        [ "house", "corner" ],
+        [ "roof", "air", "house", "corner" ],
+        [ "roof", "air", "house", "corner" ],
+        [ "house", "corner", "air"  ]
       ],
       "FlipX": false,
       "FlipY": false,
-      "RotateZ": false,
-      "Color": "4C9900",
-      "Texture": null
+      "RotateZ": true,
+      "Color": null,
+      "Texture": ["Textures/roof.png", "Textures/roof_side.png", "Textures/bottom.png", "Textures/roof_side.png", "Textures/roof_side.png", "Textures/roof_side.png"]
     },
     {
-      "Name": "ysymmetry",
+      "Name": "corner",
       "Edges": [
-        [ "air"],
-        [ "yselfsymmetry", "air"],
-        [ "ground"],
-        [ "notsymmetry", "air"],
-        [ "air"],
-        [ "yselfsymmetry", "air"]
+        [ "roof", "corner" ],
+        [ "house" ],
+        [ "corner", "grass" ],
+        [ "house" ],
+        [ "air" ],
+        [ "air" ]
       ],
       "FlipX": false,
       "FlipY": false,
-      "RotateZ": false,
-      "Color": "B2FF66",
-      "Texture": null
+      "RotateZ": true,
+      "Color": null,
+      "Texture": ["Textures/roof.png", "Textures/bottom.png", "Textures/bottom.png", "Textures/bottom.png", "Textures/corner.png", "Textures/corner_flip.png"]
     },
     {
-      "Name": "notsymmetry",
+      "Name": "grass",
       "Edges": [
-        [ "air"],
-        [ "yselfsymmetry", "air"],
-        [ "ground"],
-        [ "ysymmetry", "air"],
-        [ "xselfsymmetry", "air"],
-        [ "xsymmetry", "air"]
+        [ "corner", "house" , "air"],
+        [ "grass", "bound" ],
+        [ "ground" ],
+        [ "grass", "bound" ],
+        [ "grass", "bound"],
+        [ "grass", "bound" ]
       ],
       "FlipX": false,
       "FlipY": false,
       "RotateZ": false,
-      "Color": "FFFFFF",
+      "Color": "3C896D",
       "Texture": null
     }
   ]

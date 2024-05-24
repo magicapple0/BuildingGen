@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
+using System.Linq;
 using BuildingGen;
 using Vector3 = Microsoft.Xna.Framework.Vector3;
 
@@ -95,14 +96,9 @@ namespace Visualize
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-            lock (_cubes)
-            {
-                foreach (var cube in _cubes)
-                {
-                    cube.Draw();
-                }
-            }
-            
+
+            foreach (var cube in _cubes)
+                cube.Draw();
 
             _chamber.Draw();
             base.Draw(gameTime);

@@ -16,6 +16,23 @@ namespace BuildingGen
         public string? Color { get; set; }
         public string[]? Texture { get; set; }
         public TileInfo() { }
+
+        public TileInfo(String name, string[] texture, string color)
+        {
+            Name = name;
+            Color = color;
+            Texture = texture;
+            Edges = null;
+            FlipX = false;
+            FlipY = false;
+            RotateZ = false;
+            Color = color;
+            if (texture == null && color == null)
+            {
+                Texture = new [] { "Textures/img.png", "Textures/img.png", "Textures/img.png", 
+                    "Textures/img.png", "Textures/img.png", "Textures/img.png" };
+            }
+        }
         public TileInfo(string name, string[][] edges, bool flipX, bool flipY, bool rotateZ, string? color, string[]? texture)
         {
             Name = name;

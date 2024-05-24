@@ -7,9 +7,9 @@ public class WaveFunction
     public State CurrState { get; private set; }
     private readonly Stack<State> _previousStates = new ();
 
-    public WaveFunction(Vector3 size, TileInfo[] tilesInfos, int seed, bool xSymmetry, bool ySymmetry)
+    public WaveFunction(Vector3 size, TileManager tileManager, int seed, bool xSymmetry, bool ySymmetry)
     {
-        CurrState = new State(size, tilesInfos, xSymmetry, ySymmetry);
+        CurrState = new State(size, tileManager, xSymmetry, ySymmetry);
         Seed = seed;
         Rand = new Random(Seed);
     }
@@ -32,7 +32,7 @@ public class WaveFunction
             while (CurrState.PossibleMoves == null || CurrState.PossibleMoves.Count == 0)
             {
                 CurrState = _previousStates.Pop();
-                Console.Write("Шаг назад\t");
+                //Console.Write("Шаг назад\t");
             }
 
             var move = CurrState.PossibleMoves.Dequeue();
@@ -41,7 +41,7 @@ public class WaveFunction
             currState.Wave();
             if (currState.IsBroken())
             {
-                Console.Write("Другой тайл\t");
+                //Console.Write("Другой тайл\t");
                 continue;
             }
             if (currState.IsCollapse())
@@ -52,7 +52,7 @@ public class WaveFunction
 
             _previousStates.Push(CurrState);
             CurrState = currState;
-            Console.Write("Дальше\t");
+            //Console.Write("Дальше\t");
         }
     }
 }

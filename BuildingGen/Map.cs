@@ -12,9 +12,9 @@ public class Map
 
     private Map() { }
 
-    public Map(Vector3 size, TileInfo[] tilesInfos, bool xSymmetry, bool ySymmetry)
+    public Map(Vector3 size, TileManager tileManager, bool xSymmetry, bool ySymmetry)
     {
-        _tileManager = new TileManager(tilesInfos);
+        _tileManager = tileManager;
         XSymmetry = xSymmetry;
         YSymmetry = ySymmetry;
         XEven = size.X % 2 == 0;

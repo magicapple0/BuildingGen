@@ -1,4 +1,7 @@
-﻿namespace BuildingGen;
+﻿using System.Diagnostics;
+using System.Diagnostics.Tracing;
+
+namespace BuildingGen;
 
 public class TileManager
 {
@@ -7,6 +10,7 @@ public class TileManager
     public Tile Bound { get; private set; }
     private Tile Air { get; set; }
     private List<string> UsingTiles { get; set; }
+    private int idCounter = 0;
 
     public TileManager(TileInfo[] tilesInfos)
     {
@@ -26,6 +30,51 @@ public class TileManager
         newTiles.Add(Air!);
 
         TileSet = newTiles.ToArray();
+    }
+
+    public TileManager(Dictionary<Vector3, Tile> field)
+    {
+        UsingTiles = new List<string>();
+        var tileSet = new List<Tile>();
+        foreach (var cell in field)
+        {
+            var tile = cell.Value;
+            if (tile.TileInfo.Name == "air")
+                continue;
+            tile.Id = idCounter++;
+            if (!UsingTiles.Contains(tile.TileInfo.Name))
+                UsingTiles.Add(tile.TileInfo.Name);
+            var neighbors = new []{new string[1], new string[1], new string[1], 
+                new string[1], new string[1], new string[1]};
+            foreach (var direction in DirectionConstants.DirectionsVectors)
+            {
+                var newCell = (cell.Key.X + direction.Value.X,
+                    cell.Key.Y + direction.Value.Y, cell.Key.Z + direction.Value.Z);
+                if (field.TryGetValue(newCell, out var value))
+                {
+                    neighbors[DirectionConstants.DirectionsSides[direction.Key]][0] = value.TileInfo.Name;
+                    continue;
+                }
+                if (direction.Key == Directions.Down)
+                    neighbors[DirectionConstants.DirectionsSides[direction.Key]][0] = "ground";
+                else
+                {
+                    var s = new string[2];
+                    s[0] = "bound";
+                    s[1] = "air";
+                    neighbors[DirectionConstants.DirectionsSides[direction.Key]] = s;
+                }
+                    
+            }
+            tile.ModifiedEdges = neighbors;
+            if (!tileSet.Contains(tile))
+                tileSet.Add(tile);
+        }
+        InitializeAir();
+        InitializeGround();
+        InitializeBound();
+        tileSet.Add(Air!);
+        TileSet = tileSet.ToArray();
     }
     
     public List<Tile> GetOddSymmetryTiles(Directions direction)
@@ -76,11 +125,11 @@ public class TileManager
                 tileInfo.Edges[i] = new List<string>(tileInfo.Edges[i]).Append("bound").ToArray();
     }
 
-    private static List<Tile> GetModifiedTiles(TileInfo tileInfo)
+    private List<Tile> GetModifiedTiles(TileInfo tileInfo)
     {
         var tiles = new List<Tile>
         {
-            new (tileInfo)
+            new (tileInfo, idCounter++)
         };
         if (tileInfo.FlipX)
         {
@@ -119,7 +168,7 @@ public class TileManager
                 new []{"air", "bound"},
                 new []{"air", "bound"},
                 new []{"air", "bound"}
-            }, false, false, false, null, null));
+            } , false, false, false, null, null), idCounter++);
         AddUsingTiles(Air);
         Air.ModifiedEdges = Air.TileInfo.Edges;
     }
@@ -134,7 +183,7 @@ public class TileManager
                 new []{"air", "bound"},
                 new []{"air", "bound"},
                 new []{"air", "bound"}
-            }, false, false, false, null, null));
+            }, false, false, false, null, null), idCounter++);
         AddUsingTiles(Bound); 
         Bound.ModifiedEdges = Bound.TileInfo.Edges;
     }
@@ -149,7 +198,7 @@ public class TileManager
                 new []{"ground"},
                 new []{"ground"},
                 new []{"ground"}
-            },false, false, false, null, null));
+            },false, false, false, null, null), idCounter++);
         var groundNeighbors = new List<string>(UsingTiles);
         groundNeighbors.AddRange(new List<string>(Ground.TileInfo.Edges[0]));
         Ground.TileInfo.Edges[0] = groundNeighbors.ToArray();

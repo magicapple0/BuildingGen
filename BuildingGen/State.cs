@@ -8,9 +8,9 @@ public class State
     public Queue<(Vector3, Tile)>? PossibleMoves;
     public HashSet<Vector3> Neighbors = new ();
 
-    public State(Vector3 size, TileInfo[] tilesInfos, bool xSymmetry, bool ySymmetry)
+    public State(Vector3 size, TileManager tileManager, bool xSymmetry, bool ySymmetry)
     {
-        Map = new Map(size, tilesInfos, xSymmetry, ySymmetry);
+        Map = new Map(size, tileManager, xSymmetry, ySymmetry);
     }
 
     private State() { }
@@ -19,7 +19,9 @@ public class State
     {
         if (!Neighbors.Any(x => Map.Field[x].Length > 1))
         {
-            PossibleMoves = new Queue<(Vector3, Tile)>();
+            //PossibleMoves = new Queue<(Vector3, Tile)>();
+            var neighbor1 = Map.Field.Keys.Where(x => Map.Field[x].Length > 1).MinBy(x => Map.Field[x].Length);
+            PossibleMoves = new Queue<(Vector3, Tile)>(Map.Field[neighbor1].OrderBy(_ => random.Next()).Select(x => (neighbor1, x)));
             return;
         }
         var neighbor = Neighbors.Where(x => Map.Field[x].Length > 1).MinBy(x => Map.Field[x].Length);
@@ -28,19 +30,22 @@ public class State
 
     public void Wave()
     {
-        //bfs
         var queue = new Queue<Vector3>(VisitedCells.ToArray());
         var visited = new HashSet<Vector3>(VisitedCells.ToArray());
-
+        
         while (queue.Count != 0)
         {
+            queue = new Queue<Vector3>(queue.OrderBy(x => Map.Field[x].Length));
             var currCell = queue.Dequeue();
             foreach (var neighbor in GetNotVisitedNeighbors(currCell, visited))
             {
                 UpdateCellTiles(currCell, neighbor.Item1, neighbor.Item2);
-                queue.Enqueue(neighbor.Item1);
+                if (!queue.Contains(neighbor.Item1))
+                    queue.Enqueue(neighbor.Item1);
             }
             visited.Add(currCell);
+            
+            //Console.WriteLine(queue.Count);
         }
     }
 
@@ -69,6 +74,8 @@ public class State
     {
         var neighborCellDirection = DirectionConstants.CellOppositeSides[direction].Item1;
         var currCellDirection = DirectionConstants.CellOppositeSides[direction].Item2;
+        if (currCell == (2, 2, 2) && changingCell == (2, 2, 3))
+            currCell = (2, 2, 2);
 
         var newNeighborTiles = new List<Tile>();
         var newCurrCellTiles = new List<Tile>();
