@@ -41,7 +41,7 @@ public class TileManager
             var tile = cell.Value;
             if (tile.TileInfo.Name == "air")
                 continue;
-            tile.Id = idCounter++;
+            tile.Id = cell.Value.Id;
             if (!UsingTiles.Contains(tile.TileInfo.Name))
                 UsingTiles.Add(tile.TileInfo.Name);
             var neighbors = new []{new string[1], new string[1], new string[1], 

@@ -189,6 +189,7 @@ public static class Program
         var tileManager = new TileManager(exampleField);*/
         var function = new WaveFunction(size, tileManager, seed, false, false);
         function.Run();
+        JsonManipulator.SaveJsonResult(function.CurrState.Map.Result(), "generatedSimpleHouse.json");
         return function.CurrState.Map.Result();
     }
 
