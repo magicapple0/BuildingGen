@@ -9,15 +9,17 @@ public class UserInterface
 {
     private readonly SpriteBatch _spriteBatch;
     private readonly Core _game;
+    private readonly Camera _camera;
     private bool isActive = false;
     private List<IUiElement> _elements = new ();
     private List<IUiElement> _staticElements = new ();
     private int curActive = 0;
 
-    public UserInterface(SpriteBatch spriteBatch, Core game)
+    public UserInterface(SpriteBatch spriteBatch, Core game, Camera camera)
     {
         _spriteBatch = spriteBatch;
         _game = game;
+        _camera = camera;
         LoadElements();
         KeyboardInput.KeyPressed += KeyPressed;
     }
@@ -37,6 +39,7 @@ public class UserInterface
         if (e.KeyCode == Keys.LeftAlt)
         {
             isActive = !isActive;
+            _camera.IsActive = !isActive;
             if (isActive)
             {
                 curActive = 0;

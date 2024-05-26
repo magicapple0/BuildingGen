@@ -4,10 +4,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Net.Http.Json;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using BuildingGen;
 using FontStashSharp;
 using Visualize.UI;
@@ -17,102 +13,49 @@ namespace Visualize
 {
     public class Core : Game
     {
+        private readonly Dictionary<BuildingGen.Vector3, Tile> _tiles;
+        public static FontSystem FontSystem;
+        
         private readonly GraphicsDeviceManager _graphics;
-
         public Matrix ProjectionMatrix;
         public Matrix ViewMatrix;
         public Matrix WorldMatrix;
-        private Vector3 _centerOfBuilding;
-        private Vector3 _cameraPosition;
-        private Vector3 _cameraTarget;
-        private readonly Dictionary<BuildingGen.Vector3, Tile> _tiles;
-        private readonly TextureManager _textureManager;
-        private UserInterface _userInterface;
-        private Vector3 _max;
 
-        private Border _border;
-        private List<Cube> _cubes = new();
-        private SpriteBatch spriteBatch;
-        public static FontSystem FontSystem;
+        private World _world;
+        private Camera _camera;
+        private UserInterface _userInterface;
+        
+        private SpriteBatch _spriteBatch;
 
         public Core(Dictionary<BuildingGen.Vector3, Tile> tiles)
         {
             _tiles = tiles;
             _graphics = new GraphicsDeviceManager(this);
-            _textureManager = new TextureManager(this);
             Content.RootDirectory = "Content";
-            
-            
         }
 
         protected override void Initialize()
         {
-            SetGraphicsSettings();
-            _max = new Vector3(0, 0, 0);
-            CubeInitialize();
-            _border = new Border(this, _max);
-            SetCameraSettings(new Vector3(0, 0, 0));
-            
             KeyboardInput.Initialize(this, 500f, 20);
-            base.Initialize();
-        }
-
-        protected override void LoadContent()
-        {
-            spriteBatch = new SpriteBatch(GraphicsDevice);
+            SetGraphicsSettings();
+            _world = new World(this);
+            _world.LoadTiles(_tiles);
+            _camera = new Camera(this, _world);
+            _spriteBatch = new SpriteBatch(GraphicsDevice);
             FontSystem = new FontSystem();
             FontSystem.AddFont(File.ReadAllBytes(@"Fonts/OpenSans-Regular.ttf"));
-            _userInterface = new UserInterface(spriteBatch, this);
-            base.LoadContent();
+            _userInterface = new UserInterface(_spriteBatch, this, _camera);
+            base.Initialize();
         }
 
         protected override void Update(GameTime gameTime)
         {
             KeyboardInput.Update();
             _userInterface.Update();
+            _camera.Update();
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
                 Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-
-            if (Keyboard.GetState().IsKeyDown(Keys.Up))
-            {
-                WorldMatrix *= Matrix.CreateRotationX(MathHelper.ToRadians(1));
-            }
-
-            if (Keyboard.GetState().IsKeyDown(Keys.Down))
-            {
-                WorldMatrix *= Matrix.CreateRotationX(-1 * MathHelper.ToRadians(1));
-            }
-
-            if (Keyboard.GetState().IsKeyDown(Keys.Left))
-            {
-                WorldMatrix *= Matrix.CreateRotationY(MathHelper.ToRadians(1));
-            }
-
-            if (Keyboard.GetState().IsKeyDown(Keys.Right))
-            {
-                WorldMatrix *= Matrix.CreateRotationY(-1 * MathHelper.ToRadians(1));
-            }
-
-            if (Keyboard.GetState().IsKeyDown(Keys.Space))
-            {
-                WorldMatrix =
-                    Matrix.CreateWorld(
-                        new Vector3(-_centerOfBuilding.X - 0.5f, -_centerOfBuilding.Z + 0.5f,
-                            -_centerOfBuilding.Y - 0.5f), new Vector3(0, 0, -1), Vector3.Up);
-            }
-
-            if (Keyboard.GetState().IsKeyDown(Keys.Z))
-            {
-                _cameraPosition = new Vector3(_cameraPosition.X, _cameraPosition.Y, _cameraPosition.Z - 0.1f);
-                ViewMatrix = Matrix.CreateLookAt(_cameraPosition, _cameraTarget, Vector3.Up);
-            }
-
-            if (Keyboard.GetState().IsKeyDown(Keys.X))
-            {
-                _cameraPosition = new Vector3(_cameraPosition.X, _cameraPosition.Y, _cameraPosition.Z + 0.1f);
-                ViewMatrix = Matrix.CreateLookAt(_cameraPosition, _cameraTarget, Vector3.Up);
-            }
 
             base.Update(gameTime);
         }
@@ -120,13 +63,7 @@ namespace Visualize
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-
-            foreach (var cube in _cubes)
-                cube.Draw();
-
-            _border.Draw();
-
-
+            _world.Draw();
             _userInterface.Draw();
 
             base.Draw(gameTime);
@@ -145,42 +82,6 @@ namespace Visualize
             _graphics.PreferredBackBufferWidth = screenWidth * windowMultiplier;
             _graphics.PreferredBackBufferHeight = screenHeight * windowMultiplier;
             _graphics.ApplyChanges();
-        }
-
-        private void SetCameraSettings(Vector3 min)
-        {
-            _centerOfBuilding = new Vector3((_max.X - min.X) / 2, (_max.Y - min.Y) / 2, (_max.Z - min.Z) / 2);
-            var zoom = MathHelper.Max(_max.X, MathHelper.Max(_max.Y, _max.Z)) * 1.2f + 4;
-            _cameraPosition = new Vector3(0, -_centerOfBuilding.Z + 2, zoom);
-            _cameraTarget = new Vector3(0, _centerOfBuilding.Z - 2, -zoom);
-            ViewMatrix = Matrix.CreateLookAt(_cameraPosition, new Vector3(0, _centerOfBuilding.Z - 0.7f, -zoom),
-                Vector3.Up);
-            ProjectionMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4,
-                (float)Window.ClientBounds.Width / Window.ClientBounds.Height, 1, 100);
-            WorldMatrix =
-                Matrix.CreateWorld(
-                    new Vector3(-_centerOfBuilding.X - 0.5f, -_centerOfBuilding.Z + 0.5f, -_centerOfBuilding.Y - 0.5f),
-                    new Vector3(0, 0, -1), Vector3.Up);
-        }
-
-        private void CubeInitialize()
-        {
-            var newCubes = new List<Cube>();
-
-            foreach (var tile in _tiles)
-            {
-                _max.X = Math.Max(_max.X, tile.Key.X + 1);
-                _max.Y = Math.Max(_max.Y, tile.Key.Z + 1);
-                _max.Z = Math.Max(_max.Z, tile.Key.Y + 1);
-                if (tile.Value.TileInfo.Name == "air")
-                    continue;
-                newCubes.Add(new Cube(this, new Vector3(tile.Key.X, tile.Key.Z, tile.Key.Y), _textureManager.GetTexture(tile.Value)));
-            }
-
-            lock (_cubes)
-            {
-                _cubes = newCubes;
-            }
         }
     }
 }
