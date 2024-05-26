@@ -11,8 +11,8 @@ namespace Visualize;
 
 public class TextureManager
 {
-    private static Game1 _game;
-    public TextureManager(Game1 game)
+    private static Core _game;
+    public TextureManager(Core game)
     {
         _game = game;
     }

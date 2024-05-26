@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using System.Linq;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 
 namespace Visualize
@@ -7,11 +8,11 @@ namespace Visualize
     {
         private VertexPositionTexture[] _vertices;
         private short[] _indices;
-        private readonly Game1 _game;
+        private readonly Core _game;
         private BasicEffect _effect;
         private Texture2D _texture;
 
-        public Quad(Game1 game, Texture2D texture, Vector3[] positions)
+        public Quad(Core game, Texture2D texture, Vector3[] positions)
         {
             _game = game;
             InitializeVertices(positions);

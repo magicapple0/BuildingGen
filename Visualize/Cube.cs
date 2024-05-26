@@ -6,12 +6,12 @@ namespace Visualize
     public class Cube
     {
         private readonly Vector3 _position;
-        private readonly Game1 _game;
+        private readonly Core _game;
         private BasicEffect _effect;
         private Quad[] _faces;
         private readonly Texture2D[] _textures;
 
-        public Cube(Game1 game, Vector3 position, Texture2D[] textures) 
+        public Cube(Core game, Vector3 position, Texture2D[] textures) 
         {
             _game = game;
             _textures = textures;

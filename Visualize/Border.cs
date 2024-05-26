@@ -4,17 +4,17 @@ using System.Linq;
 
 namespace Visualize;
 
-public class Chamber
+public class Border
 {
     private Vector3 _size;
-    private Game1 _game;
+    private Core _game;
     private BasicEffect _effect;
     private VertexBuffer _vertexBuffer;
     private IndexBuffer _indexBuffer;
     private ushort[] _indices;
     private VertexPositionColor[] _vertices;
     
-    public Chamber(Game1 game, Vector3 size)
+    public Border(Core game, Vector3 size)
     {
         _size = size;
         _game = game;

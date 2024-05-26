@@ -3,13 +3,19 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using BuildingGen;
+using FontStashSharp;
+using Visualize.UI;
 using Vector3 = Microsoft.Xna.Framework.Vector3;
 
 namespace Visualize
 {
-    public class Game1 : Game
+    public class Core : Game
     {
         private readonly GraphicsDeviceManager _graphics;
 
@@ -21,17 +27,22 @@ namespace Visualize
         private Vector3 _cameraTarget;
         private readonly Dictionary<BuildingGen.Vector3, Tile> _tiles;
         private readonly TextureManager _textureManager;
+        private UserInterface _userInterface;
         private Vector3 _max;
 
-        private Chamber _chamber;
+        private Border _border;
         private List<Cube> _cubes = new();
+        private SpriteBatch spriteBatch;
+        public static FontSystem FontSystem;
 
-        public Game1(Dictionary<BuildingGen.Vector3, Tile> tiles)
+        public Core(Dictionary<BuildingGen.Vector3, Tile> tiles)
         {
             _tiles = tiles;
             _graphics = new GraphicsDeviceManager(this);
             _textureManager = new TextureManager(this);
             Content.RootDirectory = "Content";
+            
+            
         }
 
         protected override void Initialize()
@@ -39,33 +50,46 @@ namespace Visualize
             SetGraphicsSettings();
             _max = new Vector3(0, 0, 0);
             CubeInitialize();
-            _chamber = new Chamber(this, _max);
+            _border = new Border(this, _max);
             SetCameraSettings(new Vector3(0, 0, 0));
-
+            
+            KeyboardInput.Initialize(this, 500f, 20);
             base.Initialize();
         }
+
+        protected override void LoadContent()
+        {
+            spriteBatch = new SpriteBatch(GraphicsDevice);
+            FontSystem = new FontSystem();
+            FontSystem.AddFont(File.ReadAllBytes(@"Fonts/OpenSans-Regular.ttf"));
+            _userInterface = new UserInterface(spriteBatch, this);
+            base.LoadContent();
+        }
+
         protected override void Update(GameTime gameTime)
         {
+            KeyboardInput.Update();
+            _userInterface.Update();
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
                 Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Up) || Keyboard.GetState().IsKeyDown(Keys.W))
+            if (Keyboard.GetState().IsKeyDown(Keys.Up))
             {
                 WorldMatrix *= Matrix.CreateRotationX(MathHelper.ToRadians(1));
             }
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Down) || Keyboard.GetState().IsKeyDown(Keys.S))
+            if (Keyboard.GetState().IsKeyDown(Keys.Down))
             {
                 WorldMatrix *= Matrix.CreateRotationX(-1 * MathHelper.ToRadians(1));
             }
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Left) || Keyboard.GetState().IsKeyDown(Keys.A))
+            if (Keyboard.GetState().IsKeyDown(Keys.Left))
             {
                 WorldMatrix *= Matrix.CreateRotationY(MathHelper.ToRadians(1));
             }
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Right) || Keyboard.GetState().IsKeyDown(Keys.D))
+            if (Keyboard.GetState().IsKeyDown(Keys.Right))
             {
                 WorldMatrix *= Matrix.CreateRotationY(-1 * MathHelper.ToRadians(1));
             }
@@ -100,7 +124,11 @@ namespace Visualize
             foreach (var cube in _cubes)
                 cube.Draw();
 
-            _chamber.Draw();
+            _border.Draw();
+
+
+            _userInterface.Draw();
+
             base.Draw(gameTime);
         }
 
