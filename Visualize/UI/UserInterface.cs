@@ -10,16 +10,18 @@ public class UserInterface
     private readonly SpriteBatch _spriteBatch;
     private readonly Core _game;
     private readonly Camera _camera;
+    private readonly World _world;
     private bool isActive = false;
     private List<IUiElement> _elements = new ();
     private List<IUiElement> _staticElements = new ();
     private int curActive = 0;
 
-    public UserInterface(SpriteBatch spriteBatch, Core game, Camera camera)
+    public UserInterface(SpriteBatch spriteBatch, Core game, Camera camera, World world)
     {
         _spriteBatch = spriteBatch;
         _game = game;
         _camera = camera;
+        _world = world;
         LoadElements();
         KeyboardInput.KeyPressed += KeyPressed;
     }
@@ -28,10 +30,8 @@ public class UserInterface
     {
         _staticElements.Add(new TextLabel(){Value = "UI Active", Position = new Vector2()});
         
-        _elements.Add(new TextBoxWithLabel("Aboba", new Vector2(0, 50)));
-        _elements.Add(new TextBoxWithLabel("Baroba", new Vector2(0, 100)));
-        _elements.Add(new TextBoxWithLabel("1231234", new Vector2(0, 150)));
-        _elements.Add(new TextBoxWithLabel("asd123dfs", new Vector2(0, 200)));
+        _elements.Add(new TilePlacer(_game, _world, new Vector2(0, 50)));
+        _elements.Add(new TextBoxWithLabel("Aboba", new Vector2(0, 150)));
     }
 
     private void KeyPressed(object sender, KeyboardInput.KeyEventArgs e, KeyboardState ks)

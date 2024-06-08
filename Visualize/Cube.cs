@@ -5,7 +5,7 @@ namespace Visualize
 {
     public class Cube
     {
-        private readonly Vector3 _position;
+        public Vector3 Position { get; }
         private readonly Core _game;
         private BasicEffect _effect;
         private Quad[] _faces;
@@ -16,7 +16,7 @@ namespace Visualize
             _game = game;
             _textures = textures;
             _effect = new BasicEffect(game.GraphicsDevice);
-            _position = position;
+            Position = position;
             InitializeEffect();
             InitializeFaces();
         }
@@ -25,17 +25,17 @@ namespace Visualize
         {
             _faces = new Quad[6];
             _faces[0] = new Quad(_game, _textures[1],
-                new [] { _position + new Vector3(0, 1, 1), _position + new Vector3(1, 1, 1), _position + new Vector3(1, 0, 1), _position + new Vector3(0, 0, 1) }); //front
+                new [] { Position + new Vector3(0, 1, 1), Position + new Vector3(1, 1, 1), Position + new Vector3(1, 0, 1), Position + new Vector3(0, 0, 1) }); //front
             _faces[1] = new Quad(_game, _textures[4],
-                new [] { _position + new Vector3(1, 1, 1), _position + new Vector3(1, 1, 0), _position + new Vector3(1, 0, 0), _position + new Vector3(1, 0, 1) }); //right
+                new [] { Position + new Vector3(1, 1, 1), Position + new Vector3(1, 1, 0), Position + new Vector3(1, 0, 0), Position + new Vector3(1, 0, 1) }); //right
             _faces[2] = new Quad(_game, _textures[3],
-                new [] { _position + new Vector3(0, 1, 0), _position + new Vector3(0, 1, 1), _position + new Vector3(0, 0, 1), _position + new Vector3(0, 0, 0) }); //left
+                new [] { Position + new Vector3(0, 1, 0), Position + new Vector3(0, 1, 1), Position + new Vector3(0, 0, 1), Position + new Vector3(0, 0, 0) }); //left
             _faces[3] = new Quad(_game, _textures[5],
-                new [] { _position + new Vector3(1, 1, 0), _position + new Vector3(0, 1, 0), _position + new Vector3(0, 0, 0), _position + new Vector3(1, 0, 0) }); //back
+                new [] { Position + new Vector3(1, 1, 0), Position + new Vector3(0, 1, 0), Position + new Vector3(0, 0, 0), Position + new Vector3(1, 0, 0) }); //back
             _faces[4] = new Quad(_game, _textures[0],
-                new [] { _position + new Vector3(0, 1, 1), _position + new Vector3(0, 1, 0), _position + new Vector3(1, 1, 0), _position + new Vector3(1, 1, 1) }); //up
+                new [] { Position + new Vector3(0, 1, 1), Position + new Vector3(0, 1, 0), Position + new Vector3(1, 1, 0), Position + new Vector3(1, 1, 1) }); //up
             _faces[5] = new Quad(_game, _textures[2],
-                new [] { _position + new Vector3(1, 0, 0), _position + new Vector3(0, 0, 0), _position + new Vector3(0, 0, 1), _position + new Vector3(1, 0, 1) }); //down
+                new [] { Position + new Vector3(1, 0, 0), Position + new Vector3(0, 0, 0), Position + new Vector3(0, 0, 1), Position + new Vector3(1, 0, 1) }); //down
         }
 
         private void InitializeEffect()

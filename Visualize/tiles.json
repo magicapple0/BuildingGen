@@ -1,0 +1,25 @@
+﻿[
+  {
+    "Name": "air"
+  },
+  {
+    "Name": "house",
+    "Texture": ["Textures/roof.png", "Textures/wall.png", "Textures/bottom.png", "Textures/wall.png", "Textures/wall.png", "Textures/wall.png"],
+    "Color": null
+  },
+  {
+    "Name": "corner",
+    "Texture": ["Textures/roof.png", "Textures/bottom.png", "Textures/bottom.png", "Textures/bottom.png", "Textures/corner.png", "Textures/corner_flip.png"],
+    "Color": null
+  },
+  {
+    "Name": "roof",
+    "Texture": [ "Textures/roof.png", "Textures/roof_side.png", "Textures/bottom.png", "Textures/roof_side.png", "Textures/roof_side.png", "Textures/roof_side.png"],
+    "Color": null
+  },
+  {
+    "Name": "grass",
+    "Texture": null,
+    "Color": "3C896D"
+  }
+]

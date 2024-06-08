@@ -6,6 +6,7 @@ namespace Visualize;
 
 public class Border
 {
+    private Vector3 _position;
     private Vector3 _size;
     private Core _game;
     private BasicEffect _effect;
@@ -14,8 +15,20 @@ public class Border
     private ushort[] _indices;
     private VertexPositionColor[] _vertices;
     
+    public Border(Core game, Vector3 pos, Vector3 size)
+    {
+        _position = pos;
+        _size = pos + size;
+        _game = game;
+        _effect = new BasicEffect(_game.GraphicsDevice);
+        InitializeVertexCoordinates(_size);
+        InitializeEffect();
+        InitializeIndices();
+    }
+    
     public Border(Core game, Vector3 size)
     {
+        _position = new Vector3(0, 0, 0);
         _size = size;
         _game = game;
         _effect = new BasicEffect(_game.GraphicsDevice);
@@ -33,15 +46,15 @@ public class Border
     private void InitializeVertexCoordinates(Vector3 size)
     {
         _vertices = new VertexPositionColor[8];
-        _vertices[0] = new VertexPositionColor(new Vector3(0, size.Y, size.Z), Color.Red);
+        _vertices[0] = new VertexPositionColor(new Vector3(_position.X, size.Y, size.Z), Color.Red);
         _vertices[1] = new VertexPositionColor(new Vector3(size.X, size.Y, size.Z), Color.Red);
-        _vertices[2] = new VertexPositionColor(new Vector3(size.X, 0, size.Z), Color.Red);
-        _vertices[3] = new VertexPositionColor(new Vector3(0, 0, size.Z), Color.Red);
+        _vertices[2] = new VertexPositionColor(new Vector3(size.X, _position.Y, size.Z), Color.Red);
+        _vertices[3] = new VertexPositionColor(new Vector3(_position.X, _position.Y, size.Z), Color.Red);
  
-        _vertices[4] = new VertexPositionColor(new Vector3(0, size.Y, 0), Color.Red);
-        _vertices[5] = new VertexPositionColor(new Vector3(size.X, size.Y, 0), Color.Red);
-        _vertices[6] = new VertexPositionColor(new Vector3(size.X, 0, 0), Color.Red);
-        _vertices[7] = new VertexPositionColor(new Vector3(0, 0, 0), Color.Red);
+        _vertices[4] = new VertexPositionColor(new Vector3(_position.X, size.Y, _position.Z), Color.Red);
+        _vertices[5] = new VertexPositionColor(new Vector3(size.X, size.Y, _position.Z), Color.Red);
+        _vertices[6] = new VertexPositionColor(new Vector3(size.X, _position.Y, _position.Z), Color.Red);
+        _vertices[7] = new VertexPositionColor(new Vector3(_position.X, _position.Y, _position.Z), Color.Red);
         
         _vertexBuffer = new VertexBuffer(_game.GraphicsDevice, typeof(VertexPositionColor), 8, BufferUsage.None);
         _vertexBuffer.SetData(_vertices.ToArray());

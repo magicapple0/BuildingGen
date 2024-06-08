@@ -1,13 +1,12 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json;
 using BuildingGen;
 using FontStashSharp;
 using Visualize.UI;
-using Vector3 = Microsoft.Xna.Framework.Vector3;
 
 namespace Visualize
 {
@@ -17,10 +16,12 @@ namespace Visualize
         public static FontSystem FontSystem;
         
         private readonly GraphicsDeviceManager _graphics;
+        
         public Matrix ProjectionMatrix;
         public Matrix ViewMatrix;
         public Matrix WorldMatrix;
-
+        public TileInfo[] Tileset;
+        
         private World _world;
         private Camera _camera;
         private UserInterface _userInterface;
@@ -36,7 +37,7 @@ namespace Visualize
 
         protected override void Initialize()
         {
-            KeyboardInput.Initialize(this, 500f, 20);
+            KeyboardInput.Initialize(this, 250f, 20);
             SetGraphicsSettings();
             _world = new World(this);
             _world.LoadTiles(_tiles);
@@ -44,8 +45,16 @@ namespace Visualize
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             FontSystem = new FontSystem();
             FontSystem.AddFont(File.ReadAllBytes(@"Fonts/OpenSans-Regular.ttf"));
-            _userInterface = new UserInterface(_spriteBatch, this, _camera);
+            LoadTileSet();
+            _userInterface = new UserInterface(_spriteBatch, this, _camera, _world);
             base.Initialize();
+        }
+
+        private void LoadTileSet()
+        {
+            var tilesJson = File.ReadAllText("tiles.json");
+            var loaded = JsonSerializer.Deserialize<TileInfo[]>(tilesJson);
+            Tileset = loaded;
         }
 
         protected override void Update(GameTime gameTime)

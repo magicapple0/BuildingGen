@@ -29,9 +29,11 @@ public static class Program
         int n = 5;
         for (int i = 0; i < 25; i++)
             exampleField[(i / n, i % n, 0)] = new Tile("grass", tileId++, null, "3C896D");
-        for (int j = 0; j < 4; j++)
-            for (int i = 0; i < 25; i++)
-                exampleField[(i / n, i % n, j + 1)] = new Tile("house", tileId++, houseTexture, null);
+        n = 3;
+        for (int j = 0; j < 3; j++)
+            for (int i = 0; i < 9; i++)
+                exampleField[(1 + i / n, 1 + (i % n), j + 1)] = new Tile("house", tileId++, houseTexture, null);
+        
         for (int i = 0; i < 4; i++)
         {
             /*exampleField[(0, 0, i + 1)] = new Tile("corner", tileId++, cornerTexture, null);
@@ -45,16 +47,14 @@ public static class Program
             exampleField[(n - 1, n - 1, i + 1)].RotateZTile();
             exampleField[(n - 1, n - 1, i + 1)].RotateZTile();*/
         }
+
         
-        for (int i = 0; i < 3; i++)
+        for (int j = 0; j < n; j++)
         {
-            for (int j = 0; j < n; j++)
-            {
-                exampleField[(j, 0 + i, i + 4)] = new Tile("roof", tileId++, roofTexture, null);
-                exampleField[(j, n - i - 1, i + 4)] = new Tile("roof", tileId++, roofTexture, null);
-                exampleField[(j, 2, 5)] = new Tile("house", tileId++, houseTexture, null);
-            }
-                
+            exampleField[(1, 1 + j, 3)] = new Tile("roof", tileId++, roofTexture, null);
+            exampleField[(2, 1 + j, 4)] = new Tile("roof", tileId++, roofTexture, null);
+            exampleField[(3, 1 + j, 3)] = new Tile("roof", tileId++, roofTexture, null);
+            exampleField[(2, 1 + j, 3)] = new Tile("house", tileId++, houseTexture, null);
         }
         return exampleField;
     }

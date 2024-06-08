@@ -10,10 +10,10 @@
 
         public Tile() { }
 
-        public Tile(TileInfo tileInfo, int id) {
+        public Tile(TileInfo tileInfo, int id = -1) {
             TileInfo = tileInfo;
             Id = id;
-            ModifiedEdges = (string[][])tileInfo.Edges.Clone();
+            ModifiedEdges = (string[][])tileInfo.Edges?.Clone();
             Modifiers = new List<TileModifiers>();
             if (tileInfo.Texture != null) ModifiedTextures = (string[])tileInfo.Texture.Clone();
             
