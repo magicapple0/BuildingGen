@@ -19,6 +19,16 @@ namespace BuildingGen
             return dic;
         }
         
+        public static Dictionary<Vector2, Tile> GetTilesSetFromFieldJson2D(string fileName)
+        {
+            var inputJson = JsonSerializer.Deserialize<List<FieldCellJson2D>>(File.ReadAllText(fileName));
+            var dic = new Dictionary<Vector2, Tile>();
+            foreach (var cell in inputJson)
+                dic[cell.Key] = cell.Value;
+
+            return dic;
+        }
+        
         public static void SaveJsonResult(Dictionary<Vector3, Tile> result, string path)
         {
             var json = JsonSerializer.Serialize(result.ToArray());

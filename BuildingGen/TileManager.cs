@@ -31,7 +31,73 @@ public class TileManager
 
         TileSet = newTiles.ToArray();
     }
+    
+    public TileManager(Dictionary<Vector2, Tile> field)
+    {
+        UsingTiles = new List<string>();
+        var tileSet = new List<Tile>();
+        foreach (var cell in field)
+        {
+            var tile = cell.Value;
+            if (tile.TileInfo.Name == "air")
+                continue;
+            tile.Id = cell.Value.Id;
+            if (!UsingTiles.Contains(tile.TileInfo.Name))
+                UsingTiles.Add(tile.TileInfo.Name);
+            var neighbors = new []{new string[1], new string[1], new string[1], new string[1], new string[1], 
+                new string[1]};
+            foreach (var direction in DirectionConstants.DirectionsVectors)
+            {
+                var newCell = (cell.Key.X + direction.Value.X,
+                    cell.Key.Y + direction.Value.Y);
+                if (field.TryGetValue(newCell, out var value))
+                {
+                    neighbors[DirectionConstants.DirectionsSides[direction.Key]][0] = value.TileInfo.Name;
+                    continue;
+                }
+                if (direction.Key == Directions.Down)
+                    neighbors[DirectionConstants.DirectionsSides[direction.Key]][0] = "ground";
+                else
+                {
+                    var s = new string[2];
+                    s[0] = "bound";
+                    s[1] = "air";
+                    neighbors[DirectionConstants.DirectionsSides[direction.Key]] = s;
+                }
+                    
+            }
+            tile.ModifiedEdges = neighbors;
+            if (!tileSet.Contains(tile))
+                tileSet.Add(tile);
+        }
 
+        Air = new Tile(new TileInfo(
+            "air",new []{
+                new []{"air", "bound"},
+                new []{"air", "bound"},
+                new []{"air", "bound"},
+                new []{"air", "bound"},
+                new []{"air", "bound"},
+                new []{"air", "bound"}
+            } , false, false, false, null, null), idCounter++);
+        AddUsingTiles(Air);
+        Air.ModifiedEdges = Air.TileInfo.Edges;
+
+        Bound = new Tile(new TileInfo(
+            "bound",new []{
+                new []{"bound"},
+                new []{"air", "bound"},
+                new []{"air", "bound"},
+                new []{"air", "bound"},
+                new []{"air", "bound"},
+                new []{"air", "bound"}
+            }, false, false, false, null, null), idCounter++);
+        AddUsingTiles(Bound); 
+        Bound.ModifiedEdges = Bound.TileInfo.Edges;
+        InitializeGround();
+        TileSet = tileSet.ToArray();
+    }
+    
     public TileManager(Dictionary<Vector3, Tile> field)
     {
         UsingTiles = new List<string>();
@@ -98,6 +164,47 @@ public class TileManager
     {
         var symmetryTiles = new List<Tile>();
         var directions = DirectionConstants.CellOppositeSides[direction];
+        foreach (var tile1 in TileSet)
+        {
+            foreach (var tile2 in TileSet)
+                if (tile1.TileInfo.Name == tile2.TileInfo.Name && tile1.ModifiedEdges[directions.Item1].Contains(tile2.TileInfo.Name) &&
+                    tile2.ModifiedEdges[directions.Item2].Contains(tile1.TileInfo.Name))
+                {
+                    if (!symmetryTiles.Contains(tile1))
+                    {
+                        var symmetryTile = tile1.Copy();
+                        symmetryTile.ModifiedEdges[directions.Item1] = new []{tile2.TileInfo.Name};
+                        symmetryTiles.Add(symmetryTile);
+                    }   
+                }
+            if (tile1.ModifiedEdges[directions.Item1].Contains(tile1.TileInfo.Name) && 
+                tile1.ModifiedEdges[directions.Item2].Contains(tile1.TileInfo.Name) && !symmetryTiles.Contains(tile1))
+                symmetryTiles.Add(tile1);
+        }
+        return symmetryTiles;
+    }
+    
+    public List<Tile> GetOddSymmetryTiles(Directions2 direction)
+    {
+        var symmetryTiles = new List<Tile>();
+        var directions = DirectionConstants2.CellOppositeSides[direction];
+        foreach (var tile in TileSet)
+        {
+            var symmetryTile = tile.Copy();
+            var modifiedEdges = tile.ModifiedEdges[directions.Item1].Where(neighbor => tile.ModifiedEdges[directions.Item2].Contains(neighbor)).ToList();
+            if (modifiedEdges.Count == 0)
+                continue;
+            symmetryTile.ModifiedEdges[directions.Item1] = modifiedEdges.ToArray();
+            symmetryTile.ModifiedEdges[directions.Item2] = modifiedEdges.ToArray();
+            symmetryTiles.Add(symmetryTile);
+        }
+        return symmetryTiles;
+    }
+
+    public List<Tile> GetEvenSymmetryTiles(Directions2 direction)
+    {
+        var symmetryTiles = new List<Tile>();
+        var directions = DirectionConstants2.CellOppositeSides[direction];
         foreach (var tile1 in TileSet)
         {
             foreach (var tile2 in TileSet)
