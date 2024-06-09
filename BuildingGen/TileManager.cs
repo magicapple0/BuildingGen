@@ -10,7 +10,9 @@ public class TileManager
     public Tile Bound { get; private set; }
     private Tile Air { get; set; }
     private List<string> UsingTiles { get; set; }
+    public Dictionary<int, TileCluster> TileClusters { get; set; }
     private int idCounter = 0;
+    public Dictionary<Vector2, Tile> Field { get; set; }
 
     public TileManager(TileInfo[] tilesInfos)
     {
@@ -31,10 +33,60 @@ public class TileManager
 
         TileSet = newTiles.ToArray();
     }
+
+    public TileManager(Dictionary<Vector2, Tile> field, int size)
+    {
+        TileClusters = new Dictionary<int, TileCluster>();
+        Field = GetField(field, size);
+        var newField = Field;
+        
+        ParseField2D(newField);
+    }
+
+    private Dictionary<Vector2, Tile> GetField(Dictionary<Vector2, Tile> field, int size)
+    {
+        var tileClusterList = new List<TileCluster>();
+        var newField = new Dictionary<Vector2, Tile>();
+        var currCell = new Vector2(0, 0);
+        int name = 0;
+        while (true)
+        {
+            var tileCuster = new TileCluster(size, field, currCell);
+            if (!tileClusterList.Contains(tileCuster))
+            {
+                name++;
+                tileCuster.Name = name.ToString();
+                tileClusterList.Add(tileCuster);
+                TileClusters.Add(name, tileCuster);
+            }
+            else
+            {
+                tileCuster = tileClusterList[tileClusterList.IndexOf(tileCuster)];
+            }
+            newField.Add((currCell.X / size, currCell.Y / size), new Tile(tileCuster.Name, 0, null, null));
+            if (field.ContainsKey((currCell.X + size, currCell.Y)))
+            {
+                currCell = (currCell.X + size, currCell.Y);
+                continue;
+            }
+            if (field.ContainsKey((0, currCell.Y + size)))
+            {
+                currCell = (0, currCell.Y + size);
+                continue;
+            }
+            break;
+        }
+        return newField;
+    }
     
     public TileManager(Dictionary<Vector2, Tile> field)
     {
-        UsingTiles = new List<string>();
+        ParseField2D(field);
+    }
+
+    private void ParseField2D(Dictionary<Vector2, Tile> field)
+    {
+                UsingTiles = new List<string>();
         var tileSet = new List<Tile>();
         foreach (var cell in field)
         {

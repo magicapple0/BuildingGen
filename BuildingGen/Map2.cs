@@ -101,6 +101,8 @@ public class Map2
     public Dictionary<Vector2, Tile> Result()
     {
         var field = GetFieldDictionaryVectorTile();
+        field = DeleteBounds(field);
+        return FromCluster(field);
         if (XSymmetry && XEven)
         {
             field = XEvenMirrorResult(field);
@@ -126,6 +128,21 @@ public class Map2
         return field;
     }
 
+    private Dictionary<Vector2, Tile> FromCluster(Dictionary<Vector2, Tile> field)
+    {
+        var result = new Dictionary<Vector2, Tile>();
+        foreach (var cell in field)
+        {
+            var cluster = _tileManager.TileClusters[Int32.Parse(cell.Value.TileInfo.Name)].Tiles;
+            foreach (var tile in cluster)
+            {
+                result.Add((cell.Key.X * 3 + tile.Key.X, cell.Key.Y * 3 + tile.Key.Y), tile.Value);
+            }
+        }
+
+        return result;
+    }
+    
     private Dictionary<Vector2, Tile> DeleteBounds(Dictionary<Vector2, Tile> field)
     {
         var result = new Dictionary<Vector2, Tile>();

@@ -4,7 +4,18 @@ public static class Program
 {
     public static void Main()
     {
-        PrintField(BuildFromInput2DField((5,5), 0, "InputFields/inputField2D.json"));
+        var field = CreateExampleField2D();
+        var tileClusterSet = new TileManager(field, 3);
+        int i = 0;
+        //PrintTileSet(tileClusterSet.TileSet);
+        PrintField(From2Dto3D(tileClusterSet.Field));
+        foreach (var cluster in tileClusterSet.TileClusters)
+        {
+            Console.WriteLine("==========" + i++ + "=========");
+            Console.Write(cluster.ToString());
+        }
+        
+        //PrintField(BuildFromInput2DField((5,5), 0, "InputFields/inputField2D.json"));
     }
     
     public static Dictionary<Vector3, Tile> CreateExampleField()
@@ -33,20 +44,6 @@ public static class Program
         for (int j = 0; j < 3; j++)
             for (int i = 0; i < 9; i++)
                 exampleField[(1 + i / n, 1 + (i % n), j + 1)] = new Tile("house", tileId++, houseTexture, null);
-        
-        for (int i = 0; i < 4; i++)
-        {
-            /*exampleField[(0, 0, i + 1)] = new Tile("corner", tileId++, cornerTexture, null);
-            exampleField[(0, 0, i + 1)].RotateZTile();
-            exampleField[(0, n - 1, i + 1)] = new Tile("corner", tileId++, cornerTexture, null);
-            exampleField[(0, n - 1, i + 1)].RotateZTile();
-            exampleField[(0, n - 1, i + 1)].RotateZTile();
-            exampleField[(n - 1, 0, i + 1)] = new Tile("corner", tileId++, cornerTexture, null);
-            exampleField[(n - 1, n - 1, i + 1)] = new Tile("corner", tileId++, cornerTexture, null);
-            exampleField[(n - 1, n - 1, i + 1)].RotateZTile(); 
-            exampleField[(n - 1, n - 1, i + 1)].RotateZTile();
-            exampleField[(n - 1, n - 1, i + 1)].RotateZTile();*/
-        }
 
         
         for (int j = 0; j < n; j++)
@@ -64,7 +61,8 @@ public static class Program
         int tileId = 0;
         var exampleField = new Dictionary<Vector2, Tile>();
         
-        int n = 21;
+        int n = 39;
+        int k = 6;
         for (int i = 0; i < n * n; i++)
         {
             exampleField[(i / n, i % n)] = new Tile("grass", tileId++, null, "3C8950");
@@ -80,46 +78,51 @@ public static class Program
             for (int j = 0; j < 3; j++)
             {
                 exampleField[(n / 2 + i - 1, n / 2 + j - 1)] = new Tile("roundabout", tileId++, null, "8c188a");
-                if (i == j && i == 1)
-                    exampleField[(n / 2 + i - 1, n / 2 + j - 1)] = new Tile("roundabout", tileId++, null, "3C8950");
             }
         }
-        exampleField[(2, n / 2)] = new Tile("cross", tileId++, null, "FFFFFF");
-        for (int i = n / 2 + 1; i < n - 3; i++)
+        exampleField[(k + 1, n / 2)] = new Tile("cross", tileId++, null, "FFFFFF");
+        for (int i = n / 2 + 1; i < n - k - 1; i++)
         {
-            exampleField[(2, i)] = new Tile("road", tileId++, null, "1c1c1c");
+            exampleField[(k + 1, i)] = new Tile("road", tileId++, null, "1c1c1c");
         }
-        exampleField[(2, n - 3)] = new Tile("turn", tileId++, null, "FFF000");
-        exampleField[(1, n - 3)] = new Tile("road", tileId++, null, "1c1c1c");
-        exampleField[(0, n - 3)] = new Tile("road", tileId++, null, "1c1c1c");
-        
-        exampleField[(n / 2, 2)] = new Tile("cross", tileId++, null, "FFFFFF");
-        for (int i = n / 2 - 1; i >= 3; i--)
+        for (int i = 0; i < k + 1; i++)
         {
-            exampleField[(i, 2)] = new Tile("road", tileId++, null, "1c1c1c");
+            exampleField[(i, n - k - 2)] = new Tile("road", tileId++, null, "1c1c1c");
         }
-        exampleField[(2, 2)] = new Tile("turn", tileId++, null, "FFF000");
-        exampleField[(2, 1)] = new Tile("road", tileId++, null, "1c1c1c");
-        exampleField[(2, 0)] = new Tile("road", tileId++, null, "1c1c1c");
+        exampleField[(k + 1, n - k - 2)] = new Tile("turn", tileId++, null, "FFF000");
         
-        
-        for (int i = n / 2; i < n - 3; i++)
+        exampleField[(n / 2, k + 1)] = new Tile("cross", tileId++, null, "FFFFFF");
+        for (int i = n / 2 - 1; i >= k + 1; i--)
         {
-            exampleField[(i, n - 3)] = new Tile("road", tileId++, null, "1c1c1c");
+            exampleField[(i, k + 1)] = new Tile("road", tileId++, null, "1c1c1c");
         }
-        exampleField[(n / 2, n - 3)] = new Tile("cross", tileId++, null, "FFFFFF");
-        exampleField[(n - 3, n - 3)] = new Tile("turn", tileId++, null, "FFF000");
-        exampleField[(n - 3, n - 2)] = new Tile("road", tileId++, null, "1c1c1c");
-        exampleField[(n - 3, n - 1)] = new Tile("road", tileId++, null, "1c1c1c");
-        
-        for (int i = n / 2; i >= 3; i--)
+        exampleField[(k + 1, k + 1)] = new Tile("turn", tileId++, null, "FFF000");
+        for (int i = 0; i < k + 1; i++)
         {
-            exampleField[(n - 3, i)] = new Tile("road", tileId++, null, "1c1c1c");
+            exampleField[(k + 1, i)] = new Tile("road", tileId++, null, "1c1c1c");
         }
-        exampleField[(n - 3, n / 2)] = new Tile("cross", tileId++, null, "FFFFFF");
-        exampleField[(n - 3, 2)] = new Tile("turn", tileId++, null, "FFF000");
-        exampleField[(n - 2, 2)] = new Tile("road", tileId++, null, "1c1c1c");
-        exampleField[(n - 1, 2)] = new Tile("road", tileId++, null, "1c1c1c");
+        
+        for (int i = n - 1; i >= n - k - 1; i--)
+        {
+            exampleField[(i, k + 1)] = new Tile("road", tileId++, null, "1c1c1c");
+        }
+        for (int i = n / 2 - 1; i >= k + 1; i--)
+        {
+            exampleField[(n - k - 2, i)] = new Tile("road", tileId++, null, "1c1c1c");
+        }
+        exampleField[(n - k - 2, k + 1)] = new Tile("turn", tileId++, null, "FFF000");
+        exampleField[(n - k - 2, n / 2)] = new Tile("cross", tileId++, null, "FFFFFF");
+        
+        for (int i = n - k - 1; i < n; i++)
+        {
+            exampleField[(n - k - 2, i)] = new Tile("road", tileId++, null, "1c1c1c");
+        }
+        for (int i = n / 2; i < n - k - 1; i++)
+        {
+            exampleField[(i, n - k - 2)] = new Tile("road", tileId++, null, "1c1c1c");
+        }
+        exampleField[(n - k - 2, n - k - 2)] = new Tile("turn", tileId++, null, "FFF000");
+        exampleField[(n / 2, n - k - 2)] = new Tile("cross", tileId++, null, "FFFFFF");
         return exampleField;
     }
     
@@ -209,6 +212,24 @@ public static class Program
         var result = From2Dto3D(CreateExampleField2D());
         Save(result, "inputField2D.json");
         return From2Dto3D(CreateExampleField2D());
+    }
+    
+    public static Dictionary<Vector3, Tile> GenerateFromTest2DField(Vector2 size, int seed)
+    {
+        var field = CreateExampleField2D();
+        var tileClusterSet = new TileManager(field, 3);
+        var function = new WaveFunction2(size, tileClusterSet, seed, false, false);
+        function.Run();
+        var result = From2Dto3D(function.CurrState.Map.Result());
+        Save(result, "generatedField2D.json");
+        return result;
+    }
+    
+    public static Dictionary<Vector3, Tile> DivideGeneratedField(string inputFile)
+    {
+        var inputField = JsonManipulator.GetTilesSetFromFieldJson2D(inputFile);
+        BSP.GetFoundations(inputField, (5,5), (14, 14));
+        return From2Dto3D(inputField);
     }
     
     public static Dictionary<Vector3, Tile> BuildTestTile()
