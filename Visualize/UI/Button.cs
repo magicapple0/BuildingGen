@@ -25,7 +25,11 @@ public class Button : IUiElement
             _onClick();
     }
 
-    public bool IsActive { get; set; }
+    public bool IsActive
+    {
+        get => _text.IsActive;
+        set => _text.IsActive = value;
+    }
     public void Draw(SpriteBatch spriteBatch)
     {
         _text.Draw(spriteBatch);

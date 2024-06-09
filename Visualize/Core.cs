@@ -50,7 +50,7 @@ namespace Visualize
             base.Initialize();
         }
 
-        private void LoadTileSet()
+        public void LoadTileSet()
         {
             var tilesJson = File.ReadAllText("tiles.json");
             var loaded = JsonSerializer.Deserialize<TileInfo[]>(tilesJson);

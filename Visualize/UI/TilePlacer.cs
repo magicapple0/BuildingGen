@@ -27,7 +27,7 @@ public class TilePlacer : IUiElement
         };
         tilePosLabel = new TextLabel()
         {
-            Position = pos + new Vector2(0, 50)
+            Position = pos + new Vector2(0, 25)
         };
         UpdateLabels();
         _elements.Add(tileTypeLabel);
@@ -60,16 +60,19 @@ public class TilePlacer : IUiElement
                 _world.ActiveTilePosition += new BuildingGen.Vector3(1, 0, 0);
                 break;
             case Keys.NumPad4:
-                _world.ActiveTilePosition += new BuildingGen.Vector3(0, 0, -1);
+                if (_world.ActiveTilePosition.Z > 0 )
+                    _world.ActiveTilePosition += new BuildingGen.Vector3(0, 0, -1);
                 break;
             case Keys.NumPad5:
-                _world.ActiveTilePosition += new BuildingGen.Vector3(-1, 0, 0);
+                if (_world.ActiveTilePosition.X > 0 )
+                    _world.ActiveTilePosition += new BuildingGen.Vector3(-1, 0, 0);
                 break;
             case Keys.NumPad6:
                 _world.ActiveTilePosition += new BuildingGen.Vector3(0, 0, 1);
                 break;
             case Keys.NumPad1:
-                _world.ActiveTilePosition += new BuildingGen.Vector3(0, -1, 0);
+                if (_world.ActiveTilePosition.Y > 0 )
+                    _world.ActiveTilePosition += new BuildingGen.Vector3(0, -1, 0);
                 break;
             case Keys.NumPad3:
                 _world.ActiveTilePosition += new BuildingGen.Vector3(0, 1, 0);

@@ -23,7 +23,7 @@ public class Camera
     
     public void SetCameraSettings(Vector3 min)
     {
-        _centerOfBuilding = new Vector3((_world.Max.X - min.X) / 2, (_world.Max.Y - min.Y) / 2, (_world.Max.Z - min.Z) / 2);
+        _centerOfBuilding = new Vector3((_world.Max.X - min.X) / 2, (_world.Max.Z - min.Z) / 2, (_world.Max.Y - min.Y) / 2);
         var zoom = MathHelper.Max(_world.Max.X, MathHelper.Max(_world.Max.Y, _world.Max.Z)) * 1.2f + 10;
         _cameraPosition = new Vector3(0, -_centerOfBuilding.Z + 2, zoom);
         _cameraTarget = new Vector3(0, _centerOfBuilding.Z - 2, -zoom);
@@ -39,6 +39,8 @@ public class Camera
         _core.WorldMatrix *= Matrix.CreateRotationX(MathHelper.ToRadians(45));
     }
 
+    private int _pitchDegree = 45;
+    
     public void Update()
     {
         if (!IsActive)
@@ -46,30 +48,47 @@ public class Camera
         
         if (Keyboard.GetState().IsKeyDown(Keys.Up))
         {
+            if (_pitchDegree >= 90)
+                return;
+            _pitchDegree += 1;
             _core.WorldMatrix *= Matrix.CreateRotationX(MathHelper.ToRadians(1));
         }
 
         if (Keyboard.GetState().IsKeyDown(Keys.Down))
         {
+            if (_pitchDegree <= -90)
+                return;
+            _pitchDegree -= 1;
             _core.WorldMatrix *= Matrix.CreateRotationX(-1 * MathHelper.ToRadians(1));
         }
 
         if (Keyboard.GetState().IsKeyDown(Keys.Left))
         {
+            
+            _core.WorldMatrix *= Matrix.CreateRotationX(-1 * MathHelper.ToRadians(_pitchDegree));
             _core.WorldMatrix *= Matrix.CreateRotationY(MathHelper.ToRadians(1));
+            _core.WorldMatrix *= Matrix.CreateRotationX(MathHelper.ToRadians(_pitchDegree));
         }
 
         if (Keyboard.GetState().IsKeyDown(Keys.Right))
         {
+            _core.WorldMatrix *= Matrix.CreateRotationX(-1 * MathHelper.ToRadians(_pitchDegree));
             _core.WorldMatrix *= Matrix.CreateRotationY(-1 * MathHelper.ToRadians(1));
+            _core.WorldMatrix *= Matrix.CreateRotationX(MathHelper.ToRadians(_pitchDegree));
         }
 
         if (Keyboard.GetState().IsKeyDown(Keys.Space))
         {
+            var min = new Vector3();
+            _centerOfBuilding = new Vector3((_world.Max.X - min.X) / 2, (_world.Max.Z- min.Z) / 2, (_world.Max.Y - min.Y) / 2);
             _core.WorldMatrix =
                 Matrix.CreateWorld(
-                    new Vector3(-_centerOfBuilding.X - 0.5f, -_centerOfBuilding.Z + 0.5f,
-                        -_centerOfBuilding.Y - 0.5f), new Vector3(0, 0, -1), Vector3.Up);
+                    new Vector3(-_centerOfBuilding.X - 0.5f, -_centerOfBuilding.Y + 0.5f,
+                        -_centerOfBuilding.Z - 0.5f), new Vector3(0, 0, -1), Vector3.Up);
+            
+            _core.WorldMatrix *= Matrix.CreateRotationY(MathHelper.ToRadians(180 - 45));
+            _core.WorldMatrix *= Matrix.CreateRotationX(MathHelper.ToRadians(45));
+            _pitchDegree = 45;
         }
 
         if (Keyboard.GetState().IsKeyDown(Keys.Z))

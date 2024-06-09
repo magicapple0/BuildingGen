@@ -8,7 +8,7 @@ namespace Visualize;
 
 public class World
 {
-    private Dictionary<BuildingGen.Vector3, Tile> _tiles;
+    public Dictionary<BuildingGen.Vector3, Tile> Tiles { get; private set; }
     private readonly TextureManager _textureManager;
     private readonly Core _core;
     public Vector3 Max;
@@ -62,9 +62,17 @@ public class World
 
     public void PlaceActiveTile()
     {
-        var tile = new Tile(ActiveTileType);
-        _tiles[new BuildingGen.Vector3(_activeTilePosition.X, _activeTilePosition.Z, _activeTilePosition.Y)] = tile;
-        LoadTiles(_tiles);
+        var pos = new BuildingGen.Vector3(_activeTilePosition.X, _activeTilePosition.Z, _activeTilePosition.Y);
+        if (_activeTileType.Name == "air")
+        {
+            Tiles.Remove(pos);
+        }
+        else
+        {
+            var tile = new Tile(ActiveTileType);
+            Tiles[pos] = tile;   
+        }
+        LoadTiles(Tiles);
     }
 
     public void ClearActiveTile()
@@ -77,15 +85,15 @@ public class World
 
     public void LoadTiles(Dictionary<BuildingGen.Vector3, Tile> tiles)
     {
-        _tiles = tiles;
-        
+        Tiles = tiles;
+        Max = new Vector3();
         var newCubes = new List<Cube>();
 
-        foreach (var tile in _tiles)
+        foreach (var tile in Tiles)
         {
             Max.X = Math.Max(Max.X, tile.Key.X + 1);
-            Max.Y = Math.Max(Max.Y, tile.Key.Z + 1);
-            Max.Z = Math.Max(Max.Z, tile.Key.Y + 1);
+            Max.Y = Math.Max(Max.Y, tile.Key.Y + 1);
+            Max.Z = Math.Max(Max.Z, tile.Key.Z + 1);
             if (tile.Value.TileInfo.Name == "air")
                 continue;
             newCubes.Add(new Cube(_core, new Vector3(tile.Key.X, tile.Key.Z, tile.Key.Y), _textureManager.GetTexture(tile.Value)));

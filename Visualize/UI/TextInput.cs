@@ -8,6 +8,7 @@ namespace Visualize.UI;
 public class TextInput : IUiElement
 {
     private readonly TextLabel _text;
+    public string Value => _text.Value;
 
     public bool IsActive
     {

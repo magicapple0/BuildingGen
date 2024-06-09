@@ -7,6 +7,7 @@ public class TextBoxWithLabel : IUiElement
 {
     private readonly TextLabel _label;
     private readonly TextInput _input;
+    public string Value => _input.Value;
 
     public TextBoxWithLabel(string label, Vector2 position)
     {
