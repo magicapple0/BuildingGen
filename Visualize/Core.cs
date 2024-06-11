@@ -7,6 +7,7 @@ using System.Text.Json;
 using BuildingGen;
 using FontStashSharp;
 using Visualize.UI;
+using Vector3 = BuildingGen.Vector3;
 
 namespace Visualize
 {
@@ -31,6 +32,13 @@ namespace Visualize
         public Core(Dictionary<BuildingGen.Vector3, Tile> tiles)
         {
             _tiles = tiles;
+            _graphics = new GraphicsDeviceManager(this);
+            Content.RootDirectory = "Content";
+        }
+        
+        public Core()
+        {
+            _tiles = new Dictionary<Vector3, Tile>();
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
         }

@@ -134,9 +134,10 @@ public class Map2
         foreach (var cell in field)
         {
             var cluster = _tileManager.TileClusters[Int32.Parse(cell.Value.TileInfo.Name)].Tiles;
+            var size = (int)(Math.Sqrt(cluster.Count));
             foreach (var tile in cluster)
             {
-                result.Add((cell.Key.X * 3 + tile.Key.X, cell.Key.Y * 3 + tile.Key.Y), tile.Value);
+                result.Add((cell.Key.X * size + tile.Key.X, cell.Key.Y * size + tile.Key.Y), tile.Value);
             }
         }
 

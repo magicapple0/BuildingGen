@@ -1,4 +1,6 @@
-﻿namespace BuildingGen;
+﻿using System.Diagnostics;
+
+namespace BuildingGen;
 
 public class WaveFunction
 {
@@ -17,12 +19,16 @@ public class WaveFunction
     public bool Run()
     {
         var n = 1;
+        var sw = new Stopwatch();
+        sw.Start();
         CurrState.Wave();
+        sw.Stop();
+        Console.Write(sw.Elapsed);
         if (CurrState.IsCollapse())
             return true;
+        CurrState.Neighbors.Add((1, 1, 1));
         _previousStates.Push(CurrState);
         CurrState = CurrState.Copy();
-        CurrState.Neighbors.Add((1, 1, 1));
         
         while (true)
         {

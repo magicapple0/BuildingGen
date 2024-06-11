@@ -1,0 +1,27 @@
+﻿[
+  {
+    "Name": "square",
+    "Texture": null,
+    "Color": "8c188a"
+  },
+  {
+    "Name": "road",
+    "Texture": null,
+    "Color": "1c1c1c"
+  },
+  {
+    "Name": "turn",
+    "Texture": null,
+    "Color": "FFF000"
+  },
+  {
+    "Name": "cross",
+    "Texture": null,
+    "Color": "FFFFFF"
+  },
+  {
+    "Name": "grass",
+    "Texture": null,
+    "Color": "3C896D"
+  }
+]
