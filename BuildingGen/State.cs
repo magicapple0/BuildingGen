@@ -69,14 +69,22 @@ public class State
             Neighbors.Add(neighbor.Item1);
         Neighbors.Remove(cell);
     }
-    
+
+    private static Dictionary<string, (Tile[] newNeighborTiles, Tile[] newCurrCellTiles)> UpdateCellCache = new();
+
     private void UpdateCellTiles(Vector3 currCell, Vector3 changingCell, Directions direction)
     {
+        var cacheKey =
+            $"{direction}|{string.Join(';', Map.Field[currCell].Select(x => x.StringRep))}|{string.Join(';', Map.Field[changingCell].Select(x => x.StringRep))}";
+        if (UpdateCellCache.TryGetValue(cacheKey, out var value))
+        {
+            var (newNeighborT, newCurrCellT) = value;
+            Map.Field[changingCell] = (Tile[])newNeighborT.Clone();
+            Map.Field[currCell] = (Tile[])newCurrCellT.Clone();
+            return;
+        }
         var neighborCellDirection = DirectionConstants.CellOppositeSides[direction].Item1;
         var currCellDirection = DirectionConstants.CellOppositeSides[direction].Item2;
-        if (currCell == (2, 2, 2) && changingCell == (2, 2, 3))
-            currCell = (2, 2, 2);
-
         var newNeighborTiles = new List<Tile>();
         var newCurrCellTiles = new List<Tile>();
         //если текущая клетка может соседствовать с выбранным соседом (в этом направлении) и наоборот
@@ -92,6 +100,7 @@ public class State
                 }
         Map.Field[changingCell] = newNeighborTiles.ToArray();
         Map.Field[currCell] = newCurrCellTiles.ToArray();
+        UpdateCellCache[cacheKey] = (Map.Field[changingCell], Map.Field[currCell]);
     }
     
     public bool IsCollapse()

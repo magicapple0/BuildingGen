@@ -2,9 +2,21 @@
 {
     public class Tile
     {
+        private string[][] _modifiedEdges;
+        public string StringRep { get; private set; }
         public TileInfo TileInfo { get; set; }
         public int Id { get; set; }
-        public string[][] ModifiedEdges { get; set; }
+
+        public string[][] ModifiedEdges
+        {
+            get => _modifiedEdges;
+            set
+            {
+                _modifiedEdges = value;
+                StringRep = GetStringRep();
+            }
+        }
+
         public string[]? ModifiedTextures { get; set; }
         public List<TileModifiers> Modifiers { get; set; }
 
@@ -67,22 +79,30 @@
 
         public override bool Equals(object? obj)
         {
-            if (!(obj is Tile))
+            if (!(obj is Tile tile))
                 return false;
-            if (obj.GetHashCode() != GetHashCode())
+            return StringRep == tile.StringRep;
+            /*if (obj.GetHashCode() != GetHashCode())
                 return false;
             if (!((Tile) obj).TileInfo.Name.Equals(TileInfo.Name))
                 return false;
             for (var i = 0; i < 6; i++)
             {
-                if (ModifiedEdges[i].Length != ((Tile)obj).ModifiedEdges[i].Length)
+                if (ModifiedEdges[i].Length != (tile).ModifiedEdges[i].Length)
                     return false;
                 for (var j = 0; j < ModifiedEdges[i].Length; j++)
-                    if (!ModifiedEdges[i][j].Equals(((Tile)obj).ModifiedEdges[i][j]))
+                    if (!ModifiedEdges[i][j].Equals(tile.ModifiedEdges[i][j]))
                         return false;
-            }
+            }*/
 
             return true;
+        }
+
+        public string GetStringRep()
+        {
+            if (ModifiedEdges == null)
+                return $"{TileInfo.Name}:null";
+            return $"{TileInfo.Name}:{string.Join('/', ModifiedEdges.Select(x => string.Join(',', x)))}";
         }
     }
 }
