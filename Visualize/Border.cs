@@ -1,10 +1,11 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Linq;
 
 namespace Visualize;
 
-public class Border
+public class Border : IDisposable
 {
     private Vector3 _position;
     private Vector3 _size;
@@ -98,5 +99,12 @@ public class Border
             pass.Apply();
             _game.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.LineList, 0, 0, 12);
         }
+    }
+
+    public void Dispose()
+    {
+        _effect?.Dispose();
+        _vertexBuffer?.Dispose();
+        _indexBuffer?.Dispose();
     }
 }

@@ -1,10 +1,11 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 
 namespace Visualize
 {
-    public class Quad
+    public class Quad : IDisposable
     {
         private VertexPositionTexture[] _vertices;
         private short[] _indices;
@@ -76,5 +77,10 @@ namespace Visualize
                 );
         }
 
+        public void Dispose()
+        {
+            _effect?.Dispose();
+            _texture?.Dispose();
+        }
     }
 }

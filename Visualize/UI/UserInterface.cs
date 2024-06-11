@@ -84,8 +84,9 @@ public class UserInterface
         var path = $"saves/{_fileInput.Value}.json";
         try
         {
+            _errorLabel.Value = "Loading...";
             var fieldJson = File.ReadAllText(path);
-            var tiles = JsonSerializer.Deserialize<KeyValuePair<BuildingGen.Vector3, Tile>[]>(fieldJson)
+            var tiles = JsonSerializer.Deserialize<KeyValuePair<Vector3, Tile>[]>(fieldJson)
                 .ToDictionary(x => x.Key, x => x.Value);
             _world.LoadTiles(tiles);
             _errorLabel.Value = "Loaded";

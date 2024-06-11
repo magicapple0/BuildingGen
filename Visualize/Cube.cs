@@ -1,9 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Visualize
 {
-    public class Cube
+    public class Cube : IDisposable
     {
         public Vector3 Position { get; }
         private readonly Core _game;
@@ -53,6 +54,15 @@ namespace Visualize
             foreach (var face in _faces)
             {
                 face.Draw();
+            }
+        }
+
+        public void Dispose()
+        {
+            _effect?.Dispose();
+            foreach (var face in _faces)
+            {
+                face.Dispose();
             }
         }
     }

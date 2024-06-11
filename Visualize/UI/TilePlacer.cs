@@ -57,25 +57,25 @@ public class TilePlacer : IUiElement
                 _world.ActiveTileType = _core.Tileset[curTileInfoId];
                 break;
             case Keys.NumPad8:
-                _world.ActiveTilePosition += new BuildingGen.Vector3(1, 0, 0);
+                _world.ActiveTilePosition += new Vector3(1, 0, 0);
                 break;
             case Keys.NumPad4:
                 if (_world.ActiveTilePosition.Z > 0 )
-                    _world.ActiveTilePosition += new BuildingGen.Vector3(0, 0, -1);
+                    _world.ActiveTilePosition += new Vector3(0, 0, -1);
                 break;
             case Keys.NumPad5:
                 if (_world.ActiveTilePosition.X > 0 )
-                    _world.ActiveTilePosition += new BuildingGen.Vector3(-1, 0, 0);
+                    _world.ActiveTilePosition += new Vector3(-1, 0, 0);
                 break;
             case Keys.NumPad6:
-                _world.ActiveTilePosition += new BuildingGen.Vector3(0, 0, 1);
+                _world.ActiveTilePosition += new Vector3(0, 0, 1);
                 break;
             case Keys.NumPad1:
                 if (_world.ActiveTilePosition.Y > 0 )
-                    _world.ActiveTilePosition += new BuildingGen.Vector3(0, -1, 0);
+                    _world.ActiveTilePosition += new Vector3(0, -1, 0);
                 break;
             case Keys.NumPad3:
-                _world.ActiveTilePosition += new BuildingGen.Vector3(0, 1, 0);
+                _world.ActiveTilePosition += new Vector3(0, 1, 0);
                 break;
             case Keys.Enter:
                 _world.PlaceActiveTile();

@@ -13,22 +13,31 @@ public class World
     private readonly Core _core;
     public Vector3 Max;
     private Border _border;
-    private List<Cube> _cubes = new();
+    private Dictionary<Vector3, Cube> _cubes = new();
     private Cube _activeCube;
     private Border _activeCubeBorder;
     private TileInfo _activeTileType;
-    private BuildingGen.Vector3 _activeTilePosition;
+    private Vector3 _activeTilePosition;
     private int _activeTileRotation;
+    private readonly object _activeLock = new ();
 
-    public BuildingGen.Vector3 ActiveTilePosition
+    public Vector3 ActiveTilePosition
     {
         get => _activeTilePosition;
         set
         {
-            _activeTilePosition = value;
-            var pos = new Vector3(_activeTilePosition.X, _activeTilePosition.Y, _activeTilePosition.Z);
-            _activeCubeBorder = new Border(_core, pos, new Vector3(1));
-            _activeCube = new Cube(_core, pos,  _textureManager.GetTexture( new Tile(_activeTileType)));
+            lock (_activeLock)
+            {
+                _activeTilePosition = value;
+                var pos = new Vector3(_activeTilePosition.X, _activeTilePosition.Y, _activeTilePosition.Z);
+                if (_activeCube != null)
+                {
+                    _activeCube.Dispose();
+                    _activeCubeBorder.Dispose();
+                }
+                _activeCubeBorder = new Border(_core, pos, new Vector3(1));
+                _activeCube = new Cube(_core, pos,  _textureManager.GetTexture( new Tile(_activeTileType)));   
+            }
         }
     }
 
@@ -37,10 +46,18 @@ public class World
         get => _activeTileType;
         set
         {
-            _activeTileType = value;
-            var pos = new Vector3(_activeTilePosition.X, _activeTilePosition.Y, _activeTilePosition.Z);
-            _activeCubeBorder = new Border(_core, pos, new Vector3(1));
-            _activeCube = new Cube(_core, pos,  _textureManager.GetTexture( new Tile(_activeTileType)));
+            lock (_activeLock)
+            {
+                _activeTileType = value;
+                var pos = new Vector3(_activeTilePosition.X, _activeTilePosition.Y, _activeTilePosition.Z);
+                if (_activeCube != null)
+                {
+                    _activeCube.Dispose();
+                    _activeCubeBorder.Dispose();
+                }
+                _activeCubeBorder = new Border(_core, pos, new Vector3(1));
+                _activeCube = new Cube(_core, pos,  _textureManager.GetTexture( new Tile(_activeTileType)));   
+            }
         }
     }
 
@@ -62,32 +79,53 @@ public class World
 
     public void PlaceActiveTile()
     {
-        var pos = new BuildingGen.Vector3(_activeTilePosition.X, _activeTilePosition.Z, _activeTilePosition.Y);
-        if (_activeTileType.Name == "air")
+        var pos = new BuildingGen.Vector3((int)_activeTilePosition.X, (int)_activeTilePosition.Z, (int)_activeTilePosition.Y);
+        lock (Tiles)
         {
-            Tiles.Remove(pos);
+            if (_activeTileType.Name == "air")
+            {
+                Tiles.Remove(pos);
+            }
+            else
+            {
+                var tile = new Tile(ActiveTileType);
+                Tiles[pos] = tile;   
+            }    
         }
-        else
+        
+
+        lock (_cubes)
         {
-            var tile = new Tile(ActiveTileType);
-            Tiles[pos] = tile;   
+            if (_cubes.TryGetValue(_activeTilePosition, out var oldCube))
+            {
+                oldCube.Dispose();
+            }
+            lock(_activeLock)
+            {
+                _cubes[_activeTilePosition] = _activeCube;
+                _activeCube = new Cube(_core, _activeCube.Position,
+                    _textureManager.GetTexture(new Tile(_activeTileType)));
+            }
         }
-        LoadTiles(Tiles);
+        //LoadTiles(Tiles);
     }
 
     public void ClearActiveTile()
     {
-        _activeTileType = new TileInfo("air", null, null);
-        _activeTilePosition = new BuildingGen.Vector3(0, 0, 0);
-        _activeCube = null;
-        _activeCubeBorder = null;
+        lock (_activeLock)
+        {
+            _activeTileType = new TileInfo("air", null, null);
+            _activeTilePosition = new Vector3(0, 0, 0);
+            _activeCube = null;
+            _activeCubeBorder = null;   
+        }
     }
 
     public void LoadTiles(Dictionary<BuildingGen.Vector3, Tile> tiles)
     {
         Tiles = tiles;
         Max = new Vector3();
-        var newCubes = new List<Cube>();
+        var newCubes = new Dictionary<Vector3, Cube>();
 
         foreach (var tile in Tiles)
         {
@@ -96,20 +134,34 @@ public class World
             Max.Z = Math.Max(Max.Z, tile.Key.Z + 1);
             if (tile.Value.TileInfo.Name == "air")
                 continue;
-            newCubes.Add(new Cube(_core, new Vector3(tile.Key.X, tile.Key.Z, tile.Key.Y), _textureManager.GetTexture(tile.Value)));
+            var pos = new Vector3(tile.Key.X, tile.Key.Z, tile.Key.Y);
+            newCubes[pos] = (new Cube(_core, pos, _textureManager.GetTexture(tile.Value)));
         }
-        _cubes = newCubes;
+        lock (_cubes)
+        {
+            foreach (var cube in _cubes.Values)
+            {
+                cube.Dispose();
+            }
+            _cubes = newCubes;
+        }
     }
     
     public void Draw()
     {
-        foreach (var cube in _cubes.Where(x => _activeCube == null || x.Position != _activeCube.Position))
-            cube.Draw();
+        lock (_cubes)
+        {
+            foreach (var cube in _cubes.Where(x => _activeCube == null || x.Value.Position != _activeCube.Position))
+                cube.Value.Draw();
+        }
         if (_activeCube != null)
         {
-            _activeCube.Draw();
-            _activeCubeBorder.Draw();
+            lock (_activeLock)
+            {
+                _activeCube.Draw();
+                _activeCubeBorder.Draw();
+            }
         }
-        _border.Draw();
+        //_border.Draw();
     }
 }
