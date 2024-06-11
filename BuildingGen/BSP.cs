@@ -1,19 +1,37 @@
-﻿using System.Drawing;
-
-namespace BuildingGen;
+﻿namespace BuildingGen;
 
 public static class BSP
 {
-    public static Dictionary<int, List<Vector2>> GetFoundations(Dictionary<Vector2, Tile> map, Vector2 minSize, Vector2 maxSize)
+    public static Dictionary<int, List<Vector2>> GetFoundations(Dictionary<Vector2, Tile> map, Vector2 minSize, Vector2 maxSize, Random random)
     {
         var foundations = GetRectangles(map);
         foundations = DeleteSmallRectangles(foundations, minSize);
-        foundations = DivideBigRectangles(foundations, maxSize);
+        while (IsBiggerRectanglesExist(foundations, maxSize))
+            foundations = DivideBigRectangles(foundations, maxSize, minSize, random);
         //Paint(foundations, map);
         return foundations;
     }
 
-    private static Dictionary<int, List<Vector2>> DivideBigRectangles(Dictionary<int, List<Vector2>> rectangles, Vector2 maxSize)
+    private static bool IsBiggerRectanglesExist(Dictionary<int, List<Vector2>> rectangles, Vector2 maxSize)
+    {
+        foreach (var rectangle in rectangles)
+        {
+            var maxPoint = rectangle.Value.Aggregate((0, 0),
+                (max, pair) => (Math.Max(max.Item1, pair.X), Math.Max(max.Item2, pair.Y)));
+            var minPoint = rectangle.Value.Aggregate((9999999999, 99999999999),
+                (min, pair) => (Math.Min(min.Item1, pair.X), Math.Min(min.Item2, pair.Y)));
+            var size = (maxPoint.Item1 - minPoint.Item1 + 1, maxPoint.Item2 - minPoint.Item2 + 1);
+            if ((size.Item1 >= maxSize.X || size.Item2 >= maxSize.Y) &&
+                (size.Item2 >= maxSize.X || size.Item1 >= maxSize.Y))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static Dictionary<int, List<Vector2>> DivideBigRectangles(Dictionary<int, List<Vector2>> rectangles, Vector2 maxSize, Vector2 minSize, Random random)
     {
         var newRectangles = new Dictionary<int, List<Vector2>>();
         var maxId = rectangles.Keys.Max() + 1;
@@ -27,7 +45,7 @@ public static class BSP
             if ((size.Item1 >= maxSize.X || size.Item2 >= maxSize.Y) &&
                 (size.Item2 >= maxSize.X || size.Item1 >= maxSize.Y))
             {
-                var smallRectangles = DivideRectangle(rectangle.Value, maxSize);
+                var smallRectangles = DivideRectangle(rectangle.Value, minSize, random);
                 foreach (var r in smallRectangles)
                 {
                     newRectangles.Add(maxId++, r);
@@ -41,7 +59,7 @@ public static class BSP
         return newRectangles;
     }
 
-    private static List<List<Vector2>> DivideRectangle(List<Vector2> rectangle, Vector2 maxSize)
+    private static List<List<Vector2>> DivideRectangle(List<Vector2> rectangle, Vector2 minSize, Random random)
     {
         var maxPoint = rectangle.Aggregate((0, 0),
             (max, pair) => (Math.Max(max.Item1, pair.X), Math.Max(max.Item2, pair.Y)));
@@ -49,8 +67,8 @@ public static class BSP
             (min, pair) => (Math.Min(min.Item1, pair.X), Math.Min(min.Item2, pair.Y)));
         var size = new Vector2((int)(maxPoint.Item1 - minPoint.Item1 + 1), (int)(maxPoint.Item2 - minPoint.Item2 + 1));
         (List<Vector2>, List<Vector2>) dividedRectangles;
-        dividedRectangles = Divide(size.X > size.Y ? new Vector2(size.X / 2, size.Y) : 
-            new Vector2(size.X, size.Y / 2), minPoint, rectangle);
+        dividedRectangles = Divide(size.X >= size.Y ? new Vector2(Math.Max(minSize.X, size.X / 2 + random.Next(0, 2) - 1), size.Y) : 
+            new Vector2(size.X, Math.Max(minSize.Y, size.Y / 2 + random.Next(0, 2) - 1)), minPoint, rectangle);
         return new List<List<Vector2>>() { dividedRectangles.Item1, dividedRectangles.Item2 };
 
     }
@@ -174,7 +192,9 @@ public static class BSP
             "6A5ACD",
             "F4A460",
             "808080",
-            "808000"
+            "808000",
+            "8FBC8F",
+            "ADD8E6"
         };
         foreach (var rectangle in rectangles)
         {

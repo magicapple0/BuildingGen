@@ -1,21 +1,23 @@
 ﻿[
   {
-    "Name": "air"
+    "Name": "square",
+    "Texture": null,
+    "Color": "8c188a"
   },
   {
-    "Name": "house",
-    "Texture": ["Textures/roof.png", "Textures/wall.png", "Textures/bottom.png", "Textures/wall.png", "Textures/wall.png", "Textures/wall.png"],
-    "Color": null
+    "Name": "road",
+    "Texture": null,
+    "Color": "1c1c1c"
   },
   {
-    "Name": "corner",
-    "Texture": ["Textures/roof.png", "Textures/bottom.png", "Textures/bottom.png", "Textures/bottom.png", "Textures/corner.png", "Textures/corner_flip.png"],
-    "Color": null
+    "Name": "turn",
+    "Texture": null,
+    "Color": "FFF000"
   },
   {
-    "Name": "roof",
-    "Texture": [ "Textures/roof.png", "Textures/roof_side.png", "Textures/bottom.png", "Textures/roof_side.png", "Textures/roof_side.png", "Textures/roof_side.png"],
-    "Color": null
+    "Name": "cross",
+    "Texture": null,
+    "Color": "FFFFFF"
   },
   {
     "Name": "grass",

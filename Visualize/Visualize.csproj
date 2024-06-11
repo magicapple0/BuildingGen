@@ -43,6 +43,9 @@
     <None Update="tiles.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="tiles1.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Icon.ico">

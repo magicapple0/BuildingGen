@@ -1,7 +1,4 @@
-﻿using System.Diagnostics;
-using System.Diagnostics.Tracing;
-
-namespace BuildingGen;
+﻿namespace BuildingGen;
 
 public class TileManager
 {
@@ -11,7 +8,7 @@ public class TileManager
     private Tile Air { get; set; }
     private List<string> UsingTiles { get; set; }
     public Dictionary<int, TileCluster> TileClusters { get; set; }
-    private int idCounter = 0;
+    private int idCounter;
     public Dictionary<Vector2, Tile> Field { get; set; }
 
     public TileManager(TileInfo[] tilesInfos)
