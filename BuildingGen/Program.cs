@@ -1,10 +1,15 @@
-﻿namespace BuildingGen;
+﻿using System.Diagnostics;
+
+namespace BuildingGen;
 
 public static class Program
 {
     public static void Main()
     {
-        GenerateFromTestField((6, 6, 10), 1);
+        var sw = Stopwatch.StartNew();
+        GenerateFromTestField((15, 15, 15), 1);
+        sw.Stop();
+        Console.Write(sw.Elapsed);
         /*var inputField = CreateExampleField3D();
         var tileManager = new TileManager(inputField);
         Console.WriteLine(inputField.Count + " " + tileManager.TileSet.Count());
@@ -30,10 +35,10 @@ public static class Program
         int n = 3;
         for (int i = 0; i < n; i++)
             for (int j = 0; j < n; j++)
-                exampleField[(i, j, 0)] = new Tile("grass", tileId++, null, "3C896D");
+                exampleField[(i, j, 0)] = new Tile("grass", null, "3C896D");
         for (int j = 0; j < 3; j++)
             for (int i = 0; i < 9; i++)
-                exampleField[(i / n, i % n, j + 1)] = new Tile("house", tileId++, houseTexture, null);
+                exampleField[(i / n, i % n, j + 1)] = new Tile("house", houseTexture, null);
         
         for (int i = 0; i < 2; i++)
         {
@@ -44,9 +49,9 @@ public static class Program
                 {
                     h += 1;
                 }
-                exampleField[(j, 0 + i, h)] = new Tile("roof", tileId++, roofTexture, null);
-                exampleField[(j, n - i - 1, h)] = new Tile("roof", tileId++, roofTexture, null);
-                exampleField[(j, 2, 5)] = new Tile("house", tileId++, houseTexture, null);
+                exampleField[(j, 0 + i, h)] = new Tile("roof",roofTexture, null);
+                exampleField[(j, n - i - 1, h)] = new Tile("roof", roofTexture, null);
+                exampleField[(j, 2, 5)] = new Tile("house", houseTexture, null);
             }
         }
         return exampleField;
@@ -74,31 +79,31 @@ public static class Program
         int n = 5;
         for (int i = 0; i < 5; i++)
             for (int j = 0; j < 5; j++)
-                exampleField[(i, j, 0)] = new Tile("grass", tileId++, null, "3C896D");
+                exampleField[(i, j, 0)] = new Tile("grass", null, "3C896D");
         for (int j = 0; j < 4; j++)
             for (int i = 0; i < 25; i++)
-                exampleField[(i / n, i % n, j + 1)] = new Tile("house", tileId++, houseTexture, null);
+                exampleField[(i / n, i % n, j + 1)] = new Tile("house", houseTexture, null);
                     
             for (int i = 0; i < 4; i++)
             {
-                exampleField[(0, 0 + n + 2, i + 1)] = new Tile("corner", tileId++, cornerTexture, null);
+                exampleField[(0, 0 + n + 2, i + 1)] = new Tile("corner",  cornerTexture, null);
                 exampleField[(0, 0 + n + 2, i + 1)].RotateZTile();
-                exampleField[(0, n - 1 + n + 2, i + 1)] = new Tile("corner", tileId++, cornerTexture, null);
+                exampleField[(0, n - 1 + n + 2, i + 1)] = new Tile("corner",  cornerTexture, null);
                 exampleField[(0, n - 1 + n + 2, i + 1)].RotateZTile();
                 exampleField[(0, n - 1 + n + 2, i + 1)].RotateZTile();
-                exampleField[(n - 1, 0 + n + 2, i + 1)] = new Tile("corner", tileId++, cornerTexture, null);
-                exampleField[(n - 1, n - 1 + n + 2, i + 1)] = new Tile("corner", tileId++, cornerTexture, null);
+                exampleField[(n - 1, 0 + n + 2, i + 1)] = new Tile("corner", cornerTexture, null);
+                exampleField[(n - 1, n - 1 + n + 2, i + 1)] = new Tile("corner",  cornerTexture, null);
                 exampleField[(n - 1, n - 1 + n + 2, i + 1)].RotateZTile(); 
                 exampleField[(n - 1, n - 1 + n + 2, i + 1)].RotateZTile();
                 exampleField[(n - 1, n - 1 + n + 2, i + 1)].RotateZTile();
                 
-                exampleField[(0, 0, i + 1)] = new Tile("corner", tileId++, cornerTexture, null);
+                exampleField[(0, 0, i + 1)] = new Tile("corner", cornerTexture, null);
                 exampleField[(0, 0, i + 1)].RotateZTile();
-                exampleField[(0, n - 1, i + 1)] = new Tile("corner", tileId++, cornerTexture, null);
+                exampleField[(0, n - 1, i + 1)] = new Tile("corner",  cornerTexture, null);
                 exampleField[(0, n - 1, i + 1)].RotateZTile();
                 exampleField[(0, n - 1, i + 1)].RotateZTile();
-                exampleField[(n - 1, 0, i + 1)] = new Tile("corner", tileId++, cornerTexture, null);
-                exampleField[(n - 1, n - 1, i + 1)] = new Tile("corner", tileId++, cornerTexture, null);
+                exampleField[(n - 1, 0, i + 1)] = new Tile("corner",  cornerTexture, null);
+                exampleField[(n - 1, n - 1, i + 1)] = new Tile("corner", cornerTexture, null);
                 exampleField[(n - 1, n - 1, i + 1)].RotateZTile(); 
                 exampleField[(n - 1, n - 1, i + 1)].RotateZTile();
                 exampleField[(n - 1, n - 1, i + 1)].RotateZTile();
@@ -114,9 +119,9 @@ public static class Program
                 {
                     h += 1;
                 }
-                exampleField[(j, 0 + i, h)] = new Tile("roof", tileId++, roofTexture, null);
-                exampleField[(j, n - i - 1, h)] = new Tile("roof", tileId++, roofTexture, null);
-                exampleField[(j, 2, 5)] = new Tile("house", tileId++, houseTexture, null);
+                exampleField[(j, 0 + i, h)] = new Tile("roof",  roofTexture, null);
+                exampleField[(j, n - i - 1, h)] = new Tile("roof",  roofTexture, null);
+                exampleField[(j, 2, 5)] = new Tile("house",  houseTexture, null);
                 /*exampleField[(j, 1, 5)] = new Tile("house", tileId++, houseTexture, null);
                 exampleField[(j, 3, 5)] = new Tile("house", tileId++, houseTexture, null);
                 exampleField[(j, 2, 6)] = new Tile("house", tileId++, houseTexture, null);*/
@@ -147,10 +152,10 @@ public static class Program
         int n = 5;
         for (int i = 0; i < 5; i++)
             for (int j = 0; j < 5; j++)
-                exampleField[(i, j, 0)] = new Tile("grass", tileId++, null, "3C896D");
+                exampleField[(i, j, 0)] = new Tile("grass",  null, "3C896D");
         for (int j = 0; j < 4; j++)
             for (int i = 0; i < 25; i++)
-                exampleField[(i / n, i % n, j + 1)] = new Tile("house", tileId++, houseTexture, null);
+                exampleField[(i / n, i % n, j + 1)] = new Tile("house",  houseTexture, null);
                     
             /*for (int i = 0; i < 4; i++)
             {
@@ -183,9 +188,9 @@ public static class Program
             for (int j = 0; j < n; j++)
             {
                 var h = i + 4;
-                exampleField[(j, 0 + i, h)] = new Tile("roof", tileId++, roofTexture, null);
-                exampleField[(j, n - i - 1, h)] = new Tile("roof", tileId++, roofTexture, null);
-                exampleField[(j, 2, 5)] = new Tile("house", tileId++, houseTexture, null);
+                exampleField[(j, 0 + i, h)] = new Tile("roof", roofTexture, null);
+                exampleField[(j, n - i - 1, h)] = new Tile("roof",  roofTexture, null);
+                exampleField[(j, 2, 5)] = new Tile("house", houseTexture, null);
             }
         }
         return exampleField;
@@ -213,19 +218,19 @@ public static class Program
         int n = 7;
         for (int i = 0; i < 7; i++)
             for (int j = 0; j < 16; j++)
-                exampleField[(i, j, 0)] = new Tile("grass", tileId++, null, "3C896D");
+                exampleField[(i, j, 0)] = new Tile("grass", null, "3C896D");
         for (int k = 0; k < 2; k++)
         {
             for (int j = 0; j < 5; j++)
                 for (int i = 0; i < 49; i++)
                 {
-                    exampleField[(i / n, i % n, j + 1)] = new Tile("house", tileId++, houseTexture, null);
-                    exampleField[(i / n, i % n + n + 2, j + 1)] = new Tile("house", tileId++, houseTexture, null);
+                    exampleField[(i / n, i % n, j + 1)] = new Tile("house", houseTexture, null);
+                    exampleField[(i / n, i % n + n + 2, j + 1)] = new Tile("house", houseTexture, null);
                     if (i / n + i % n == 0 || i / n + i % n == n - 1 || i / n + i % n == 2 * n - 2)
-                        exampleField[(i / n, i % n, j + 1)] = new Tile("corner", tileId++, cornerTexture, null);
+                        exampleField[(i / n, i % n, j + 1)] = new Tile("corner", cornerTexture, null);
                     if ((i / n == 0 && i % n + n + 2 == 9) || (i / n == 0 && i % n + n + 2 == 15) ||  
                         (i / n == 6 && i % n + n + 2 == 15) || (i / n == 6 && i % n + n + 2 == 9))
-                        exampleField[(i / n, i % n + n + 2, j + 1)] = new Tile("corner", tileId++, cornerTexture, null);
+                        exampleField[(i / n, i % n + n + 2, j + 1)] = new Tile("corner", cornerTexture, null);
                 }
         }
 
@@ -239,15 +244,15 @@ public static class Program
                 {
                     h += 1;
                 }
-                exampleField[(j, 0 + i, h)] = new Tile("roof", tileId++, roofTexture, null);
-                exampleField[(j, n - i - 1, h)] = new Tile("roof", tileId++, roofTexture, null);
-                exampleField[(j, 3, 8)] = new Tile("roof", tileId++, roofTexture, null);
+                exampleField[(j, 0 + i, h)] = new Tile("roof", roofTexture, null);
+                exampleField[(j, n - i - 1, h)] = new Tile("roof", roofTexture, null);
+                exampleField[(j, 3, 8)] = new Tile("roof", roofTexture, null);
                 exampleField.Remove((j, 0, 5));
                 exampleField.Remove((j, 6, 5));
-                exampleField[(j, 3, 6)] = new Tile("house", tileId++, houseTexture, null);
-                exampleField[(j, 2, 6)] = new Tile("house", tileId++, houseTexture, null);
-                exampleField[(j, 4, 6)] = new Tile("house", tileId++, houseTexture, null);
-                exampleField[(j, 3, 7)] = new Tile("house", tileId++, houseTexture, null);
+                exampleField[(j, 3, 6)] = new Tile("house",  houseTexture, null);
+                exampleField[(j, 2, 6)] = new Tile("house",  houseTexture, null);
+                exampleField[(j, 4, 6)] = new Tile("house",  houseTexture, null);
+                exampleField[(j, 3, 7)] = new Tile("house",  houseTexture, null);
             }
                 
         }
@@ -260,17 +265,17 @@ public static class Program
                 
                 exampleField.Remove((0, h, 5));
                 exampleField.Remove((6, h, 5));
-                exampleField[(0, h, 4)] = new Tile("roof", tileId++, roofTexture, null);
-                exampleField[(6, h, 4)] = new Tile("roof", tileId++, roofTexture, null);
-                exampleField[(1, h, 5)] = new Tile("roof", tileId++, roofTexture, null);
-                exampleField[(5, h, 5)] = new Tile("roof", tileId++, roofTexture, null);
-                exampleField[(2, h, 7)] = new Tile("roof", tileId++, roofTexture, null);
-                exampleField[(3, h, 8)] = new Tile("roof", tileId++, roofTexture, null);
-                exampleField[(4, h, 7)] = new Tile("roof", tileId++, roofTexture, null);
-                exampleField[(2, h, 6)] = new Tile("house", tileId++, houseTexture, null);
-                exampleField[(3, h, 7)] = new Tile("house", tileId++, houseTexture, null);
-                exampleField[(3, h, 6)] = new Tile("house", tileId++, houseTexture, null);
-                exampleField[(4, h, 6)] = new Tile("house", tileId++, houseTexture, null);
+                exampleField[(0, h, 4)] = new Tile("roof", roofTexture, null);
+                exampleField[(6, h, 4)] = new Tile("roof",  roofTexture, null);
+                exampleField[(1, h, 5)] = new Tile("roof", roofTexture, null);
+                exampleField[(5, h, 5)] = new Tile("roof",  roofTexture, null);
+                exampleField[(2, h, 7)] = new Tile("roof",  roofTexture, null);
+                exampleField[(3, h, 8)] = new Tile("roof",  roofTexture, null);
+                exampleField[(4, h, 7)] = new Tile("roof",  roofTexture, null);
+                exampleField[(2, h, 6)] = new Tile("house",  houseTexture, null);
+                exampleField[(3, h, 7)] = new Tile("house", houseTexture, null);
+                exampleField[(3, h, 6)] = new Tile("house",  houseTexture, null);
+                exampleField[(4, h, 6)] = new Tile("house", houseTexture, null);
                 
             }
                 
@@ -287,64 +292,64 @@ public static class Program
         int k = 6;
         for (int i = 0; i < n * n; i++)
         {
-            exampleField[(i / n, i % n)] = new Tile("grass", tileId++, null, "3C8950");
+            exampleField[(i / n, i % n)] = new Tile("grass",  null, "3C8950");
         }
 
         for (int i = 0; i < n; i++)
         {
-            exampleField[(n / 2, i)] = new Tile("road", tileId++, null, "1c1c1c");
-            exampleField[(i, n / 2)] = new Tile("road", tileId++, null, "1c1c1c");
+            exampleField[(n / 2, i)] = new Tile("road", null, "1c1c1c");
+            exampleField[(i, n / 2)] = new Tile("road",  null, "1c1c1c");
         }
         for (int i = 0; i < 3; i++)
         {
             for (int j = 0; j < 3; j++)
             {
-                exampleField[(n / 2 + i - 1, n / 2 + j - 1)] = new Tile("roundabout", tileId++, null, "8c188a");
+                exampleField[(n / 2 + i - 1, n / 2 + j - 1)] = new Tile("roundabout", null, "8c188a");
             }
         }
-        exampleField[(k + 1, n / 2)] = new Tile("cross", tileId++, null, "FFFFFF");
+        exampleField[(k + 1, n / 2)] = new Tile("cross",  null, "FFFFFF");
         for (int i = n / 2 + 1; i < n - k - 1; i++)
         {
-            exampleField[(k + 1, i)] = new Tile("road", tileId++, null, "1c1c1c");
+            exampleField[(k + 1, i)] = new Tile("road", null, "1c1c1c");
         }
         for (int i = 0; i < k + 1; i++)
         {
-            exampleField[(i, n - k - 2)] = new Tile("road", tileId++, null, "1c1c1c");
+            exampleField[(i, n - k - 2)] = new Tile("road",  null, "1c1c1c");
         }
-        exampleField[(k + 1, n - k - 2)] = new Tile("turn", tileId++, null, "FFF000");
+        exampleField[(k + 1, n - k - 2)] = new Tile("turn", null, "FFF000");
         
-        exampleField[(n / 2, k + 1)] = new Tile("cross", tileId++, null, "FFFFFF");
+        exampleField[(n / 2, k + 1)] = new Tile("cross",  null, "FFFFFF");
         for (int i = n / 2 - 1; i >= k + 1; i--)
         {
-            exampleField[(i, k + 1)] = new Tile("road", tileId++, null, "1c1c1c");
+            exampleField[(i, k + 1)] = new Tile("road", null, "1c1c1c");
         }
-        exampleField[(k + 1, k + 1)] = new Tile("turn", tileId++, null, "FFF000");
+        exampleField[(k + 1, k + 1)] = new Tile("turn",  null, "FFF000");
         for (int i = 0; i < k + 1; i++)
         {
-            exampleField[(k + 1, i)] = new Tile("road", tileId++, null, "1c1c1c");
+            exampleField[(k + 1, i)] = new Tile("road",  null, "1c1c1c");
         }
         
         for (int i = n - 1; i >= n - k - 1; i--)
         {
-            exampleField[(i, k + 1)] = new Tile("road", tileId++, null, "1c1c1c");
+            exampleField[(i, k + 1)] = new Tile("road",  null, "1c1c1c");
         }
         for (int i = n / 2 - 1; i >= k + 1; i--)
         {
-            exampleField[(n - k - 2, i)] = new Tile("road", tileId++, null, "1c1c1c");
+            exampleField[(n - k - 2, i)] = new Tile("road",  null, "1c1c1c");
         }
-        exampleField[(n - k - 2, k + 1)] = new Tile("turn", tileId++, null, "FFF000");
-        exampleField[(n - k - 2, n / 2)] = new Tile("cross", tileId++, null, "FFFFFF");
+        exampleField[(n - k - 2, k + 1)] = new Tile("turn",  null, "FFF000");
+        exampleField[(n - k - 2, n / 2)] = new Tile("cross",  null, "FFFFFF");
         
         for (int i = n - k - 1; i < n; i++)
         {
-            exampleField[(n - k - 2, i)] = new Tile("road", tileId++, null, "1c1c1c");
+            exampleField[(n - k - 2, i)] = new Tile("road",  null, "1c1c1c");
         }
         for (int i = n / 2; i < n - k - 1; i++)
         {
-            exampleField[(i, n - k - 2)] = new Tile("road", tileId++, null, "1c1c1c");
+            exampleField[(i, n - k - 2)] = new Tile("road",  null, "1c1c1c");
         }
-        exampleField[(n - k - 2, n - k - 2)] = new Tile("turn", tileId++, null, "FFF000");
-        exampleField[(n / 2, n - k - 2)] = new Tile("cross", tileId++, null, "FFFFFF");
+        exampleField[(n - k - 2, n - k - 2)] = new Tile("turn",  null, "FFF000");
+        exampleField[(n / 2, n - k - 2)] = new Tile("cross", null, "FFFFFF");
         return exampleField;
     }
     
@@ -358,114 +363,114 @@ public static class Program
         for (int i = 0; i < n * n; i++)
         {
             //if ((i / n + i % n) % 2 == 0)
-                exampleField[(i / n, i % n)] = new Tile("grass", tileId++, null, "3C8950");
+                exampleField[(i / n, i % n)] = new Tile("grass", null, "3C8950");
             /*else
                 exampleField[(i / n, i % n)] = new Tile("grass", tileId++, null, "3C8990");*/
         }
 
         for (int i = 0; i < n; i++)
         {
-            exampleField[(n / 2, i)] = new Tile("road", tileId++, null, "1c1c1c");
-            exampleField[(i, n / 2)] = new Tile("road", tileId++, null, "1c1c1c");
-            exampleField[(n / 2 - 1, i)] = new Tile("road", tileId++, null, "1c1c1c");
-            exampleField[(i, n / 2 - 1)] = new Tile("road", tileId++, null, "1c1c1c");
+            exampleField[(n / 2, i)] = new Tile("road",  null, "1c1c1c");
+            exampleField[(i, n / 2)] = new Tile("road",  null, "1c1c1c");
+            exampleField[(n / 2 - 1, i)] = new Tile("road",  null, "1c1c1c");
+            exampleField[(i, n / 2 - 1)] = new Tile("road",  null, "1c1c1c");
         }
         for (int i = 0; i < 4; i++)
         {
             for (int j = 0; j < 4; j++)
             {
-                exampleField[(n / 2 + i - 2, n / 2 + j - 2)] = new Tile("square", tileId++, null, "8c188a");
+                exampleField[(n / 2 + i - 2, n / 2 + j - 2)] = new Tile("square",  null, "8c188a");
             }
         }
-        exampleField[(15 + 8, 12 + 8)] = new Tile("square", tileId++, null, "8c188a");
-        exampleField[(15 + 8, 13 + 8)] = new Tile("square", tileId++, null, "8c188a");
-        exampleField[(13 + 8, 10 + 8)] = new Tile("square", tileId++, null, "8c188a");
-        exampleField[(12 + 8, 10 + 8)] = new Tile("square", tileId++, null, "8c188a");
-        exampleField[(13 + 8, 15 + 8)] = new Tile("square", tileId++, null, "8c188a");
-        exampleField[(12 + 8, 15 + 8)] = new Tile("square", tileId++, null, "8c188a");
-        exampleField[(10 + 8, 12 + 8)] = new Tile("square", tileId++, null, "8c188a");
-        exampleField[(10 + 8, 13 + 8)] = new Tile("square", tileId++, null, "8c188a");
+        exampleField[(15 + 8, 12 + 8)] = new Tile("square",  null, "8c188a");
+        exampleField[(15 + 8, 13 + 8)] = new Tile("square",  null, "8c188a");
+        exampleField[(13 + 8, 10 + 8)] = new Tile("square",  null, "8c188a");
+        exampleField[(12 + 8, 10 + 8)] = new Tile("square", null, "8c188a");
+        exampleField[(13 + 8, 15 + 8)] = new Tile("square",  null, "8c188a");
+        exampleField[(12 + 8, 15 + 8)] = new Tile("square", null, "8c188a");
+        exampleField[(10 + 8, 12 + 8)] = new Tile("square",  null, "8c188a");
+        exampleField[(10 + 8, 13 + 8)] = new Tile("square", null, "8c188a");
         
         for (int i = n / 2 + 1; i < n - k - 1; i++)
         {
-            exampleField[(k + 1, i)] = new Tile("road", tileId++, null, "1c1c1c");
-            exampleField[(k, i)] = new Tile("road", tileId++, null, "1c1c1c");
+            exampleField[(k + 1, i)] = new Tile("road", null, "1c1c1c");
+            exampleField[(k, i)] = new Tile("road",  null, "1c1c1c");
         }
         for (int i = 0; i < k + 1; i++)
         {
-            exampleField[(i, n - k - 2)] = new Tile("road", tileId++, null, "1c1c1c");
-            exampleField[(i, n - k - 1)] = new Tile("road", tileId++, null, "1c1c1c");
+            exampleField[(i, n - k - 2)] = new Tile("road",  null, "1c1c1c");
+            exampleField[(i, n - k - 1)] = new Tile("road",  null, "1c1c1c");
         }
-        exampleField[(k + 1, n - k - 2)] = new Tile("turn", tileId++, null, "FFF000");
-        exampleField[(k, n - k - 2)] = new Tile("turn", tileId++, null, "FFF000");
-        exampleField[(k + 1, n - k - 1)] = new Tile("turn", tileId++, null, "FFF000");
-        exampleField[(k, n - k - 1)] = new Tile("turn", tileId++, null, "FFF000");
+        exampleField[(k + 1, n - k - 2)] = new Tile("turn",  null, "FFF000");
+        exampleField[(k, n - k - 2)] = new Tile("turn",  null, "FFF000");
+        exampleField[(k + 1, n - k - 1)] = new Tile("turn",  null, "FFF000");
+        exampleField[(k, n - k - 1)] = new Tile("turn",  null, "FFF000");
         
-        exampleField[(k + 1, n / 2)] = new Tile("cross", tileId++, null, "FFFFFF");
-        exampleField[(k, n / 2)] = new Tile("cross", tileId++, null, "FFFFFF");
-        exampleField[(k + 1, n / 2 - 1)] = new Tile("cross", tileId++, null, "FFFFFF");
-        exampleField[(k, n / 2 - 1)] = new Tile("cross", tileId++, null, "FFFFFF");
+        exampleField[(k + 1, n / 2)] = new Tile("cross",  null, "FFFFFF");
+        exampleField[(k, n / 2)] = new Tile("cross",  null, "FFFFFF");
+        exampleField[(k + 1, n / 2 - 1)] = new Tile("cross",  null, "FFFFFF");
+        exampleField[(k, n / 2 - 1)] = new Tile("cross",  null, "FFFFFF");
         
 
         for (int i = n / 2 - 1; i >= k + 1; i--)
         {
-            exampleField[(i, k + 1)] = new Tile("road", tileId++, null, "1c1c1c");
-            exampleField[(i, k)] = new Tile("road", tileId++, null, "1c1c1c");
+            exampleField[(i, k + 1)] = new Tile("road", null, "1c1c1c");
+            exampleField[(i, k)] = new Tile("road",  null, "1c1c1c");
         }
         for (int i = 0; i < k + 1; i++)
         {
-            exampleField[(k + 1, i)] = new Tile("road", tileId++, null, "1c1c1c");
-            exampleField[(k, i)] = new Tile("road", tileId++, null, "1c1c1c");
+            exampleField[(k + 1, i)] = new Tile("road",  null, "1c1c1c");
+            exampleField[(k, i)] = new Tile("road", null, "1c1c1c");
         }
-        exampleField[(k + 1, k + 1)] = new Tile("turn", tileId++, null, "FFF000");
-        exampleField[(k, k + 1)] = new Tile("turn", tileId++, null, "FFF000");
-        exampleField[(k + 1, k)] = new Tile("turn", tileId++, null, "FFF000");
-        exampleField[(k, k)] = new Tile("turn", tileId++, null, "FFF000");
+        exampleField[(k + 1, k + 1)] = new Tile("turn",  null, "FFF000");
+        exampleField[(k, k + 1)] = new Tile("turn",  null, "FFF000");
+        exampleField[(k + 1, k)] = new Tile("turn",  null, "FFF000");
+        exampleField[(k, k)] = new Tile("turn",  null, "FFF000");
         
-        exampleField[(n / 2, k + 1)] = new Tile("cross", tileId++, null, "FFFFFF");
-        exampleField[(n / 2 - 1, k + 1)] = new Tile("cross", tileId++, null, "FFFFFF");
-        exampleField[(n / 2, k)] = new Tile("cross", tileId++, null, "FFFFFF");
-        exampleField[(n / 2 - 1, k)] = new Tile("cross", tileId++, null, "FFFFFF");
+        exampleField[(n / 2, k + 1)] = new Tile("cross",null, "FFFFFF");
+        exampleField[(n / 2 - 1, k + 1)] = new Tile("cross", null, "FFFFFF");
+        exampleField[(n / 2, k)] = new Tile("cross",  null, "FFFFFF");
+        exampleField[(n / 2 - 1, k)] = new Tile("cross",  null, "FFFFFF");
         
         for (int i = n - 1; i >= n - k - 1; i--)
         {
-            exampleField[(i, k + 1)] = new Tile("road", tileId++, null, "1c1c1c");
-            exampleField[(i, k)] = new Tile("road", tileId++, null, "1c1c1c");
+            exampleField[(i, k + 1)] = new Tile("road",  null, "1c1c1c");
+            exampleField[(i, k)] = new Tile("road",  null, "1c1c1c");
         }
         for (int i = n / 2 - 1; i >= k + 1; i--)
         {
-            exampleField[(n - k - 2, i)] = new Tile("road", tileId++, null, "1c1c1c");
-            exampleField[(n - k - 1, i)] = new Tile("road", tileId++, null, "1c1c1c");
+            exampleField[(n - k - 2, i)] = new Tile("road",  null, "1c1c1c");
+            exampleField[(n - k - 1, i)] = new Tile("road",  null, "1c1c1c");
         }
-        exampleField[(n - k - 2, k + 1)] = new Tile("turn", tileId++, null, "FFF000");
-        exampleField[(n - k - 1, k + 1)] = new Tile("turn", tileId++, null, "FFF000");
-        exampleField[(n - k - 2, k)] = new Tile("turn", tileId++, null, "FFF000");
-        exampleField[(n - k - 1, k)] = new Tile("turn", tileId++, null, "FFF000");
+        exampleField[(n - k - 2, k + 1)] = new Tile("turn",  null, "FFF000");
+        exampleField[(n - k - 1, k + 1)] = new Tile("turn",  null, "FFF000");
+        exampleField[(n - k - 2, k)] = new Tile("turn",  null, "FFF000");
+        exampleField[(n - k - 1, k)] = new Tile("turn", null, "FFF000");
         
-        exampleField[(n - k - 2, n / 2)] = new Tile("cross", tileId++, null, "FFFFFF");
-        exampleField[(n - k - 1, n / 2)] = new Tile("cross", tileId++, null, "FFFFFF");
-        exampleField[(n - k - 2, n / 2 - 1)] = new Tile("cross", tileId++, null, "FFFFFF");
-        exampleField[(n - k - 1, n / 2 - 1)] = new Tile("cross", tileId++, null, "FFFFFF");
+        exampleField[(n - k - 2, n / 2)] = new Tile("cross",  null, "FFFFFF");
+        exampleField[(n - k - 1, n / 2)] = new Tile("cross",  null, "FFFFFF");
+        exampleField[(n - k - 2, n / 2 - 1)] = new Tile("cross",  null, "FFFFFF");
+        exampleField[(n - k - 1, n / 2 - 1)] = new Tile("cross",  null, "FFFFFF");
         
         for (int i = n - k - 1; i < n; i++)
         {
-            exampleField[(n - k - 2, i)] = new Tile("road", tileId++, null, "1c1c1c");
-            exampleField[(n - k - 1, i)] = new Tile("road", tileId++, null, "1c1c1c");
+            exampleField[(n - k - 2, i)] = new Tile("road",  null, "1c1c1c");
+            exampleField[(n - k - 1, i)] = new Tile("road",  null, "1c1c1c");
         }
         for (int i = n / 2; i < n - k - 1; i++)
         {
-            exampleField[(i, n - k - 2)] = new Tile("road", tileId++, null, "1c1c1c");
-            exampleField[(i, n - k - 1)] = new Tile("road", tileId++, null, "1c1c1c");
+            exampleField[(i, n - k - 2)] = new Tile("road", null, "1c1c1c");
+            exampleField[(i, n - k - 1)] = new Tile("road",  null, "1c1c1c");
         }
-        exampleField[(n - k - 2, n - k - 2)] = new Tile("turn", tileId++, null, "FFF000");
-        exampleField[(n - k - 1, n - k - 2)] = new Tile("turn", tileId++, null, "FFF000");
-        exampleField[(n - k - 2, n - k - 1)] = new Tile("turn", tileId++, null, "FFF000");
-        exampleField[(n - k - 1, n - k - 1)] = new Tile("turn", tileId++, null, "FFF000");
+        exampleField[(n - k - 2, n - k - 2)] = new Tile("turn", null, "FFF000");
+        exampleField[(n - k - 1, n - k - 2)] = new Tile("turn",  null, "FFF000");
+        exampleField[(n - k - 2, n - k - 1)] = new Tile("turn", null, "FFF000");
+        exampleField[(n - k - 1, n - k - 1)] = new Tile("turn",  null, "FFF000");
         
-        exampleField[(n / 2, n - k - 2)] = new Tile("cross", tileId++, null, "FFFFFF");
-        exampleField[(n / 2 - 1, n - k - 2)] = new Tile("cross", tileId++, null, "FFFFFF");
-        exampleField[(n / 2, n - k - 1)] = new Tile("cross", tileId++, null, "FFFFFF");
-        exampleField[(n / 2 - 1, n - k - 1)] = new Tile("cross", tileId++, null, "FFFFFF");
+        exampleField[(n / 2, n - k - 2)] = new Tile("cross",  null, "FFFFFF");
+        exampleField[(n / 2 - 1, n - k - 2)] = new Tile("cross",  null, "FFFFFF");
+        exampleField[(n / 2, n - k - 1)] = new Tile("cross", null, "FFFFFF");
+        exampleField[(n / 2 - 1, n - k - 1)] = new Tile("cross",  null, "FFFFFF");
         return exampleField;
     }
     

@@ -2,6 +2,8 @@
 {
     public class Tile
     {
+        private static int _idCounter;
+        
         private string[][] _modifiedEdges;
         public string StringRep { get; private set; }
         public TileInfo TileInfo { get; set; }
@@ -23,17 +25,17 @@
         public Tile() { }
 
         public Tile(TileInfo tileInfo, int id = -1) {
+            Id = id >= 0 ? id : _idCounter++;
             TileInfo = tileInfo;
-            Id = id;
             ModifiedEdges = (string[][])tileInfo.Edges?.Clone();
             Modifiers = new List<TileModifiers>();
             if (tileInfo.Texture != null) ModifiedTextures = (string[])tileInfo.Texture.Clone();
             
         }
         
-        public Tile(String name, int id, String[] textures, string color)
+        public Tile(String name, String[] textures, string color, int id = -1)
         {
-            Id = id;
+            Id = id >= 0 ? id : _idCounter++;
             TileInfo = new TileInfo(name, textures, color);
             ModifiedEdges = null;
             Modifiers = new List<TileModifiers>();

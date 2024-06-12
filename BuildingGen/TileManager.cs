@@ -60,7 +60,7 @@ public class TileManager
             {
                 tileCuster = tileClusterList[tileClusterList.IndexOf(tileCuster)];
             }
-            newField.Add((currCell.X / size, currCell.Y / size), new Tile(tileCuster.Name, 0, null, null));
+            newField.Add((currCell.X / size, currCell.Y / size), new Tile(tileCuster.Name, null, null, 0));
             if (field.ContainsKey((currCell.X + size, currCell.Y)))
             {
                 currCell = (currCell.X + size, currCell.Y);
@@ -128,7 +128,7 @@ public class TileManager
                 new []{"air", "bound"},
                 new []{"air", "bound"},
                 new []{"air", "bound"}
-            } , false, false, false, null, null), idCounter++);
+            } , false, false, false, null, null));
         AddUsingTiles(Air);
         Air.ModifiedEdges = Air.TileInfo.Edges;
 
@@ -140,7 +140,7 @@ public class TileManager
                 new []{"air", "bound"},
                 new []{"air", "bound"},
                 new []{"air", "bound"}
-            }, false, false, false, null, null), idCounter++);
+            }, false, false, false, null, null));
         AddUsingTiles(Bound); 
         Bound.ModifiedEdges = Bound.TileInfo.Edges;
         InitializeGround();
@@ -285,7 +285,7 @@ public class TileManager
     {
         var tiles = new List<Tile>
         {
-            new (tileInfo, idCounter++)
+            new (tileInfo)
         };
         if (tileInfo.FlipX)
         {
@@ -324,7 +324,7 @@ public class TileManager
                 new []{"air", "bound"},
                 new []{"air", "bound"},
                 new []{"air", "bound"}
-            } , false, false, false, null, null), idCounter++);
+            } , false, false, false, null, null));
         AddUsingTiles(Air);
         Air.ModifiedEdges = Air.TileInfo.Edges;
     }
@@ -339,7 +339,7 @@ public class TileManager
                 new []{"air", "bound"},
                 new []{"air", "bound"},
                 new []{"air", "bound"}
-            }, false, false, false, null, null), idCounter++);
+            }, false, false, false, null, null));
         AddUsingTiles(Bound); 
         Bound.ModifiedEdges = Bound.TileInfo.Edges;
     }
@@ -354,7 +354,7 @@ public class TileManager
                 new []{"ground"},
                 new []{"ground"},
                 new []{"ground"}
-            },false, false, false, null, null), idCounter++);
+            },false, false, false, null, null));
         var groundNeighbors = new List<string>(UsingTiles);
         groundNeighbors.AddRange(new List<string>(Ground.TileInfo.Edges[0]));
         Ground.TileInfo.Edges[0] = groundNeighbors.ToArray();

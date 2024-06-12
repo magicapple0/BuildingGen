@@ -85,18 +85,16 @@ public class State
         }
         var neighborCellDirection = DirectionConstants.CellOppositeSides[direction].Item1;
         var currCellDirection = DirectionConstants.CellOppositeSides[direction].Item2;
-        var newNeighborTiles = new List<Tile>();
-        var newCurrCellTiles = new List<Tile>();
+        var newNeighborTiles = new HashSet<Tile>();
+        var newCurrCellTiles = new HashSet<Tile>();
         //если текущая клетка может соседствовать с выбранным соседом (в этом направлении) и наоборот
         foreach (var currCellTile in Map.Field[currCell])
             foreach (var oldNeighborTile in Map.Field[changingCell])
                 if (currCellTile.ModifiedEdges[currCellDirection].Contains(oldNeighborTile.TileInfo.Name) &&
                     oldNeighborTile.ModifiedEdges[neighborCellDirection].Contains(currCellTile.TileInfo.Name))
                 {
-                    if (!newNeighborTiles.Contains(oldNeighborTile))
-                        newNeighborTiles.Add(oldNeighborTile);
-                    if (!newCurrCellTiles.Contains(currCellTile))
-                        newCurrCellTiles.Add(currCellTile);
+                    newNeighborTiles.Add(oldNeighborTile);
+                    newCurrCellTiles.Add(currCellTile);
                 }
         Map.Field[changingCell] = newNeighborTiles.ToArray();
         Map.Field[currCell] = newCurrCellTiles.ToArray();
